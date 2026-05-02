@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nugO Affiliate Marketing Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--card:#0e1320;--border:#1a2640;
+  --accent:#f5b731;--as:#f5b73118;
+  --green:#4cdb8a;--grs:#4cdb8a18;
+  --red:#f04060;--rs:#f0406018;
+  --blue:#3d9eff;--bs:#3d9eff18;
+  --purple:#a875f0;--ps:#a875f018;
+  --orange:#ff7c3a;--os:#ff7c3a18;
+  --teal:#00d4d4;--ts:#00d4d418;
+  --text:#ddeeff;--muted:#7a90b0;--dim:#374a66;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select,textarea{font-family:'Syne',sans-serif;}
+button{font-family:'Space Mono',monospace;cursor:pointer;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px var(--accent)44}50%{box-shadow:0 0 40px var(--accent)88}}
+.fu{animation:fadeUp .32s ease forwards;}
+
+/* Layout */
+#app{max-width:720px;margin:0 auto;padding:0 16px 80px;}
+
+/* Header */
+#hdr{background:linear-gradient(180deg,#0d1520,transparent);padding:20px 18px 0;margin-bottom:6px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+#hdr-inner{max-width:720px;margin:0 auto;}
+
+/* Progress */
+.module-progress{display:flex;gap:4px;margin-top:14px;margin-bottom:2px;}
+.mp-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;cursor:pointer;}
+.mp-labels{display:flex;justify-content:space-between;margin-top:4px;}
+.mp-labels span{color:var(--muted);font-size:9px;}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 2px 20px #00000055;}
+.card.gold{border-color:var(--accent)55;box-shadow:0 0 28px var(--accent)22;}
+.card.green{border-color:var(--green)55;box-shadow:0 0 28px var(--green)22;}
+.card.red{border-color:var(--red)55;box-shadow:0 0 28px var(--red)22;}
+.card.blue{border-color:var(--blue)55;box-shadow:0 0 28px var(--blue)22;}
+.card.purple{border-color:var(--purple)55;box-shadow:0 0 28px var(--purple)22;}
+.card.teal{border-color:var(--teal)55;box-shadow:0 0 28px var(--teal)22;}
+.card.dark{background:#080c18;}
+
+/* Typography */
+.display{font-family:'Playfair Display',serif;font-weight:900;}
+.mono{font-family:'Space Mono',monospace;}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:14px;}
+
+/* Badges */
+.badge{display:inline-block;border-radius:99px;font-weight:700;white-space:nowrap;font-size:11px;padding:2px 10px;}
+.badge.lg{font-size:13px;padding:4px 14px;}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;}
+.col{display:flex;flex-direction:column;gap:15px;}
+
+/* Stat */
+.stat{text-align:center;}
+.stat .val{font-family:'Space Mono',monospace;font-weight:800;line-height:1;}
+.stat .lbl{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+/* Progress bar */
+.pbar{background:#151f35;border-radius:99px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:99px;transition:width .9s cubic-bezier(.4,2,.6,1);}
+
+/* Inputs */
+.inp-wrap{display:flex;flex-direction:column;gap:5px;}
+.inp-label{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.inp-hint{color:var(--dim);font-size:10px;}
+.inp-row{display:flex;align-items:center;background:#080c18;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.inp-pre{color:var(--muted);padding:9px 11px;background:#111825;font-size:12px;border-right:1px solid var(--border);}
+.inp-suf{color:var(--muted);padding:9px 11px;font-size:11px;}
+.inp-row input,.inp-row select,.inp-row textarea{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:9px 13px;font-size:14px;font-family:'Space Mono',monospace;width:100%;}
+.inp-row textarea{resize:vertical;min-height:70px;}
+
+/* Buttons */
+.btn{border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.3px;transition:opacity .15s,transform .1s;border:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.gold{background:var(--accent);color:#060a12;}
+.btn.green{background:var(--green);color:#060a12;}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)55;}
+.btn.dark{background:#151f35;color:var(--muted);border:1px solid var(--border);}
+.btn.blue{background:var(--blue);color:#060a12;}
+.btn.teal{background:var(--teal);color:#060a12;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.sm{padding:6px 14px;font-size:11px;}
+.btn.md{padding:9px 20px;}
+.btn.lg{padding:13px 28px;font-size:14px;}
+.btn.xl{padding:15px 38px;font-size:16px;}
+.btn.full{width:100%;}
+
+/* Module header */
+.mod-hdr{border-radius:14px;padding:20px;margin-bottom:16px;}
+.mod-num{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;}
+
+/* Truth box */
+.truth-box{border-radius:12px;padding:14px 16px;margin-top:4px;}
+.truth-row{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--border)22;font-size:12px;line-height:1.7;}
+
+/* Platform card */
+.platform-card{border-radius:12px;padding:14px;border:2px solid var(--border);cursor:pointer;transition:all .13s;}
+.platform-card.sel{border-color:var(--accent);background:var(--as);}
+
+/* Timeline */
+.timeline-item{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--border);}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0;font-family:'Space Mono',monospace;}
+.tl-week{color:var(--accent);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.tl-title{font-weight:800;font-size:13px;margin:3px 0;}
+.tl-tasks{color:var(--muted);font-size:11px;line-height:1.8;}
+
+/* Niche selector */
+.niche-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.niche-opt{border-radius:10px;padding:12px 14px;border:1px solid var(--border);cursor:pointer;transition:all .13s;}
+.niche-opt.sel{border-color:var(--accent);background:var(--as);}
+.niche-opt .ni{font-size:20px;margin-bottom:4px;}
+.niche-opt .nl{font-weight:700;font-size:12px;}
+.niche-opt .nd{color:var(--muted);font-size:10px;margin-top:2px;}
+.niche-opt .np{font-size:10px;font-weight:700;margin-top:5px;}
+
+/* Tool card */
+.tool-card{border-radius:11px;padding:12px 14px;border:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;}
+
+/* Day planner */
+.day-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)22;}
+.day-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .13s;}
+.day-check.done{background:var(--green);border-color:var(--green);color:#060a12;}
+
+/* Income calculator */
+.calc-result{background:var(--as);border:1px solid var(--accent)44;border-radius:10px;padding:14px;text-align:center;margin-top:14px;}
+
+/* Platform comparison */
+.comp-table{width:100%;border-collapse:collapse;font-size:11px;}
+.comp-table th{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:8px;text-align:left;border-bottom:1px solid var(--border);}
+.comp-table td{padding:9px 8px;border-bottom:1px solid var(--border)22;font-size:12px;}
+
+/* Cert */
+.cert{background:linear-gradient(135deg,#1a1200,#0e1a00);border:1px solid var(--accent)55;border-radius:16px;padding:28px;text-align:center;}
+
+/* Nav tabs */
+.nav-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.nav-tab{padding:8px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Space Mono',monospace;transition:all .13s;}
+.nav-tab.active{background:var(--accent);color:#060a12;border-color:var(--accent);}
+
+/* Workbook input */
+.wb-input{background:#080c18;border:1px solid var(--border);border-radius:9px;padding:10px 13px;width:100%;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:60px;}
+.wb-input:focus{border-color:var(--accent)66;}
+
+@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}.niche-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-inner">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="background:var(--as);border:1px solid var(--accent)33;border-radius:11px;padding:7px 13px;font-size:19px;flex-shrink:0">💰</div>
+      <div>
+        <div style="color:var(--accent);font-weight:900;font-size:16px;letter-spacing:-0.5px">nugO Affiliate Marketing Lab</div>
+        <div style="color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1.5px">Interactive Workbook · 7 Modules · 90-Day Action Plan</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <div id="prog-pct" style="color:var(--accent);font-size:10px;font-weight:700;font-family:'Space Mono',monospace">0%</div>
+        <button class="btn dark sm" onclick="toggleCert()" id="cert-btn" style="display:none">🏆 Certificate</button>
+      </div>
+    </div>
+    <div class="module-progress" id="mod-progress">
+      ${Array(7).fill("").map((_,i)=>`<div class="mp-seg" id="mseg-${i}" onclick="goModule(${i})"></div>`).join("")}
+    </div>
+    <div class="mp-labels"><span id="mod-lbl">Module 1 of 7</span><span style="color:var(--accent)" id="mod-name">What is Affiliate Marketing</span></div>
+  </div>
+</div>
+
+<div id="app"><div id="screen" class="fu"></div></div>
+
+<script>
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+const SAVE_KEY = "nugo-affiliate-v1";
+let S = {
+  module: 0,
+  completed: [],
+  niche: null,
+  platforms: [],
+  workbook: {},
+  dailyTasks: {},
+  showCert: false,
+};
+
+function save(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){}
+}
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY)||"null");
+    if(d) S = {...S,...d};
+  }catch(e){}
+}
+
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const MODULES = [
+  {num:1, icon:"💡", title:"What is Affiliate Marketing", color:"var(--accent)",   short:"Basics"},
+  {num:2, icon:"🎯", title:"Pick Your Niche",             color:"var(--green)",    short:"Niche"},
+  {num:3, icon:"🛒", title:"Find Your Products",          color:"var(--blue)",     short:"Products"},
+  {num:4, icon:"📣", title:"Build Your Platform",         color:"var(--purple)",   short:"Platform"},
+  {num:5, icon:"🤖", title:"AI Content Creation",         color:"var(--teal)",     short:"AI Tools"},
+  {num:6, icon:"📊", title:"Track & Optimize",            color:"var(--orange)",   short:"Analytics"},
+  {num:7, icon:"🗓️", title:"90-Day Action Plan",          color:"var(--accent)",   short:"Action Plan"},
+];
+
+const NICHES = [
+  {id:"finance",  icon:"💰", label:"Personal Finance",    desc:"Budgeting, investing, credit repair",       comp:"High",   earn:"$50–500/sale",  color:"var(--accent)"},
+  {id:"health",   icon:"💪", label:"Health & Fitness",    desc:"Weight loss, supplements, workouts",        comp:"High",   earn:"$20–100/sale",  color:"var(--green)"},
+  {id:"business", icon:"💼", label:"Online Business",     desc:"Courses, software, side hustles",           comp:"Medium", earn:"$100–1000/sale", color:"var(--blue)"},
+  {id:"tech",     icon:"💻", label:"Software & SaaS",     desc:"Tools, apps, productivity",                 comp:"Medium", earn:"$30–200/mo",     color:"var(--purple)"},
+  {id:"beauty",   icon:"💅", label:"Beauty & Fashion",    desc:"Makeup, skincare, style",                   comp:"High",   earn:"$10–50/sale",   color:"var(--teal)"},
+  {id:"parenting",icon:"👨‍👩‍👧", label:"Parenting & Family", desc:"Education, toys, family products",       comp:"Low",    earn:"$15–80/sale",   color:"var(--orange)"},
+  {id:"food",     icon:"🍽️", label:"Food & Cooking",      desc:"Recipes, meal kits, kitchen gear",          comp:"Medium", earn:"$20–150/sale",  color:"var(--red)"},
+  {id:"travel",   icon:"✈️", label:"Travel & Adventure",  desc:"Hotels, gear, travel hacks",                comp:"Medium", earn:"$30–300/sale",  color:"var(--accent)"},
+  {id:"pets",     icon:"🐾", label:"Pets & Animals",      desc:"Food, accessories, training",               comp:"Low",    earn:"$15–60/sale",   color:"var(--green)"},
+  {id:"selfdev",  icon:"🧠", label:"Self Development",    desc:"Courses, mindset, productivity",            comp:"Medium", earn:"$50–500/sale",  color:"var(--blue)"},
+];
+
+const PLATFORMS = [
+  {id:"instagram",icon:"📸",name:"Instagram / Reels",   time:"1–2 hrs/day",  reach:"High",   cost:"Free",    best:"Visual products, fashion, food, fitness"},
+  {id:"tiktok",   icon:"🎵",name:"TikTok",              time:"1–2 hrs/day",  reach:"Highest",cost:"Free",    best:"Entertainment, trending products, youth"},
+  {id:"youtube",  icon:"▶️", name:"YouTube",            time:"3–5 hrs/video",reach:"High",   cost:"Free",    best:"Reviews, tutorials, software demos"},
+  {id:"blog",     icon:"📝",name:"Blog / SEO",          time:"3–5 hrs/post", reach:"Medium", cost:"$10–30/mo",best:"Long-term passive traffic, high-ticket"},
+  {id:"email",    icon:"📧",name:"Email List",          time:"1–2 hrs/week", reach:"High",   cost:"$15–30/mo",best:"Best ROI, own your audience forever"},
+  {id:"pinterest",icon:"📌",name:"Pinterest",           time:"30 min/day",   reach:"Medium", cost:"Free",    best:"DIY, recipes, home decor, fashion"},
+];
+
+const AI_TOOLS = [
+  {icon:"🤖",name:"ChatGPT / Claude",    use:"Write captions, scripts, emails, blog posts",     cost:"Free – $20/mo",  link:"chatgpt.com"},
+  {icon:"🎬",name:"CapCut",              use:"Edit Reels & TikToks — auto-captions, templates",  cost:"Free",          link:"capcut.com"},
+  {icon:"🎨",name:"Canva",              use:"Graphics, thumbnails, carousels, story templates",  cost:"Free – $15/mo", link:"canva.com"},
+  {icon:"📅",name:"Buffer / Later",     use:"Schedule posts across all platforms automatically", cost:"Free – $18/mo", link:"buffer.com"},
+  {icon:"🔍",name:"VidIQ / TubeBuddy", use:"YouTube SEO — find keywords that rank",             cost:"Free – $10/mo", link:"vidiq.com"},
+  {icon:"✉️",name:"ConvertKit",         use:"Build email list, send automations, tag subscribers",cost:"Free – $25/mo",link:"convertkit.com"},
+  {icon:"🔗",name:"Bitly / Pretty Links",use:"Track clicks on your affiliate links",            cost:"Free – $8/mo",  link:"bitly.com"},
+  {icon:"📊",name:"Google Analytics",   use:"Track website traffic, see what converts",         cost:"Free",          link:"analytics.google.com"},
+];
+
+const NETWORKS = [
+  {name:"JVZoo",        icon:"🏪",focus:"Digital products, software, online courses",  comm:"30–75%",   pay:"Instant–weekly",  best:"Business, marketing niches",    url:"jvzoo.com"},
+  {name:"ClickBank",    icon:"💳",focus:"Health, wealth, relationships, digital",       comm:"30–75%",   pay:"Weekly",          best:"Health, self-help, finance",    url:"clickbank.com"},
+  {name:"Amazon",       icon:"📦",focus:"Physical products — everything",              comm:"1–10%",    pay:"Monthly",         best:"Any niche, trusted brand",       url:"amazon.com/associates"},
+  {name:"ShareASale",   icon:"🤝",focus:"Retail, fashion, home goods, B2B",           comm:"5–50%",    pay:"Monthly",         best:"Physical & software products",   url:"shareasale.com"},
+  {name:"Impact",       icon:"🚀",focus:"Major brands — Airbnb, Uber, Target",        comm:"Varies",   pay:"Monthly",         best:"Travel, lifestyle, apps",       url:"impact.com"},
+  {name:"CJ Affiliate", icon:"🌐",focus:"Major retailers, Fortune 500 brands",        comm:"Varies",   pay:"Monthly",         best:"Established brands, trust",     url:"cj.com"},
+  {name:"Digistore24",  icon:"💫",focus:"Digital products, courses, supplements",     comm:"25–70%",   pay:"Weekly",          best:"Health, business niches",       url:"digistore24.com"},
+];
+
+// ═══════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════
+const fmt  = n => "$" + Math.abs(Math.round(n)).toLocaleString();
+const clamp= (v,lo,hi) => Math.min(hi,Math.max(lo,v));
+const b    = (txt,fn,v="gold",sz="md",dis=false) =>
+  `<button class="btn ${v} ${sz}" onclick="${fn}" ${dis?"disabled":""}>${txt}</button>`;
+const bdg  = (txt,color,sz="sm") =>
+  `<span class="badge" style="background:${color}28;color:${color};border:1px solid ${color}44;padding:${sz==="lg"?"4px 14px":"2px 10px"};font-size:${sz==="lg"?13:11}px">${txt}</span>`;
+const st   = (lbl,val,color,sm=false) =>
+  `<div class="stat"><div class="val" style="color:${color};font-size:${sm?14:20}px">${val}</div><div class="lbl">${lbl}</div></div>`;
+const pb   = (p,color,h=8) =>
+  `<div class="pbar" style="height:${h}px"><div class="pbar-fill" style="width:${clamp(p,0,100)}%;background:${color}"></div></div>`;
+const card = (c,cls="",style="") => `<div class="card ${cls}" style="${style}">${c}</div>`;
+const inp  = (lbl,id,type="text",val="",pre="",suf="",hint="") => {
+  const pH=pre?`<span class="inp-pre">${pre}</span>`:"";
+  const sH=suf?`<span class="inp-suf">${suf}</span>`:"";
+  const hH=hint?`<div class="inp-hint">${hint}</div>`:"";
+  return `<div class="inp-wrap"><label class="inp-label">${lbl}</label>${hH}<div class="inp-row">${pH}<input type="${type}" id="${id}" value="${val}">${sH}</div></div>`;
+};
+const truthRow = (guru,reality) =>
+  `<div class="truth-row"><div style="flex:1"><span style="color:var(--red)">❌ Guru says:</span> <span style="color:var(--muted)">${guru}</span></div></div>
+   <div class="truth-row" style="margin-top:-10px"><div style="flex:1"><span style="color:var(--green)">✅ Reality:</span> <span style="color:var(--text)">${reality}</span></div></div>`;
+const modHdr = (m) =>
+  `<div class="mod-hdr" style="background:linear-gradient(135deg,${m.color}18,transparent);border:1px solid ${m.color}44">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:28px;background:${m.color}22;border-radius:10px;padding:10px 12px;flex-shrink:0">${m.icon}</div>
+      <div>
+        <div style="display:flex;gap:7px;margin-bottom:5px;flex-wrap:wrap">
+          ${bdg("Module "+m.num,"var(--accent)")}
+          ${bdg("of 7","var(--dim)")}
+          ${S.completed.includes(m.num-1)?bdg("✓ Complete","var(--green)"):""}
+        </div>
+        <div style="font-size:17px;font-weight:900">${m.title}</div>
+      </div>
+    </div>
+  </div>`;
+
+function navBtns(mi){
+  const prev = mi>0 ? b("← "+MODULES[mi-1].short,"goModule("+(mi-1)+")", "dark","sm") : "";
+  const next = mi<6 ? b("Next: "+MODULES[mi+1].short+" →","completeModule("+mi+")","gold","lg full") :
+                       b("🏆 Complete & Earn Certificate","completeModule("+mi+")","gold","lg full");
+  return `<div style="display:flex;gap:10px;margin-top:4px">${prev}<div style="flex:1"></div></div>${next}`;
+}
+
+// ═══════════════════════════════════
+// ROUTER & PROGRESS
+// ═══════════════════════════════════
+function render(){
+  updateProgress();
+  window.scrollTo({top:0,behavior:"smooth"});
+  const el=document.getElementById("screen");
+  el.className="fu";void el.offsetWidth;
+  if(S.showCert){ el.innerHTML=renderCert(); return; }
+  const renders=[renderM1,renderM2,renderM3,renderM4,renderM5,renderM6,renderM7];
+  el.innerHTML = renders[S.module]();
+}
+
+function updateProgress(){
+  const pct = Math.round((S.completed.length/7)*100);
+  document.getElementById("prog-pct").textContent = pct+"%";
+  document.getElementById("mod-lbl").textContent = "Module "+(S.module+1)+" of 7";
+  document.getElementById("mod-name").textContent = MODULES[S.module].title;
+  MODULES.forEach((_,i)=>{
+    const seg=document.getElementById("mseg-"+i);
+    if(seg) seg.style.background = S.completed.includes(i)?"var(--green)":i===S.module?"var(--accent)88":"var(--border)";
+  });
+  const cb=document.getElementById("cert-btn");
+  if(cb) cb.style.display = S.completed.length===7?"inline-block":"none";
+}
+
+function goModule(i){ S.module=i; save(); render(); }
+function completeModule(i){
+  if(!S.completed.includes(i)) S.completed.push(i);
+  if(i<6) S.module=i+1;
+  else S.showCert=true;
+  save(); render();
+}
+function toggleCert(){ S.showCert=!S.showCert; save(); render(); }
+function wbSave(id){ const el=document.getElementById("wb-"+id); if(el){S.workbook[id]=el.value;save();} }
+
+// ═══════════════════════════════════
+// MODULE 1 — WHAT IS AFFILIATE MARKETING
+// ═══════════════════════════════════
+function renderM1(){
+  const m=MODULES[0];
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">📖 The Simple Definition</div>
+        <p style="font-size:14px;line-height:1.85;color:var(--text)">
+          Affiliate marketing is <strong style="color:var(--accent)">earning a commission</strong> by promoting someone else's product. You share a special link. Someone clicks it and buys. You get paid. <strong style="color:var(--accent)">You never create a product, handle inventory, or deal with customer service.</strong>
+        </p>
+        <div style="margin-top:16px;background:#080c18;border-radius:10px;padding:14px;font-family:'Space Mono',monospace;font-size:12px;line-height:2.2;text-align:center">
+          <div>${bdg("You","var(--accent)")} → Share Link → ${bdg("Customer Buys","var(--blue)")} → ${bdg("Company Pays You","var(--green)")}</div>
+          <div style="color:var(--muted);font-size:10px;margin-top:6px">That's it. That's the whole model.</div>
+        </div>
+      `,"gold")}
+
+      ${card(`
+        <div class="section-title">💡 Real Example — How It Works</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          ${[
+            {step:"1",color:"var(--accent)",title:"You join JVZoo for free",detail:"Takes 5 minutes. No approval needed for most products."},
+            {step:"2",color:"var(--blue)",title:"You pick a product paying $200 commission",detail:"Example: Online course teaching social media marketing."},
+            {step:"3",color:"var(--purple)",title:"You get your unique affiliate link",detail:"Example: jvzoo.com/ref/yourname/product123"},
+            {step:"4",color:"var(--green)",title:"You post content about the problem it solves",detail:"Not: 'Buy this!' — Instead: 'Struggling with social media? Here's what helped me...'"},
+            {step:"5",color:"var(--accent)",title:"Someone clicks your link and buys",detail:"JVZoo tracks the sale back to your link automatically."},
+            {step:"6",color:"var(--green)",title:"$200 lands in your account",detail:"You did none of the fulfillment. You just connected a buyer to a seller."},
+          ].map((s,i)=>`
+            <div style="display:flex;gap:13px;padding:12px 0;border-top:${i>0?"1px solid var(--border)22":"none"}">
+              <div style="width:28px;height:28px;border-radius:50%;background:${s.color}22;border:1px solid ${s.color}55;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0;color:${s.color};font-family:'Space Mono',monospace">${s.step}</div>
+              <div><div style="font-weight:700;font-size:13px;margin-bottom:3px">${s.title}</div><div style="color:var(--muted);font-size:11px">${s.detail}</div></div>
+            </div>`).join("")}
+        </div>
+      `)}
+
+      ${card(`
+        <div class="section-title">💰 How Much Can You Realistically Make?</div>
+        <div class="g3" style="margin-bottom:14px">
+          ${st("Months 1–3","$0–200",  "var(--red)")}
+          ${st("Months 4–6","$200–1K", "var(--accent)")}
+          ${st("Month 7–12","$1K–5K+", "var(--green)")}
+        </div>
+        <div style="color:var(--muted);font-size:11px;line-height:1.8">
+          These are <strong style="color:var(--text)">median realistic figures</strong> for someone starting from zero and posting consistently. Top earners make $10K–$100K+/month — but they have large audiences, email lists, and paid ads. <strong style="color:var(--accent)">Your first 90 days are about learning, not earning.</strong>
+        </div>
+      `,"dark")}
+
+      <div class="truth-box" style="background:#0d0808;border:1px solid var(--red)33;border-radius:12px;padding:16px">
+        <div style="color:var(--red);font-weight:800;font-size:13px;margin-bottom:10px">⚠️ Guru Claims vs Reality</div>
+        ${truthRow(
+          '"Make $500/day with no followers or experience"',
+          'You need an audience first. No audience = no clicks = no sales. Period.'
+        )}
+        ${truthRow(
+          '"Set it and forget it — fully passive income"',
+          'Affiliate marketing requires consistent content for 3–6 months before it becomes partially passive.'
+        )}
+        ${truthRow(
+          '"Just copy and paste their swipe files"',
+          'Copy-paste content gets zero reach on any platform. Your own authentic voice is what builds trust and sales.'
+        )}
+        ${truthRow(
+          '"Anyone can make $10K in their first month"',
+          'That person already had 50K followers and an email list they built over 2 years.'
+        )}
+      </div>
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Module 1</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">Why do you want to do affiliate marketing? (Be honest)</label>
+            <textarea class="wb-input" id="wb-m1-why" oninput="wbSave('m1-why')" placeholder="Extra income, replace job, build online business...">${S.workbook["m1-why"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">How many hours per week can you realistically commit?</label>
+            <textarea class="wb-input" id="wb-m1-time" oninput="wbSave('m1-time')" placeholder="Be honest — 5 hrs/week gets very different results than 20 hrs/week...">${S.workbook["m1-time"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(0)}
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 2 — PICK YOUR NICHE
+// ═══════════════════════════════════
+function renderM2(){
+  const m=MODULES[1];
+  const sel=S.niche;
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">🎯 Why Your Niche Is Everything</div>
+        <p style="font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:14px">
+          Your niche determines your audience, your products, your content, and your income potential. <strong style="color:var(--text)">Don't pick what pays most — pick what you can talk about consistently for 12 months without burning out.</strong>
+        </p>
+        <div style="background:#080c18;border-radius:10px;padding:14px">
+          <div style="color:var(--accent);font-weight:800;font-size:13px;margin-bottom:8px">The 3-Question Niche Test</div>
+          ${["Can you create content about this topic 5 days a week for a year?","Are there products paying $20+ commission in this space?","Do people with this problem actually spend money to solve it?"].map((q,i)=>`
+            <div style="display:flex;gap:10px;padding:8px 0;border-top:${i>0?"1px solid var(--border)22":"none"}">
+              <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace">${i+1}.</span>
+              <span style="color:var(--text);font-size:13px">${q}</span>
+            </div>`).join("")}
+          <div style="margin-top:10px;padding:8px 12px;background:var(--as);border-radius:8px;font-size:11px;color:var(--accent)">
+            If you answered YES to all 3 — that's your niche.
+          </div>
+        </div>
+      `,"green")}
+
+      <div class="section-title" style="margin-bottom:8px">🗂️ Choose Your Niche — Click to Select</div>
+      <div class="niche-grid">
+        ${NICHES.map(n=>`
+          <div class="niche-opt ${sel===n.id?"sel":""}" data-nid="${n.id}" onclick="selNiche('${n.id}')">
+            <div class="ni">${n.icon}</div>
+            <div class="nl" style="color:${sel===n.id?"var(--accent)":"var(--text)"}">${n.label}</div>
+            <div class="nd">${n.desc}</div>
+            <div class="np">
+              ${bdg(n.comp+" competition",n.comp==="Low"?"var(--green)":n.comp==="Medium"?"var(--accent)":"var(--red)")}
+              ${bdg(n.earn,"var(--gold)")}
+            </div>
+          </div>`).join("")}
+      </div>
+
+      ${sel?card(`
+        <div style="color:var(--green);font-weight:800;font-size:13px;margin-bottom:12px">✓ You selected: ${NICHES.find(n=>n.id===sel)?.icon} ${NICHES.find(n=>n.id===sel)?.label}</div>
+        <div class="g3">
+          ${st("Competition",NICHES.find(n=>n.id===sel)?.comp||"",NICHES.find(n=>n.id===sel)?.comp==="Low"?"var(--green)":NICHES.find(n=>n.id===sel)?.comp==="Medium"?"var(--accent)":"var(--red)")}
+          ${st("Commission Range",NICHES.find(n=>n.id===sel)?.earn||"","var(--gold)")}
+          ${st("Longevity","High","var(--green)")}
+        </div>
+      `,"green",""):""}
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Niche Deep Dive</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">What specific problem in your niche will you solve?</label>
+            <textarea class="wb-input" id="wb-m2-problem" oninput="wbSave('m2-problem')" placeholder="Example: 'I help single moms on tight budgets build credit scores above 700'">${S.workbook["m2-problem"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">Who is your ideal customer? (age, situation, pain point)</label>
+            <textarea class="wb-input" id="wb-m2-customer" oninput="wbSave('m2-customer')" placeholder="Example: '25–40 year old women who want to pay off debt but don't know where to start'">${S.workbook["m2-customer"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">Name 3 competitors already doing this niche (study them)</label>
+            <textarea class="wb-input" id="wb-m2-comp" oninput="wbSave('m2-comp')" placeholder="1.\n2.\n3.">${S.workbook["m2-comp"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(1)}
+    </div>`;
+}
+
+function selNiche(id){
+  S.niche=id;
+  document.querySelectorAll(".niche-opt").forEach(el=>{
+    const s=el.getAttribute("data-nid")===id;
+    el.classList.toggle("sel",s);
+    el.style.borderColor=s?"var(--accent)":"var(--border)";
+    el.style.background=s?"var(--as)":"var(--card)";
+  });
+  save();
+}
+
+// ═══════════════════════════════════
+// MODULE 3 — FIND YOUR PRODUCTS
+// ═══════════════════════════════════
+function renderM3(){
+  const m=MODULES[2];
+  // Commission calculator
+  const price=S.workbook.calc_price||97;
+  const commPct=S.workbook.calc_comm||50;
+  const sales=S.workbook.calc_sales||10;
+  const commPerSale=Math.round(price*commPct/100);
+  const monthly=commPerSale*sales;
+
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">🛒 The Top Affiliate Networks</div>
+        <div style="overflow-x:auto">
+          <table class="comp-table">
+            <thead><tr><th>Network</th><th>Best For</th><th>Commission</th><th>Pay Schedule</th></tr></thead>
+            <tbody>
+              ${NETWORKS.map(n=>`
+                <tr>
+                  <td><strong>${n.icon} ${n.name}</strong><br><span style="color:var(--dim);font-size:10px">${n.url}</span></td>
+                  <td style="color:var(--muted)">${n.best}</td>
+                  <td style="color:var(--green);font-weight:700;font-family:'Space Mono',monospace">${n.comm}</td>
+                  <td style="color:var(--muted)">${n.pay}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `,"blue")}
+
+      ${card(`
+        <div class="section-title">💰 Commission Calculator</div>
+        <div class="g3">
+          ${inp("Product Price","calc-price","number",price,"$","","The price the customer pays")}
+          ${inp("Commission %","calc-comm","number",commPct,"","%","Your cut per sale")}
+          ${inp("Sales per Month","calc-sales","number",sales,"","sales","Realistic monthly conversions")}
+        </div>
+        <div class="calc-result">
+          <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px">Your Commission Per Sale</div>
+          <div style="color:var(--accent);font-size:34px;font-weight:900;font-family:'Space Mono',monospace;margin:6px 0">${fmt(commPerSale)}</div>
+          <div style="color:var(--muted);font-size:13px">${sales} sales × ${fmt(commPerSale)} = <strong style="color:var(--green);font-size:16px">${fmt(monthly)}/month</strong></div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn dark sm" onclick="updateCalc()">🔄 Recalculate</button>
+        </div>
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">✅ How to Pick a GOOD Product</div>
+        ${[
+          {icon:"⭐",label:"Check reviews & refund rate","detail":"High refund rate (>20%) = low quality. Avoid.","color":"var(--accent)"},
+          {icon:"💰",label:"$20 minimum commission","detail":"Low commissions need huge volume. Start with $30–200/sale range.","color":"var(--gold)"},
+          {icon:"🛒",label:"Sales page looks professional","detail":"If the sales page looks scammy, your audience will think YOU are scammy.","color":"var(--blue)"},
+          {icon:"🎯",label:"Matches your audience's problem","detail":"Don't promote random products. Every product must solve your niche's specific pain.","color":"var(--green)"},
+          {icon:"📧",label:"Vendor has an email sequence","detail":"Good vendors have backend sales funnels that make you MORE money after the first sale.","color":"var(--purple)"},
+          {icon:"🔄",label:"Recurring commission = best","detail":"SaaS tools that pay monthly = income that compounds over time. Prioritize these.","color":"var(--teal)"},
+        ].map((item,i)=>`
+          <div style="display:flex;gap:12px;padding:10px 0;border-top:${i>0?"1px solid var(--border)22":"none"}">
+            <span style="font-size:20px;flex-shrink:0">${item.icon}</span>
+            <div><div style="font-weight:700;font-size:13px;color:${item.color}">${item.label}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${item.detail}</div></div>
+          </div>`).join("")}
+      `)}
+
+      <div class="truth-box" style="background:#0d0808;border:1px solid var(--red)33;border-radius:12px;padding:16px">
+        <div style="color:var(--red);font-weight:800;font-size:13px;margin-bottom:10px">⚠️ Product Red Flags — Avoid These</div>
+        ${[
+          ["Products promising $10,000/month guaranteed","Guaranteed income claims are illegal marketing and the product is almost always garbage"],
+          ["$500+ products with no free trial or demo","Hard to sell cold. Start with lower-ticket to build trust, then upsell"],
+          ["Products you've never used","Your audience will feel the inauthenticity. Only promote what you'd actually recommend to a friend"],
+        ].map(([g,r])=>truthRow(g,r)).join("")}
+      </div>
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Product Research</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">Which affiliate network will you start with and why?</label>
+            <textarea class="wb-input" id="wb-m3-network" oninput="wbSave('m3-network')" placeholder="Example: JVZoo — because I'm in the online business niche and they have the best digital products...">${S.workbook["m3-network"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">Name 3 products you want to research (search your network)</label>
+            <textarea class="wb-input" id="wb-m3-products" oninput="wbSave('m3-products')" placeholder="1. Product name — $XX commission — Link\n2.\n3.">${S.workbook["m3-products"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(2)}
+    </div>`;
+}
+
+function updateCalc(){
+  const price=+(document.getElementById("calc-price")?.value||97);
+  const comm=+(document.getElementById("calc-comm")?.value||50);
+  const sales=+(document.getElementById("calc-sales")?.value||10);
+  S.workbook.calc_price=price; S.workbook.calc_comm=comm; S.workbook.calc_sales=sales;
+  save(); render();
+}
+
+// ═══════════════════════════════════
+// MODULE 4 — BUILD YOUR PLATFORM
+// ═══════════════════════════════════
+function renderM4(){
+  const m=MODULES[3];
+  const selP=S.platforms;
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">📣 Platform Overview — Pick 1 to Start</div>
+        <p style="color:var(--muted);font-size:12px;line-height:1.8;margin-bottom:14px">
+          <strong style="color:var(--text)">The biggest mistake new affiliates make: trying to be everywhere at once.</strong> Pick ONE platform, master it for 90 days, then expand. Consistency on one platform beats mediocrity on five.
+        </p>
+        <div class="col">
+          ${PLATFORMS.map(p=>`
+            <div class="platform-card ${selP.includes(p.id)?"sel":""}" data-pid="${p.id}" onclick="togglePlatform('${p.id}')">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-size:26px">${p.icon}</span>
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px">
+                    <div style="font-weight:800;font-size:13px;color:${selP.includes(p.id)?"var(--accent)":"var(--text)"}">${p.name}</div>
+                    ${bdg("Reach: "+p.reach,p.reach==="Highest"?"var(--green)":p.reach==="High"?"var(--accent)":"var(--blue)")}
+                    ${bdg(p.cost,"var(--muted)")}
+                  </div>
+                  <div style="color:var(--muted);font-size:11px">⏱ ${p.time} · 💡 Best for: ${p.best}</div>
+                </div>
+                ${selP.includes(p.id)?`<span style="color:var(--accent);font-size:18px;flex-shrink:0">✓</span>`:""}
+              </div>
+            </div>`).join("")}
+        </div>
+      `,"purple")}
+
+      ${card(`
+        <div class="section-title">📊 Platform Comparison</div>
+        <div style="overflow-x:auto">
+          <table class="comp-table">
+            <thead><tr><th>Platform</th><th>Time to First Sale</th><th>Algorithm Friendly?</th><th>Email List?</th></tr></thead>
+            <tbody>
+              ${[
+                ["📸 Instagram",    "3–6 months",  "Yes — Reels get boosted","No — need link in bio"],
+                ["🎵 TikTok",       "1–3 months",  "Best for new accounts",  "No — need link in bio"],
+                ["▶️ YouTube",      "6–12 months", "Yes — SEO stays forever","No — use description"],
+                ["📝 Blog/SEO",     "6–18 months", "Slow but permanent",     "Yes — best integration"],
+                ["📧 Email List",   "1 month",     "N/A — you own it",       "YES — this IS the list"],
+                ["📌 Pinterest",    "2–4 months",  "Yes — pins last years",  "No — need landing page"],
+              ].map(r=>`<tr><td style="font-weight:700">${r[0]}</td><td style="color:var(--muted)">${r[1]}</td><td style="color:var(--green)">${r[2]}</td><td style="color:var(--accent)">${r[3]}</td></tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:var(--as);border-radius:9px;font-size:12px;color:var(--accent);font-weight:700">
+          💡 Pro Tip: Start with TikTok or Instagram for fast feedback. Build an email list from day 1 — it's the only platform you own.
+        </div>
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">🚀 Platform Setup Checklist</div>
+        ${[
+          "Create account with niche-specific username (not your personal name)",
+          "Write bio that states clearly WHO you help and HOW",
+          "Add link in bio pointing to a landing page or link tree",
+          "Post 3 pieces of content before promoting anything",
+          "Set up a free email capture (ConvertKit, Mailchimp)",
+          "Create a simple lead magnet (free PDF, checklist, or mini-course)",
+          "Connect Google Analytics or platform analytics",
+        ].map((task,i)=>{
+          const done=S.dailyTasks["setup-"+i];
+          return `<div class="day-row">
+            <div class="day-check ${done?"done":""}" onclick="toggleTask('setup-${i}')">${done?"✓":""}</div>
+            <span style="color:${done?"var(--green)":"var(--text)"};font-size:12px;${done?"text-decoration:line-through;color:var(--muted)":""}">${task}</span>
+          </div>`;
+        }).join("")}
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Platform Strategy</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">Which platform will you focus on for the first 90 days and why?</label>
+            <textarea class="wb-input" id="wb-m4-platform" oninput="wbSave('m4-platform')" placeholder="Example: TikTok — because I'm in the fitness niche and short video content about workouts gets massive organic reach...">${S.workbook["m4-platform"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">What is your content angle? (How will you stand out?)</label>
+            <textarea class="wb-input" id="wb-m4-angle" oninput="wbSave('m4-angle')" placeholder="Example: 'I show busy moms how to lose weight in 15-minute workouts at home, no gym needed'">${S.workbook["m4-angle"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(3)}
+    </div>`;
+}
+
+function togglePlatform(id){
+  const idx=S.platforms.indexOf(id);
+  if(idx>=0) S.platforms.splice(idx,1); else {
+    if(S.platforms.length>=2) S.platforms.shift();
+    S.platforms.push(id);
+  }
+  save();
+  document.querySelectorAll(".platform-card").forEach(el=>{
+    const s=S.platforms.includes(el.getAttribute("data-pid"));
+    el.classList.toggle("sel",s);
+    el.style.borderColor=s?"var(--accent)":"var(--border)";
+    el.style.background=s?"var(--as)":"var(--card)";
+  });
+}
+function toggleTask(id){
+  S.dailyTasks[id]=!S.dailyTasks[id]; save();
+  const el=document.querySelector(`[onclick="toggleTask('${id}')"]`);
+  if(el){ el.classList.toggle("done",S.dailyTasks[id]); el.textContent=S.dailyTasks[id]?"✓":""; }
+  const row=el?.nextElementSibling;
+  if(row){ row.style.textDecoration=S.dailyTasks[id]?"line-through":"none"; row.style.color=S.dailyTasks[id]?"var(--muted)":"var(--text)"; }
+}
+
+// ═══════════════════════════════════
+// MODULE 5 — AI CONTENT CREATION
+// ═══════════════════════════════════
+function renderM5(){
+  const m=MODULES[4];
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">🤖 Your AI Content Stack</div>
+        <div class="col">
+          ${AI_TOOLS.map(t=>`
+            <div class="tool-card">
+              <span style="font-size:24px;flex-shrink:0">${t.icon}</span>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                  <div style="font-weight:800;font-size:13px">${t.name}</div>
+                  ${bdg(t.cost,"var(--gold)")}
+                </div>
+                <div style="color:var(--muted);font-size:11px">${t.use}</div>
+              </div>
+            </div>`).join("")}
+        </div>
+      `,"teal")}
+
+      ${card(`
+        <div class="section-title">✍️ AI Prompt Templates — Copy & Use These</div>
+        <div class="col">
+          ${[
+            {label:"🎬 Reel/TikTok Script Hook",prompt:`Write a 30-second TikTok script for the [NICHE] niche. The hook should stop someone from scrolling in the first 3 seconds. Topic: [TOPIC]. End with a soft call to action to click the link in bio. Tone: conversational, not salesy.`},
+            {label:"📝 Instagram Caption",prompt:`Write an Instagram caption for the [NICHE] niche. Format: Start with a bold first line that stops the scroll. Then 3–5 lines of value. End with a question to boost comments. Include 5 relevant hashtags. Topic: [TOPIC].`},
+            {label:"📧 Email Newsletter",prompt:`Write a short email for my [NICHE] newsletter list. Subject line that gets opens. Body: tell a relatable story about [PROBLEM]. Then naturally introduce [PRODUCT] as the solution. CTA: click here to learn more. Max 200 words.`},
+            {label:"▶️ YouTube Video Outline",prompt:`Create a YouTube video outline for the [NICHE] niche. Title should be SEO-friendly and get clicks. Include: hook (first 30 seconds), 3–5 main points, and a CTA to check the affiliate product in description. Topic: [TOPIC].`},
+            {label:"🎯 Content Ideas (30 days)",prompt:`Give me 30 content ideas for the [NICHE] niche on [PLATFORM]. Each idea should address a specific pain point or question my audience has. Format as a numbered list with a one-line description of each.`},
+          ].map(p=>`
+            <div style="border:1px solid var(--border);border-radius:11px;padding:14px">
+              <div style="font-weight:700;font-size:13px;margin-bottom:8px;color:var(--teal)">${p.label}</div>
+              <div style="background:#080c18;border-radius:8px;padding:10px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;position:relative">
+                ${p.prompt}
+                <button class="btn dark sm" style="margin-top:8px" onclick="copyPrompt(this,'${p.prompt.replace(/'/g,"\\'")}')">📋 Copy Prompt</button>
+              </div>
+            </div>`).join("")}
+        </div>
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">📅 Weekly Content Schedule Template</div>
+        <div style="overflow-x:auto">
+          <table class="comp-table">
+            <thead><tr><th>Day</th><th>Content Type</th><th>Time Needed</th><th>Goal</th></tr></thead>
+            <tbody>
+              ${[
+                ["Monday",   "Educational post — teach something",        "30 min","Build trust & authority"],
+                ["Tuesday",  "Personal story or transformation",           "20 min","Build connection"],
+                ["Wednesday","Product review or recommendation",           "45 min","Generate affiliate clicks"],
+                ["Thursday", "Q&A or myth-busting content",               "20 min","Engagement"],
+                ["Friday",   "Behind the scenes or day in my life",       "25 min","Humanize your brand"],
+                ["Saturday", "User-generated content or testimonial share","15 min","Social proof"],
+                ["Sunday",   "Rest OR batch-create next week's content",  "1–2 hrs","Sustainability"],
+              ].map(r=>`<tr><td style="font-weight:700;color:var(--accent)">${r[0]}</td><td style="color:var(--muted)">${r[1]}</td><td style="color:var(--gold)">${r[2]}</td><td style="color:var(--green)">${r[3]}</td></tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `)}
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Content Plan</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">Write your first 5 content ideas using the AI prompt template above</label>
+            <textarea class="wb-input" id="wb-m5-ideas" oninput="wbSave('m5-ideas')" style="min-height:100px" placeholder="1.\n2.\n3.\n4.\n5.">${S.workbook["m5-ideas"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">Which AI tools will you use in your workflow?</label>
+            <textarea class="wb-input" id="wb-m5-tools" oninput="wbSave('m5-tools')" placeholder="Example: Claude for scripts, CapCut for editing, Buffer for scheduling...">${S.workbook["m5-tools"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(4)}
+    </div>`;
+}
+
+function copyPrompt(btn, text){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent="✅ Copied!";
+    setTimeout(()=>btn.textContent="📋 Copy Prompt",2000);
+  });
+}
+
+// ═══════════════════════════════════
+// MODULE 6 — TRACK & OPTIMIZE
+// ═══════════════════════════════════
+function renderM6(){
+  const m=MODULES[5];
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">📊 The 5 Numbers You Must Track Weekly</div>
+        <div class="col">
+          ${[
+            {num:"01",label:"Clicks on your affiliate link",why:"If nobody clicks, content isn't working. Fix: stronger CTA.",color:"var(--accent)"},
+            {num:"02",label:"Conversion rate (sales ÷ clicks)",why:"Industry avg is 1–3%. Below 1% means wrong audience or bad product match.",color:"var(--blue)"},
+            {num:"03",label:"Revenue per click (EPC)",why:"Total commission ÷ total clicks. Shows which products perform best.",color:"var(--gold)"},
+            {num:"04",label:"Email list growth per week",why:"Your list is your most valuable asset. Track it religiously.",color:"var(--green)"},
+            {num:"05",label:"Best performing content piece",why:"Double down on what works. 80% of your results come from 20% of your content.",color:"var(--purple)"},
+          ].map(item=>`
+            <div style="display:flex;gap:13px;padding:11px 0;border-top:1px solid var(--border)22;align-items:flex-start">
+              <div style="font-size:24px;font-weight:900;color:${item.color};font-family:'Space Mono',monospace;flex-shrink:0;opacity:.5">${item.num}</div>
+              <div>
+                <div style="font-weight:800;font-size:13px;color:${item.color}">${item.label}</div>
+                <div style="color:var(--muted);font-size:11px;margin-top:3px">💡 ${item.why}</div>
+              </div>
+            </div>`).join("")}
+        </div>
+      `,"orange")}
+
+      ${card(`
+        <div class="section-title">🔄 When to Pivot vs When to Push Through</div>
+        <div class="g2">
+          <div style="background:var(--rs);border:1px solid var(--red)44;border-radius:10px;padding:14px">
+            <div style="color:var(--red);font-weight:800;font-size:12px;margin-bottom:8px">🚩 Time to PIVOT if:</div>
+            ${["0 clicks after 30 posts","Same content, zero engagement","Product has >20% refund rate","Niche feels forced to write about","Email open rate below 15%"].map(t=>`<div style="color:var(--muted);font-size:11px;padding:4px 0;border-top:1px solid var(--border)22">• ${t}</div>`).join("")}
+          </div>
+          <div style="background:var(--grs);border:1px solid var(--green)44;border-radius:10px;padding:14px">
+            <div style="color:var(--green);font-weight:800;font-size:12px;margin-bottom:8px">✅ PUSH THROUGH if:</div>
+            ${["Under 90 days — too early to judge","Getting engagement but no sales yet","Clicks happening but low conversions","Email list growing even slowly","You still enjoy making the content"].map(t=>`<div style="color:var(--muted);font-size:11px;padding:4px 0;border-top:1px solid var(--border)22">• ${t}</div>`).join("")}
+          </div>
+        </div>
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">📈 Income Projection Calculator</div>
+        <div class="g2">
+          ${inp("Monthly content pieces","proj-content","number",S.workbook.proj_content||30,"","posts/mo","Reels, posts, emails combined")}
+          ${inp("Avg commission per sale","proj-comm","number",S.workbook.proj_comm||75,"$","/sale","")}
+          ${inp("Conversion rate","proj-conv","number",S.workbook.proj_conv||2,"","%","Industry avg: 1–3%")}
+          ${inp("Avg monthly visitors","proj-visitors","number",S.workbook.proj_visitors||500,"","visitors","")}
+        </div>
+        <button class="btn dark sm" onclick="calcProjection()" style="margin:10px 0">🔄 Calculate</button>
+        <div id="proj-result"></div>
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Your Metrics Tracker</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">What tracking tools will you use? (be specific)</label>
+            <textarea class="wb-input" id="wb-m6-tools" oninput="wbSave('m6-tools')" placeholder="Example: Bitly for link clicks, ConvertKit for email stats, Instagram Insights for reach...">${S.workbook["m6-tools"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">What does success look like for you at month 3? Month 6? Month 12?</label>
+            <textarea class="wb-input" id="wb-m6-goals" oninput="wbSave('m6-goals')" placeholder="Month 3: ___\nMonth 6: ___\nMonth 12: ___">${S.workbook["m6-goals"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(5)}
+    </div>`;
+}
+
+function calcProjection(){
+  const content=+(document.getElementById("proj-content")?.value||30);
+  const comm=+(document.getElementById("proj-comm")?.value||75);
+  const conv=+(document.getElementById("proj-conv")?.value||2)/100;
+  const visitors=+(document.getElementById("proj-visitors")?.value||500);
+  S.workbook.proj_content=content; S.workbook.proj_comm=comm;
+  S.workbook.proj_conv=conv*100; S.workbook.proj_visitors=visitors; save();
+  const sales=Math.round(visitors*conv);
+  const monthly=sales*comm;
+  const m3=Math.round(monthly*0.3); // ramp up
+  const m6=monthly;
+  const m12=Math.round(monthly*2.5); // audience has grown
+  document.getElementById("proj-result").innerHTML=`
+    <div class="calc-result">
+      <div style="color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:10px">${visitors} visitors × ${(conv*100)}% conversion × ${fmt(comm)}/sale</div>
+      <div class="g3">
+        ${st("Month 3 Est.",fmt(m3),"var(--orange)")}
+        ${st("Month 6 Est.",fmt(m6),"var(--accent)")}
+        ${st("Month 12 Est.",fmt(m12),"var(--green)")}
+      </div>
+      <div style="color:var(--dim);font-size:10px;margin-top:10px">*Estimates assume consistent content posting and list building. Month 12 assumes 2.5x audience growth.</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 7 — 90-DAY ACTION PLAN
+// ═══════════════════════════════════
+function renderM7(){
+  const m=MODULES[6];
+  const weeks=[
+    {wk:"Week 1",color:"var(--accent)",phase:"Foundation",tasks:["Sign up for JVZoo/ClickBank (free)","Pick your niche using the 3-question test","Set up your chosen platform account","Write your bio and set up link in bio","Install Bitly for link tracking","Choose 1 product to research and apply for"]},
+    {wk:"Week 2",color:"var(--blue)",phase:"First Content",tasks:["Create your first 5 pieces of content","Use AI prompts from Module 5","Post daily — no promotional content yet","Engage in 10 comments per day in your niche","Set up free ConvertKit account","Create your first lead magnet (free PDF or checklist)"]},
+    {wk:"Week 3",color:"var(--purple)",phase:"Soft Launch",tasks:["You now have your first affiliate link approved","Mention it naturally in 1 of 5 posts this week","Track clicks daily in Bitly","Respond to every comment you get","Start your email list — first 10 subscribers goal","Study top 3 competitors — what's working for them?"]},
+    {wk:"Week 4",color:"var(--green)",phase:"Review & Adjust",tasks:["Review Week 1–3 analytics","Which content got the most reach?","Which content got the most profile clicks?","Double down on what worked","Email your first newsletter to your list","Set Month 2 goals based on real data"]},
+    {wk:"Month 2",color:"var(--gold)",phase:"Build Momentum",tasks:["Post consistently every day","Add 2nd product to promote","Run first email sequence (3-email welcome series)","Aim for 100 email subscribers by end of month","Engage with 20 accounts per day","Track: clicks, conversions, email open rate weekly"]},
+    {wk:"Month 3",color:"var(--teal)",phase:"Optimize & Scale",tasks:["Identify your top 3 best-performing content pieces","Create 5 variations of each — rinse and repeat","Try one paid promotion ($5–10 test)","Apply for 2 more affiliate products","Goal: first $100–300 in commissions this month","Review full 90 days — write what you learned"]},
+  ];
+
+  const dailyHabits=[
+    "Post 1 piece of content (15–45 min)",
+    "Engage with 10–20 accounts in your niche (15 min)",
+    "Check affiliate link click stats (5 min)",
+    "Respond to all comments and DMs (10 min)",
+    "Read/watch 1 marketing tip or tutorial (15 min)",
+  ];
+
+  return `
+    ${modHdr(m)}
+    <div class="col">
+
+      ${card(`
+        <div class="section-title">🗓️ Your 90-Day Roadmap</div>
+        <p style="color:var(--muted);font-size:12px;line-height:1.8;margin-bottom:14px">
+          Print this. Post it where you work. The people who follow this for 90 days without quitting are the ones who eventually make real money. <strong style="color:var(--text)">Not talented people. Consistent people.</strong>
+        </p>
+        <div class="col">
+          ${weeks.map((w,i)=>`
+            <div class="timeline-item">
+              <div class="tl-dot" style="background:${w.color}22;border:1px solid ${w.color}55;color:${w.color}">${i+1}</div>
+              <div style="flex:1">
+                <div class="tl-week">${w.wk}</div>
+                <div class="tl-title" style="color:${w.color}">${w.phase}</div>
+                <div class="tl-tasks">
+                  ${w.tasks.map((t,ti)=>{
+                    const key=`week${i}-task${ti}`;
+                    const done=S.dailyTasks[key];
+                    return `<div class="day-row" style="padding:5px 0">
+                      <div class="day-check ${done?"done":""}" onclick="toggleTask('${key}')">${done?"✓":""}</div>
+                      <span style="color:${done?"var(--muted)":"var(--text)"};font-size:11px;${done?"text-decoration:line-through":""}">${t}</span>
+                    </div>`;
+                  }).join("")}
+                </div>
+              </div>
+            </div>`).join("")}
+        </div>
+      `,"gold")}
+
+      ${card(`
+        <div class="section-title">📋 Daily Non-Negotiables</div>
+        <p style="color:var(--muted);font-size:12px;margin-bottom:12px">These 5 tasks = ~60 minutes per day. Do them every single day for 90 days.</p>
+        ${dailyHabits.map((h,i)=>{
+          const key="daily-"+i;
+          const done=S.dailyTasks[key];
+          return `<div class="day-row">
+            <div class="day-check ${done?"done":""}" onclick="toggleTask('${key}')">${done?"✓":""}</div>
+            <span style="color:${done?"var(--muted)":"var(--text)"};font-size:12px;${done?"text-decoration:line-through":""}">${h}</span>
+          </div>`;
+        }).join("")}
+        <div style="margin-top:12px;padding:10px 14px;background:var(--as);border-radius:9px;font-size:11px;color:var(--accent)">
+          💡 60 minutes a day × 90 days = 90 hours of focused effort. That's what separates people who make money from people who just talk about it.
+        </div>
+      `,"dark")}
+
+      ${card(`
+        <div class="section-title">🔑 The Honest Truth About Day 1 vs Day 90</div>
+        <div class="g2">
+          <div style="background:#080c18;border-radius:10px;padding:14px">
+            <div style="color:var(--red);font-weight:800;font-size:12px;margin-bottom:8px">Day 1 Reality</div>
+            ${["0 followers","0 email subscribers","0 clicks on your link","0 commission earnings","Questioning if this is worth it"].map(t=>`<div style="color:var(--muted);font-size:11px;padding:4px 0">• ${t}</div>`).join("")}
+          </div>
+          <div style="background:#080c18;border-radius:10px;padding:14px">
+            <div style="color:var(--green);font-weight:800;font-size:12px;margin-bottom:8px">Day 90 (if consistent)</div>
+            ${["500–2,000 followers","50–300 email subscribers","Consistent daily link clicks","First $100–500 earned","Data to know what works"].map(t=>`<div style="color:var(--text);font-size:11px;padding:4px 0">✓ ${t}</div>`).join("")}
+          </div>
+        </div>
+      `)}
+
+      ${card(`
+        <div class="section-title">✏️ Workbook — Your Personal Commitment</div>
+        <div class="col">
+          <div>
+            <label class="inp-label">Write your 90-day goal (specific number — clicks, subscribers, or dollars)</label>
+            <textarea class="wb-input" id="wb-m7-goal" oninput="wbSave('m7-goal')" placeholder="By Day 90 I will have: ___ email subscribers, ___ affiliate link clicks, and earn my first $___ in commissions...">${S.workbook["m7-goal"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">What will you do when you feel like quitting? (Write your why)</label>
+            <textarea class="wb-input" id="wb-m7-why" oninput="wbSave('m7-why')" placeholder="I will keep going because...">${S.workbook["m7-why"]||""}</textarea>
+          </div>
+          <div>
+            <label class="inp-label">Who will hold you accountable?</label>
+            <textarea class="wb-input" id="wb-m7-acct" oninput="wbSave('m7-acct')" placeholder="Name one person who will check in on your progress...">${S.workbook["m7-acct"]||""}</textarea>
+          </div>
+        </div>
+      `,"dark")}
+
+      ${navBtns(6)}
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// CERTIFICATE
+// ═══════════════════════════════════
+function renderCert(){
+  const completedModules=MODULES.filter((_,i)=>S.completed.includes(i));
+  const wbFilled=Object.keys(S.workbook).length;
+  return `
+    <div class="col fu">
+      <div class="cert">
+        <div style="font-size:50px;margin-bottom:10px">🏆</div>
+        <div style="color:var(--accent);font-family:'Playfair Display',serif;font-size:22px;font-weight:900">Certificate of Completion</div>
+        <div style="color:var(--text);font-size:14px;margin-top:5px">nugO Affiliate Marketing Lab</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:14px">This certifies completion of</div>
+        <div style="color:var(--accent);font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin:6px 0">The Complete Affiliate Marketing Workbook</div>
+        <div style="color:var(--muted);font-size:12px">All 7 modules · 90-Day Action Plan · Interactive Workbook</div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+          ${bdg("7 Modules Complete","var(--green)","lg")}
+          ${bdg(wbFilled+" Workbook Entries","var(--gold)","lg")}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;text-align:left">
+          ${["What Affiliate Marketing Is","Niche Selection Framework","Affiliate Networks & Products","Platform Strategy","AI Content Creation","Analytics & Optimization","90-Day Action Plan","Daily Success Habits"].map(s=>`
+            <div style="display:flex;gap:6px;align-items:center">
+              <span style="color:var(--accent);font-size:11px">✓</span>
+              <span style="color:var(--muted);font-size:10px">${s}</span>
+            </div>`).join("")}
+        </div>
+      </div>
+
+      ${card(`
+        <div class="section-title">📋 Your Completed Workbook Summary</div>
+        ${Object.keys(S.workbook).filter(k=>!k.startsWith("calc")&&!k.startsWith("proj")).map(k=>{
+          const labels={"m1-why":"Why you want to do affiliate marketing","m1-time":"Hours per week committed","m2-problem":"Your niche problem statement","m2-customer":"Your ideal customer","m2-comp":"Competitors to study","m3-network":"Chosen network","m3-products":"Products to research","m4-platform":"Platform strategy","m4-angle":"Your content angle","m5-ideas":"First 5 content ideas","m5-tools":"AI tools workflow","m6-tools":"Tracking tools","m6-goals":"3/6/12 month goals","m7-goal":"90-day goal","m7-why":"Your why","m7-acct":"Accountability partner"};
+          return S.workbook[k]?`
+            <div style="padding:10px 0;border-top:1px solid var(--border)22">
+              <div style="color:var(--accent);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:4px">${labels[k]||k}</div>
+              <div style="color:var(--text);font-size:12px;line-height:1.7">${S.workbook[k]}</div>
+            </div>`:"";
+        }).join("")}
+      `,"dark")}
+
+      <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn gold lg" onclick="S.showCert=false;render()">← Back to Modules</button>
+        <button class="btn dark lg" onclick="window.print()">🖨️ Print Certificate</button>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// INTRO / LANDING
+// ═══════════════════════════════════
+function renderIntro(){
+  return `
+    <div class="col fu">
+      <div style="text-align:center;padding:26px 0 18px">
+        <div style="font-size:52px;margin-bottom:12px">💰</div>
+        <h1 class="display" style="font-size:26px;margin:0 0 10px;line-height:1.2">Affiliate Marketing<br><span style="color:var(--accent)">Done Right.</span></h1>
+        <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 20px">
+          7 modules. Real talk. No guru hype. Learn exactly how affiliate marketing works, pick your niche, find products, build your platform, and execute a realistic <strong style="color:var(--accent)">90-day action plan</strong>.
+        </p>
+        <button class="btn gold xl" onclick="goModule(0)">Start Module 1 →</button>
+      </div>
+
+      <div class="g3" style="margin-bottom:18px">
+        <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">📖</div><div style="font-weight:700;font-size:11px">7 Modules</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Complete curriculum</div></div>
+        <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">✍️</div><div style="font-weight:700;font-size:11px">Interactive Workbook</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Fill in your own plan</div></div>
+        <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🗓️</div><div style="font-weight:700;font-size:11px">90-Day Plan</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Week-by-week tasks</div></div>
+      </div>
+
+      ${card(`
+        <div class="section-title">📚 7 Modules Overview</div>
+        ${MODULES.map((m,i)=>`
+          <div style="display:flex;gap:11px;padding:10px 0;border-top:${i>0?"1px solid var(--border)":"none"};align-items:center;cursor:pointer" onclick="goModule(${i})">
+            <div style="width:28px;height:28px;border-radius:50%;background:${m.color}22;border:1px solid ${m.color}55;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${m.icon}</div>
+            <div style="flex:1"><div style="font-weight:700;font-size:12px">Module ${m.num}: ${m.title}</div></div>
+            ${S.completed.includes(i)?bdg("✓ Done","var(--green)"):bdg("Start →",m.color)}
+          </div>`).join("")}
+      `)}
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+window.onload = function(){
+  load();
+  // Build progress bar dots
+  const bar = document.getElementById("mod-progress");
+  if(bar) bar.innerHTML = Array(7).fill("").map((_,i)=>
+    `<div class="mp-seg" id="mseg-${i}" onclick="goModule(${i})"></div>`
+  ).join("");
+  // Show intro if never started, else go to current module
+  if(S.completed.length===0 && S.module===0){
+    document.getElementById("screen").innerHTML = renderIntro();
+  } else {
+    render();
+  }
+  updateProgress();
+};
+</script>
+</body>
+</html>
