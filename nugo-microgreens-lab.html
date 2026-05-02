@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nugO Microgreens Business Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--card:#0e1320;--border:#1a2640;
+  --accent:#4cdb8a;--as:#4cdb8a18;
+  --gold:#f5b731;--gs:#f5b73118;
+  --red:#f04060;--rs:#f0406018;
+  --blue:#3d9eff;--bs:#3d9eff18;
+  --purple:#a875f0;--ps:#a875f018;
+  --orange:#ff7c3a;--os:#ff7c3a18;
+  --teal:#00d4d4;--ts:#00d4d418;
+  --green:#4cdb8a;--grs:#4cdb8a18;
+  --lime:#a8e63d;--ls:#a8e63d18;
+  --text:#ddeeff;--muted:#7a90b0;--dim:#374a66;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select,textarea{font-family:'Syne',sans-serif;}
+button{font-family:'Space Mono',monospace;cursor:pointer;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes diceShake{0%{transform:rotate(-10deg)scale(1.12)}50%{transform:rotate(10deg)scale(0.91)}100%{transform:rotate(-5deg)scale(1.05)}}
+@keyframes cardReveal{0%{opacity:0;transform:scale(0.85)translateY(12px)}100%{opacity:1;transform:scale(1)translateY(0)}}
+@keyframes grow{0%{transform:scaleY(0)}100%{transform:scaleY(1)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp 0.32s ease forwards;}
+.shake{animation:diceShake 0.07s infinite;}
+.reveal{animation:cardReveal 0.4s ease forwards;}
+#app{max-width:720px;margin:0 auto;padding:0 16px 80px;}
+#hdr{background:linear-gradient(180deg,#0a1a0a,transparent);padding:20px 18px 0;margin-bottom:6px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+#hdr-inner{max-width:720px;margin:0 auto;}
+.hdr-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.logo-box{background:var(--as);border:1px solid var(--accent)33;border-radius:11px;padding:7px 13px;font-size:19px;flex-shrink:0;}
+.logo-title{color:var(--accent);font-weight:900;font-size:16px;letter-spacing:-0.5px;}
+.logo-sub{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.save-flash{color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.prog-wrap{margin-top:14px;margin-bottom:2px;}
+.prog-bar{display:flex;gap:2px;}
+.prog-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;}
+.prog-labels{display:flex;justify-content:space-between;margin-top:4px;}
+.prog-labels span{color:var(--muted);font-size:9px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 2px 20px #00000055;}
+.glow-green{border-color:var(--accent)55!important;box-shadow:0 0 28px var(--accent)22!important;}
+.glow-gold{border-color:var(--gold)55!important;box-shadow:0 0 28px var(--gold)22!important;}
+.glow-teal{border-color:var(--teal)55!important;box-shadow:0 0 28px var(--teal)22!important;}
+.glow-blue{border-color:var(--blue)55!important;box-shadow:0 0 28px var(--blue)22!important;}
+.glow-purple{border-color:var(--purple)55!important;box-shadow:0 0 28px var(--purple)22!important;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.col{display:flex;flex-direction:column;gap:15px;}
+.stat{text-align:center;}
+.stat .val{font-family:'Space Mono',monospace;font-weight:800;line-height:1;}
+.stat .lbl{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.badge{display:inline-block;border-radius:99px;font-weight:700;white-space:nowrap;}
+.pbar-wrap{background:#151f35;border-radius:99px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,2,.6,1);}
+.inp-wrap{display:flex;flex-direction:column;gap:5px;}
+.inp-label{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.inp-hint{color:var(--dim);font-size:10px;margin-top:-3px;}
+.inp-row{display:flex;align-items:center;background:#080c18;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.inp-pre{color:var(--muted);padding:9px 11px;background:#111825;font-size:12px;border-right:1px solid var(--border);}
+.inp-suf{color:var(--muted);padding:9px 11px;font-size:11px;}
+.inp-row input,.inp-row select{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:9px 13px;font-size:14px;font-family:'Space Mono',monospace;width:100%;}
+.btn{border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.3px;transition:opacity .15s,transform .1s;border:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.primary{background:var(--accent);color:#060a12;}
+.btn.gold{background:var(--gold);color:#060a12;}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)55;}
+.btn.purple{background:var(--purple);color:#fff;}
+.btn.blue{background:var(--blue);color:#060a12;}
+.btn.teal{background:var(--teal);color:#060a12;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.dark{background:#151f35;color:var(--muted);border:1px solid var(--border);}
+.btn.lime{background:var(--lime);color:#060a12;}
+.btn.sm{padding:6px 14px;font-size:11px;}
+.btn.md{padding:9px 20px;}
+.btn.lg{padding:13px 28px;font-size:14px;}
+.btn.xl{padding:15px 38px;font-size:16px;}
+.btn.full{width:100%;}
+.toggle{width:42px;height:22px;border-radius:99px;cursor:pointer;position:relative;transition:background .2s;border:none;flex-shrink:0;}
+.toggle .knob{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{background:#0a0e1a;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;}
+.dice-face{width:72px;height:72px;border-radius:14px;font-size:42px;display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0;}
+.round-hdr{border-radius:14px;padding:14px 17px;margin-bottom:15px;display:flex;gap:13px;align-items:center;}
+.profile-opt{border-radius:13px;padding:14px;cursor:pointer;transition:all .13s;border:2px solid var(--border);background:var(--card);}
+.profile-opt.sel{border-color:var(--accent);background:var(--as);}
+.variety-card{border-radius:12px;padding:13px;border:1px solid var(--border);cursor:pointer;transition:all .13s;}
+.variety-card.sel{border-color:var(--accent);background:var(--as);}
+.grow-step{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--border);}
+.grow-step .step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;font-family:'Space Mono',monospace;}
+.problem-card{border-radius:11px;padding:12px 14px;border:1px solid var(--border);margin-bottom:8px;}
+.modal-overlay{position:fixed;inset:0;background:#000000bb;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--card);border-radius:20px;padding:26px;max-width:480px;width:100%;animation:slideDown .25s ease;}
+.modal-progress{display:flex;gap:5px;margin-bottom:20px;}
+.modal-prog-seg{flex:1;height:3px;border-radius:99px;cursor:pointer;transition:background .3s;}
+.resume-banner{background:linear-gradient(135deg,#061a0a,#040c08);border:1px solid var(--accent)55;border-radius:14px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:16px;}
+.cert{background:linear-gradient(135deg,#0a1a05,#061005);border:1px solid var(--accent)55;border-radius:16px;padding:26px 18px;text-align:center;}
+.month-banner{background:linear-gradient(135deg,#061a0a,#040d0a);border:1px solid var(--accent)33;border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.harvest-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--border)22;font-size:12px;}
+.audit-item{border-radius:11px;padding:12px 14px;border:1px solid var(--border);margin-bottom:8px;transition:all .15s;}
+.stmt-row{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #1a264022;font-size:12px;}
+/* Diagram styles */
+.diagram-wrap{background:#060e08;border:1px solid var(--accent)33;border-radius:14px;padding:20px;overflow-x:auto;}
+.shelf-unit{display:flex;flex-direction:column;gap:0;max-width:500px;margin:0 auto;}
+.shelf-label{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.shelf{background:linear-gradient(90deg,#1a2a1a,#0e1a0e);border:1px solid var(--accent)44;border-radius:8px;padding:12px 16px;margin-bottom:3px;display:flex;align-items:center;gap:12px;position:relative;}
+.shelf-bracket{width:8px;background:var(--accent)66;border-radius:4px;align-self:stretch;flex-shrink:0;}
+.tray{background:linear-gradient(135deg,#0a2a0a,#061806);border:1px solid var(--accent)66;border-radius:6px;padding:8px 12px;flex:1;font-size:11px;}
+.tray-label{color:var(--accent);font-weight:700;font-size:11px;}
+.tray-status{color:var(--muted);font-size:10px;margin-top:2px;}
+.light-bar{background:linear-gradient(90deg,#fff8e1,#fffde7,#fff8e1);border-radius:4px;height:10px;flex:1;box-shadow:0 0 12px #fff8e188;}
+.leg{width:6px;background:var(--accent)44;flex-shrink:0;border-radius:2px;}
+.tooltip-wrap{position:relative;display:inline-block;}
+.tooltip{visibility:hidden;background:#1a2a1a;color:var(--text);border:1px solid var(--accent)44;padding:6px 10px;border-radius:8px;font-size:11px;position:absolute;z-index:10;bottom:125%;left:50%;transform:translateX(-50%);white-space:nowrap;}
+.tooltip-wrap:hover .tooltip{visibility:visible;}
+@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-inner">
+    <div class="hdr-row">
+      <div class="logo-box">🌱</div>
+      <div><div class="logo-title">nugO Microgreens Lab</div><div class="logo-sub">Business Simulation · Grow Guide · Full Audit</div></div>
+      <div class="hdr-right">
+        <div id="save-flash" class="save-flash" style="display:none">💾 Saved</div>
+        <button class="btn dark sm" onclick="openHTP()" style="background:var(--ps);border:1px solid var(--purple)55;color:var(--purple)">❓ How to Play</button>
+        <div id="farm-hdr" style="display:none;text-align:right">
+          <div id="farm-hdr-name" style="color:var(--gold);font-weight:800;font-size:12px"></div>
+          <div id="farm-hdr-type" style="color:var(--muted);font-size:9px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="prog-wrap" class="prog-wrap" style="display:none">
+      <div class="prog-bar" id="prog-bar"></div>
+      <div class="prog-labels"><span id="prog-l">Round 1 of 16</span><span id="prog-r" style="color:var(--accent)">0%</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="htp-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeHTP()">
+  <div class="modal-box" id="htp-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div><div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px">How to Play</div><div style="color:var(--muted);font-size:11px;margin-top:2px" id="htp-step-lbl">Step 1 of 9</div></div>
+      <button class="btn dark sm" onclick="closeHTP()">✕ Close</button>
+    </div>
+    <div class="modal-progress" id="htp-dots"></div>
+    <div id="htp-content"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn ghost sm" id="htp-prev" onclick="htpNav(-1)">← Back</button>
+      <div style="flex:1"></div>
+      <button class="btn blue md" id="htp-next" onclick="htpNav(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="app"><div id="screen"></div></div>
+
+<script>
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const PROFILES=[
+  {id:"home",    icon:"🏠", label:"Home Grower",         desc:"Start small, sell to neighbors & farmers markets",   income:800,  expenses:200, trays:10, price:4.50, color:"var(--accent)"},
+  {id:"market",  icon:"🏪", label:"Market Vendor",        desc:"Farmers markets, pop-ups & weekend sales",           income:1800, expenses:450, trays:25, price:5.00, color:"var(--blue)"},
+  {id:"resto",   icon:"🍽️", label:"Restaurant Supplier",  desc:"Direct to chefs, weekly standing orders",            income:3200, expenses:800, trays:50, price:6.50, color:"var(--gold)"},
+  {id:"online",  icon:"📦", label:"Online Store",         desc:"Ship nationwide, subscription boxes",                income:2400, expenses:650, trays:40, price:7.00, color:"var(--purple)"},
+  {id:"school",  icon:"🏫", label:"School/Community",     desc:"Schools, nonprofits & community centers",            income:1200, expenses:300, trays:18, price:4.00, color:"var(--teal)"},
+  {id:"wellness",icon:"💆", label:"Wellness Brand",       desc:"Health stores, gyms & juice bars",                   income:2800, expenses:700, trays:45, price:8.00, color:"var(--lime)"},
+  {id:"scale",   icon:"🚀", label:"Grow & Scale",         desc:"Full operation — wholesale, retail & online",        income:5500, expenses:1400,trays:90, price:5.50, color:"var(--orange)"},
+];
+
+const VARIETIES=[
+  {id:"sunflower",name:"🌻 Sunflower",    days:"10–14", difficulty:"Easy",     yield:"High",   price:"$5–8/oz",  taste:"Nutty, crunchy",        light:"High",  water:"Moderate", germTime:"2–3 days", color:"var(--gold)"},
+  {id:"peas",     name:"🫛 Pea Shoots",   days:"10–14", difficulty:"Easy",     yield:"High",   price:"$4–7/oz",  taste:"Sweet, tender",         light:"Medium",water:"Moderate", germTime:"2–3 days", color:"var(--accent)"},
+  {id:"radish",   name:"🌶️ Radish",       days:"7–10",  difficulty:"Easy",     yield:"Medium", price:"$5–9/oz",  taste:"Spicy, peppery",        light:"High",  water:"Low",      germTime:"1–2 days", color:"var(--red)"},
+  {id:"broccoli", name:"🥦 Broccoli",     days:"8–12",  difficulty:"Medium",   yield:"Medium", price:"$6–10/oz", taste:"Mild, nutritious",      light:"Medium",water:"Low",      germTime:"2–3 days", color:"var(--teal)"},
+  {id:"basil",    name:"🌿 Basil",        days:"12–16", difficulty:"Hard",     yield:"Low",    price:"$8–14/oz", taste:"Aromatic, herby",       light:"High",  water:"Low",      germTime:"3–5 days", color:"var(--lime)"},
+  {id:"wheatgrass",name:"🌾 Wheatgrass",  days:"7–10",  difficulty:"Easy",     yield:"High",   price:"$4–6/oz",  taste:"Earthy, grassy",        light:"High",  water:"High",     germTime:"1–2 days", color:"var(--green)"},
+  {id:"amaranth", name:"💜 Amaranth",     days:"10–14", difficulty:"Medium",   yield:"Medium", price:"$7–12/oz", taste:"Earthy, colorful",      light:"High",  water:"Low",      germTime:"2–3 days", color:"var(--purple)"},
+  {id:"cabbage",  name:"🥬 Cabbage",      days:"8–12",  difficulty:"Easy",     yield:"High",   price:"$5–8/oz",  taste:"Mild, crunchy",         light:"Medium",water:"Low",      germTime:"2–3 days", color:"var(--blue)"},
+];
+
+const EVENTS=[
+  {id:"mold",     e:"🍄", t:"Mold Outbreak!",          d:"A tray developed mold — must be discarded.",           ef:"trays",    v:-2,    lbl:"−2 Trays Lost",       c:"var(--red)"},
+  {id:"perfect",  e:"✨", t:"Perfect Harvest!",         d:"Ideal conditions produced a premium crop.",            ef:"revenue",  v:200,   lbl:"+$200 Premium Sale",  c:"var(--gold)"},
+  {id:"bigorder", e:"🍽️", t:"Restaurant Big Order",     d:"A chef placed a large standing order.",               ef:"revenue",  v:400,   lbl:"+$400 Order",         c:"var(--accent)"},
+  {id:"nongerm",  e:"😰", t:"Seeds Didn't Germinate",   d:"A bad seed batch failed to sprout.",                  ef:"trays",    v:-3,    lbl:"−3 Trays Lost",       c:"var(--red)"},
+  {id:"rainout",  e:"🌧️", t:"Market Rained Out",        d:"Farmers market cancelled — no sales this week.",     ef:"revenue",  v:-150,  lbl:"−$150 Lost Sales",    c:"var(--red)"},
+  {id:"store",    e:"🏪", t:"Health Store Contract!",   d:"A local health store wants weekly supply.",           ef:"revenue",  v:350,   lbl:"+$350 Contract",      c:"var(--accent)"},
+  {id:"power",    e:"⚡", t:"Power Outage",              d:"Lights were out 24hrs — slow growth this cycle.",    ef:"trays",    v:-1,    lbl:"−1 Tray Affected",    c:"var(--orange)"},
+  {id:"viral",    e:"🔥", t:"Social Media Viral!",       d:"Your harvest video blew up online.",                 ef:"revenue",  v:500,   lbl:"+$500 Orders",        c:"var(--gold)"},
+  {id:"pest",     e:"🐛", t:"Pest Problem",              d:"Insects found in your grow area.",                   ef:"trays",    v:-2,    lbl:"−2 Trays Damaged",    c:"var(--red)"},
+  {id:"award",    e:"🏆", t:"Local Agri Award!",         d:"Won a local small farm award — press coverage.",     ef:"revenue",  v:300,   lbl:"+$300 Exposure",      c:"var(--gold)"},
+  {id:"heatwave", e:"🌡️", t:"Heatwave Week",             d:"High temps stressed plants — lower yield.",          ef:"revenue",  v:-100,  lbl:"−$100 Yield Loss",    c:"var(--orange)"},
+  {id:"bulk",     e:"📦", t:"Bulk Seed Deal",            d:"Found a great deal on seeds — saved on supplies.",   ef:"expense",  v:-80,   lbl:"−$80 Supply Cost",    c:"var(--accent)"},
+  {id:"subsbox",  e:"📫", t:"Subscription Box Feature",  d:"Featured in a popular subscription box service.",    ef:"revenue",  v:450,   lbl:"+$450 Feature",       c:"var(--lime)"},
+  {id:"equip",    e:"🔧", t:"Equipment Failure",         d:"Grow light broke — emergency replacement.",          ef:"expense",  v:150,   lbl:"+$150 Repair",        c:"var(--red)"},
+  {id:"coldsnap", e:"❄️", t:"Cold Snap",                 d:"Temperature drop slowed germination by 2 days.",    ef:"trays",    v:-1,    lbl:"−1 Slow Tray",        c:"var(--blue)"},
+  {id:"chef",     e:"👨‍🍳",t:"Chef Partnership",          d:"A Michelin-starred chef wants exclusive supply.",    ef:"revenue",  v:600,   lbl:"+$600 Partnership",   c:"var(--gold)"},
+  {id:"overwater",e:"💧", t:"Overwatered Trays",          d:"Rookie mistake — too much water caused root rot.",  ef:"trays",    v:-2,    lbl:"−2 Trays Rotted",     c:"var(--red)"},
+  {id:"grant",    e:"🌱", t:"Farm Grant Awarded!",        d:"A local agriculture grant came through.",           ef:"revenue",  v:500,   lbl:"+$500 Grant",         c:"var(--accent)"},
+  {id:"wholesale",e:"🚚", t:"Wholesale Deal",             d:"A grocery chain wants regular wholesale orders.",   ef:"revenue",  v:400,   lbl:"+$400 Wholesale",     c:"var(--lime)"},
+  {id:"festival", e:"🎉", t:"Food Festival Win",          d:"Won best micro-greens at a local food festival.",   ef:"revenue",  v:350,   lbl:"+$350 Prize",         c:"var(--gold)"},
+];
+
+const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DICE_FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
+const TOTAL_ROUNDS=16;
+const SAVE_KEY="nugo-microgreens-v1";
+
+const HTP=[
+  {icon:"🌱",title:"Round 1 — Choose Your Farm Profile",color:"var(--accent)",body:"Pick your microgreens business model: Home Grower, Market Vendor, Restaurant Supplier, Online Store, School/Community, Wellness Brand, or Grow & Scale. Each has unique revenue potential, tray counts, and pricing."},
+  {icon:"🏷️",title:"Round 2 — Name & Fund Your Farm",color:"var(--gold)",body:"Name your microgreens farm, set your starting capital, decide whether to take a startup loan, and choose if you'll hire help or go solo. These decisions affect your monthly cash flow for all 8 operating months."},
+  {icon:"📖",title:"Round 3 — Grow Guide & Varieties",color:"var(--lime)",body:"Study the complete growing guide before you start. Learn germination times, light requirements, watering schedules, and harvest techniques for 8 microgreen varieties. Choose which variety to grow as your main crop."},
+  {icon:"🏗️",title:"Round 4 — Setup Diagram & Equipment",color:"var(--teal)",body:"Set up your grow room using the interactive diagram. Learn shelf setup, light placement, fan position, and watering station layout. Then purchase your equipment and supplies — trays, seeds, grow medium, lights, and shelving."},
+  {icon:"💰",title:"Round 5 — Pricing Strategy",color:"var(--gold)",body:"Calculate your cost per tray, price per ounce, and target profit margin. Use the BUAD222 contribution margin formula to find your break-even point and set a competitive price for your market."},
+  {icon:"📣",title:"Round 6 — Marketing Plan",color:"var(--blue)",body:"Choose your sales channels: Farmers Market, Restaurant Direct Sales, Social Media, Online Store, or Health Food Stores. Each channel has different customer reach and revenue potential. Your choices apply for all 8 months."},
+  {icon:"🌿",title:"Round 7 — First Harvest Setup",color:"var(--accent)",body:"Plan your first grow cycle. Set your tray count, growing schedule, and harvest timeline based on your chosen variety. The system calculates your expected yield and projected revenue for Month 1."},
+  {icon:"📅",title:"Rounds 8–15 — 8 Months of Operations",color:"var(--blue)",body:"Each round = one month of your microgreens business. Review your crop status, set expenses, then roll 2 dice. The sum auto-draws a farm event — mold outbreak, viral post, restaurant big order, power outage, and more. No choice. Just like real farming."},
+  {icon:"🔍",title:"Round 16 — Full Business Audit",color:"var(--teal)",body:"Review your Income Statement, Balance Sheet, Cash Flow Statement, and Trial Balance — all built from your real decisions. Complete the 12-item Business Health Checklist and receive an official Audit Opinion with your Certificate of Completion."},
+];
+
+const AUDIT_CHECKS=[
+  {id:"revenue",   lbl:"Revenue consistently met monthly projections",           cat:"Revenue",    risk:"high"},
+  {id:"expenses",  lbl:"All growing expenses recorded and classified",           cat:"Expenses",   risk:"high"},
+  {id:"inventory", lbl:"Tray inventory properly tracked each month",             cat:"Inventory",  risk:"medium"},
+  {id:"cash",      lbl:"Ending cash balance matches farm bank records",          cat:"Cash",       risk:"high"},
+  {id:"debt",      lbl:"Any startup loan properly recorded and being paid",      cat:"Debt",       risk:"medium"},
+  {id:"cogs",      lbl:"Cost of Goods Sold calculated correctly per harvest",    cat:"COGS",       risk:"high"},
+  {id:"pricing",   lbl:"Pricing covers all costs plus desired profit margin",    cat:"Pricing",    risk:"medium"},
+  {id:"growth",    lbl:"Monthly tray count increased or was maintained",         cat:"Growth",     risk:"medium"},
+  {id:"marketing", lbl:"Marketing spend generated measurable customer growth",   cat:"Marketing",  risk:"low"},
+  {id:"waste",     lbl:"Waste and crop loss tracked and accounted for",          cat:"Operations", risk:"medium"},
+  {id:"taxes",     lbl:"Income properly recorded for tax purposes",              cat:"Taxes",      risk:"low"},
+  {id:"networth",  lbl:"Farm net worth increased from starting position",        cat:"Net Worth",  risk:"high"},
+];
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let S={round:0,farm:null,months:[],auditChecks:{},strategy:{}};
+let _profileId="home",_htpStep=0,_auditTab="income";
+let _diceRolled=false,_chosenEvent=null,_diceInterval=null;
+let _varietyId="sunflower",_guideTab="overview";
+
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({...S,savedAt:new Date().toLocaleString()}));const el=document.getElementById("save-flash");if(el){el.style.display="flex";setTimeout(()=>el.style.display="none",2200);}}catch(e){}}
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch{return null;}}
+function clearSave(){try{localStorage.removeItem(SAVE_KEY);}catch{}}
+function advance(){S.round++;if(S.round>0&&S.farm)saveGame();render();}
+
+// ═══════════════════════════════════
+// MATH
+// ═══════════════════════════════════
+const fmt  = n=>"$"+Math.abs(Math.round(n)).toLocaleString();
+const fmtS = n=>(n>=0?"+":"−")+fmt(n);
+const pct  = (a,b)=>b===0?"0%":Math.round((a/b)*100)+"%";
+const clamp= (v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+
+function pickEvent(d1,d2,mi){return EVENTS[((d1+d2+2-2)*2+mi)%EVENTS.length];}
+
+function calcScores(months,farm){
+  if(!months.length) return {revenue:0,profit:0,growth:0,quality:0,decisions:0,total:0};
+  const avgProfit=months.reduce((a,m)=>a+(m.profit||0),0)/months.length;
+  const profit=clamp(Math.round(50+avgProfit/20),0,100);
+  const lastRev=months[months.length-1].revenue||0;
+  const revenue=clamp(Math.round(Math.min(100,(lastRev/farm.income)*80)),0,100);
+  const trayGrowth=(months[months.length-1].traysActive||0)-(months[0].traysActive||0);
+  const growth=clamp(Math.round(50+trayGrowth*3),0,100);
+  const lostTrays=months.reduce((a,m)=>a+(m.traysLost||0),0);
+  const quality=clamp(Math.round(100-lostTrays*5),0,100);
+  const decisions=clamp(Math.round(months.reduce((a,m)=>a+(m.profit>0?20:0)+(m.mktSpend>0?10:0),0)/months.length),0,100);
+  const total=Math.round((profit+revenue+growth+quality+decisions)/5);
+  return {revenue,profit,growth,quality,decisions,total};
+}
+
+// ═══════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════
+const b  =(txt,fn,v="primary",sz="md",dis=false)=>`<button class="btn ${v} ${sz}" onclick="${fn}" ${dis?"disabled":""}>${txt}</button>`;
+const bdg=(txt,color,sz="sm")=>`<span class="badge" style="background:${color}28;color:${color};border:1px solid ${color}44;padding:${sz==="lg"?"4px 14px":"2px 10px"};font-size:${sz==="lg"?13:11}px">${txt}</span>`;
+const st =(lbl,val,color,sm=false)=>`<div class="stat"><div class="val" style="color:${color};font-size:${sm?14:20}px">${val}</div><div class="lbl">${lbl}</div></div>`;
+const pb =(p,color,h=8)=>`<div class="pbar-wrap" style="height:${h}px"><div class="pbar-fill" style="width:${clamp(p,0,100)}%;background:${color}"></div></div>`;
+const inp=(lbl,id,type="text",val="",pre="",suf="",hint="")=>{
+  const pH=pre?`<span class="inp-pre">${pre}</span>`:"";
+  const sH=suf?`<span class="inp-suf">${suf}</span>`:"";
+  const hH=hint?`<div class="inp-hint">${hint}</div>`:"";
+  return `<div class="inp-wrap"><label class="inp-label">${lbl}</label>${hH}<div class="inp-row">${pH}<input type="${type}" id="${id}" value="${val}">${sH}</div></div>`;
+};
+const card=(c,cls="",style="")=>`<div class="card ${cls}" style="${style}">${c}</div>`;
+const restartLink=()=>`<div style="text-align:center;margin-top:14px"><button onclick="if(confirm('Restart?'))restartFull()" style="background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:11px;font-family:'Space Mono',monospace;text-decoration:underline">↺ Restart from beginning</button></div>`;
+
+function roundHdr(icon,rndNum,title,desc){
+  const r=S.round;
+  const isAudit=r===16; const isOps=r>=8&&r<=15; const isStrat=r>=3&&r<=7;
+  const bgC=isAudit?"var(--ts)":isOps?"var(--as)":isStrat?"var(--gs)":"var(--as)";
+  const brdC=isAudit?"var(--teal)":isOps?"var(--accent)":isStrat?"var(--lime)":"var(--accent)";
+  const moName=isOps?MONTH_NAMES[r-8]:"";
+  return `<div class="round-hdr" style="background:linear-gradient(135deg,${bgC},transparent);border:1px solid ${brdC}44">
+    <div style="background:${bgC};border-radius:10px;padding:9px 11px;font-size:22px;flex-shrink:0">${icon}</div>
+    <div style="flex:1">
+      <div style="display:flex;gap:7px;margin-bottom:5px;flex-wrap:wrap">
+        ${bdg("Round "+rndNum,"var(--accent)")}
+        ${bdg("of 16","var(--dim)")}
+        ${isOps?bdg(moName,"var(--accent)"):""}
+        ${isAudit?bdg("Final Round","var(--teal)"):""}
+        ${isStrat?bdg("Setup Round","var(--lime)"):""}
+      </div>
+      <div style="font-size:16px;font-weight:900">${title}</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px">${desc}</div>
+    </div>
+    <button class="btn dark sm" onclick="openHTP()">❓</button>
+  </div>`;
+}
+
+function updateHeader(){
+  const pw=document.getElementById("prog-wrap"),fh=document.getElementById("farm-hdr");
+  if(S.round===0){pw.style.display="none";fh.style.display="none";return;}
+  pw.style.display="block";
+  const bar=document.getElementById("prog-bar");
+  bar.innerHTML=Array.from({length:TOTAL_ROUNDS},(_,i)=>{
+    const done=i<S.round;
+    const col=i===15?"var(--teal)":i>=7?"var(--accent)":i>=2?"var(--lime)":"var(--accent)";
+    return `<div class="prog-seg" style="background:${done?col:i===S.round-1?col+"88":"var(--border)"}"></div>`;
+  }).join("");
+  document.getElementById("prog-l").textContent=`Round ${S.round} of ${TOTAL_ROUNDS}`;
+  document.getElementById("prog-r").textContent=Math.round((S.round/TOTAL_ROUNDS)*100)+"%";
+  if(S.farm){
+    fh.style.display="block";
+    document.getElementById("farm-hdr-name").textContent=S.farm.name;
+    document.getElementById("farm-hdr-type").textContent=S.farm.profileLabel;
+  }
+}
+
+function render(){
+  updateHeader();window.scrollTo({top:0,behavior:"smooth"});
+  const el=document.getElementById("screen");
+  el.className="fu";void el.offsetWidth;
+  if(S.round===0)       el.innerHTML=renderIntro();
+  else if(S.round===1)  el.innerHTML=renderPickProfile();
+  else if(S.round===2)  el.innerHTML=renderFarmSetup();
+  else if(S.round===3)  el.innerHTML=renderGrowGuide();
+  else if(S.round===4)  el.innerHTML=renderSetupDiagram();
+  else if(S.round===5)  el.innerHTML=renderPricing();
+  else if(S.round===6)  el.innerHTML=renderMarketing();
+  else if(S.round===7)  el.innerHTML=renderFirstHarvest();
+  else if(S.round>=8&&S.round<=15) el.innerHTML=renderMonth(S.round-8);
+  else if(S.round===16) el.innerHTML=renderAudit();
+}
+
+// ═══════════════════════════════════
+// INTRO
+// ═══════════════════════════════════
+function renderIntro(){
+  const saved=loadSave();
+  const resumeBanner=saved&&saved.round>0&&saved.farm?`
+    <div class="resume-banner">
+      <div style="font-size:26px">💾</div>
+      <div style="flex:1"><div style="color:var(--accent);font-weight:800;font-size:14px">Saved Farm Found</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px"><strong style="color:var(--gold)">${saved.farm.name}</strong> · Round ${saved.round} of 16 · ${saved.savedAt||""}</div></div>
+      <div style="display:flex;gap:7px;flex-shrink:0">${b("Discard","discardSave()","dark","sm")}${b("▶ Resume","resumeGame()","primary","sm")}</div>
+    </div>`:"";
+
+  return `
+    <div style="text-align:center;padding:26px 0 18px">
+      <div style="font-size:52px;margin-bottom:10px">🌱</div>
+      <h1 style="font-size:23px;font-weight:900;margin:0 0 10px;line-height:1.25">Grow It.<br><span style="color:var(--accent)">Sell It. Scale It.</span></h1>
+      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 18px">
+        Launch a <strong style="color:var(--gold)">microgreens business</strong>. Learn to grow, harvest & sell. Survive <strong style="color:var(--red)">farm events</strong> for 8 months. Then face a <strong style="color:var(--teal)">Full Business Audit</strong>.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
+        ${b("🌱 Start Your Farm","startGame()","primary","xl")}
+        ${b("❓ How to Play","openHTP()","ghost","lg")}
+      </div>
+    </div>
+    ${resumeBanner}
+    <div class="g3" style="margin-bottom:18px">
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">📖</div><div style="font-weight:700;font-size:11px">Full Grow Guide</div><div style="color:var(--muted);font-size:10px;margin-top:3px">8 varieties + care tips</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🏗️</div><div style="font-weight:700;font-size:11px">Setup Diagram</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Interactive grow room layout</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🔍</div><div style="font-weight:700;font-size:11px">Full Audit</div><div style="color:var(--muted);font-size:10px;margin-top:3px">4 statements + opinion</div></div>
+    </div>
+    ${card(`
+      <div style="color:var(--accent);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">🌿 16-Round Structure</div>
+      ${[
+        ["var(--accent)","🌱 Setup",    "Rounds 1–2",  "Pick farm profile, name it, fund it"],
+        ["var(--lime)",  "📖 Learn",    "Rounds 3–4",  "Grow guide, varieties & setup diagram"],
+        ["var(--gold)",  "💼 Strategy", "Rounds 5–7",  "Pricing, marketing & first harvest plan"],
+        ["var(--accent)","📅 Operate",  "Rounds 8–15", "8 months of growing, harvesting & selling"],
+        ["var(--teal)",  "🔍 Audit",    "Round 16",    "Full business audit + certificate"],
+      ].map(([col,tag,rnd,desc])=>`
+        <div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border);align-items:center">
+          <div style="width:24px;height:24px;border-radius:50%;background:${col}28;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${tag.split(" ")[0]}</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:12px">${tag} — ${rnd}</div><div style="color:var(--muted);font-size:10px;margin-top:2px">${desc}</div></div>
+          ${bdg(rnd,col)}
+        </div>`).join("")}
+    `,"","margin-bottom:18px")}
+    <div style="text-align:center">${b("🌱 Start Your Farm","startGame()","primary","xl")}</div>`;
+}
+
+function startGame(){S={round:1,farm:null,months:[],auditChecks:{},strategy:{}};_auditTab="income";render();}
+function resumeGame(){const saved=loadSave();if(!saved)return;S=saved;_auditTab="income";render();}
+function discardSave(){clearSave();render();}
+function restartFull(){clearSave();S={round:0,farm:null,months:[],auditChecks:{},strategy:{}};_auditTab="income";render();}
+
+// ═══════════════════════════════════
+// ROUND 1 — PICK PROFILE
+// ═══════════════════════════════════
+function renderPickProfile(){
+  const opts=PROFILES.map(p=>`
+    <div class="profile-opt ${_profileId===p.id?"sel":""}" data-pid="${p.id}" onclick="selProfile('${p.id}')">
+      <div style="font-size:24px;margin-bottom:5px">${p.icon}</div>
+      <div style="font-weight:800;font-size:13px;color:${_profileId===p.id?"var(--accent)":"var(--text)"}">${p.label}</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:3px">${p.desc}</div>
+      <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">
+        ${bdg(fmt(p.income)+"/mo",p.color)}
+        ${bdg(p.trays+" trays",p.color)}
+      </div>
+    </div>`).join("");
+  const sel=PROFILES.find(p=>p.id===_profileId);
+  return `
+    ${roundHdr("🌱","1","Choose Your Farm Profile","Pick the microgreens business model that fits you")}
+    <div class="col">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${opts}</div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📊 ${sel.label} — Baseline Metrics</div>
+        <div class="g4">
+          ${st("Monthly Revenue",fmt(sel.income),"var(--accent)")}
+          ${st("Monthly Expenses",fmt(sel.expenses),"var(--red)")}
+          ${st("Starting Trays",sel.trays,"var(--lime)")}
+          ${st("Price per oz",sel.price,"var(--gold)")}
+        </div>`,"","background:#080c18")}
+      ${b("Round 2: Set Up Your Farm →","submitPickProfile()","primary","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selProfile(id){
+  _profileId=id;
+  document.querySelectorAll(".profile-opt").forEach(el=>{
+    const s=el.getAttribute("data-pid")===id;
+    el.classList.toggle("sel",s);
+    el.style.borderColor=s?"var(--accent)":"var(--border)";
+    el.style.background=s?"var(--as)":"var(--card)";
+  });
+}
+function submitPickProfile(){
+  const p=PROFILES.find(x=>x.id===_profileId);
+  S.farm={profileId:_profileId,profileLabel:p.label,profileIcon:p.icon,
+    income:p.income,expenses:p.expenses,trays:p.trays,pricePerOz:p.price,
+    name:"My Farm",startCash:1000,loan:false,loanAmt:0,solo:true,totalCash:1000};
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 2 — FARM SETUP
+// ═══════════════════════════════════
+function renderFarmSetup(){
+  const p=PROFILES.find(x=>x.id===S.farm.profileId);
+  return `
+    ${roundHdr("🏡","2","Name & Fund Your Farm","Set up your microgreens operation")}
+    <div class="col">
+      ${inp("Farm Name","farm-name","text","","","","e.g. Green Roots Farm, Fresh Harvest Co.")}
+      <div class="g2">
+        ${inp("Starting Capital","farm-cash","number",1000,"$","","Your personal investment to start")}
+        <div class="inp-wrap">
+          <label class="inp-label">Team</label>
+          <div style="display:flex;gap:8px;margin-top:5px">
+            ${["Solo Grower","Hire Help +$300/mo"].map((l,i)=>`
+              <div onclick="selStaff(${i===0})" style="flex:1;text-align:center;padding:9px 6px;border-radius:9px;cursor:pointer;
+                border:2px solid ${(S.farm.solo&&i===0)||(!S.farm.solo&&i===1)?"var(--accent)":"var(--border)"};
+                background:${(S.farm.solo&&i===0)||(!S.farm.solo&&i===1)?"var(--as)":"var(--card)"}">
+                <div style="font-weight:700;font-size:11px">${l.split("+")[0]}</div>
+                ${i===1?`<div style="color:var(--red);font-size:9px">+$300/mo</div>`:""}
+              </div>`).join("")}
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="toggle" id="loan-toggle" onclick="toggleLoan()" style="background:${S.farm.loan?"var(--accent)":"var(--border)"}">
+          <div class="knob" style="left:${S.farm.loan?"22px":"3px"}"></div>
+        </button>
+        <span style="font-weight:700;font-size:13px">Take a Startup Loan</span>
+        ${S.farm.loan?bdg("10%/mo Interest","var(--red)"):""}
+      </div>
+      <div id="loan-section" style="display:${S.farm.loan?"block":"none"}">
+        ${inp("Loan Amount","loan-amt","number",S.farm.loanAmt||500,"$")}
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">🌱 Farm Overview</div>
+        <div class="g3">
+          ${st("Profile",S.farm.profileIcon+" "+S.farm.profileLabel.split(" ")[0],"var(--accent)")}
+          ${st("Starting Trays",p.trays+" trays","var(--lime)")}
+          ${st("Price per oz",fmt(p.pricePerOz),"var(--gold)")}
+        </div>`,"","background:#080c18")}
+      ${b("Round 3: Grow Guide →","submitFarmSetup()","primary","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selStaff(s){S.farm.solo=s;render();}
+function toggleLoan(){S.farm.loan=!S.farm.loan;render();}
+function submitFarmSetup(){
+  const name=(document.getElementById("farm-name")?.value||"").trim()||"My Farm";
+  const cash=+(document.getElementById("farm-cash")?.value||1000);
+  const loanAmt=S.farm.loan?+(document.getElementById("loan-amt")?.value||0):0;
+  S.farm.name=name;S.farm.startCash=cash;S.farm.loanAmt=loanAmt;
+  S.farm.totalCash=cash+loanAmt;
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 3 — GROW GUIDE
+// ═══════════════════════════════════
+function renderGrowGuide(){
+  const tabs=[
+    {id:"overview",lbl:"🌱 Overview"},
+    {id:"varieties",lbl:"🌿 Varieties"},
+    {id:"growing",lbl:"💧 Growing"},
+    {id:"harvest",lbl:"✂️ Harvesting"},
+    {id:"problems",lbl:"⚠️ Problems"},
+  ];
+
+  let content="";
+
+  if(_guideTab==="overview"){
+    content=`
+      <div style="color:var(--accent);font-weight:800;font-size:16px;margin-bottom:14px">🌱 What Are Microgreens?</div>
+      <p style="color:var(--text);font-size:13px;line-height:1.8;margin-bottom:16px">
+        Microgreens are young vegetable greens harvested just after the first true leaves develop — typically <strong style="color:var(--gold)">7–14 days</strong> after germination. They are packed with nutrients, have intense flavors, and command premium prices at farmers markets, restaurants, and health food stores.
+      </p>
+      <div class="g2" style="margin-bottom:16px">
+        ${[
+          ["💰","Premium Pricing","$4–14 per oz at market"],
+          ["⚡","Fast Turnover","7–14 day grow cycle"],
+          ["📦","Low Overhead","Minimal space needed"],
+          ["🔄","Year-Round","Grow indoors any season"],
+        ].map(([ic,t,d])=>`<div style="background:#080c18;border:1px solid var(--border);border-radius:10px;padding:12px">
+          <div style="font-size:22px;margin-bottom:5px">${ic}</div>
+          <div style="font-weight:700;font-size:12px">${t}</div>
+          <div style="color:var(--muted);font-size:11px;margin-top:3px">${d}</div>
+        </div>`).join("")}
+      </div>
+      <div style="background:var(--as);border:1px solid var(--accent)44;border-radius:10px;padding:14px">
+        <div style="color:var(--accent);font-weight:800;font-size:13px;margin-bottom:8px">💡 Why Microgreens Are a Great Business</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.8">
+          • Profit margins of <strong style="color:var(--gold)">40–70%</strong> when sold direct<br>
+          • Can start with just <strong style="color:var(--gold)">$200–500</strong> in equipment<br>
+          • No farming experience required<br>
+          • Restaurants pay premium for consistent supply<br>
+          • Can be grown in a <strong style="color:var(--gold)">spare bedroom, garage, or basement</strong>
+        </div>
+      </div>`;
+  }
+  else if(_guideTab==="varieties"){
+    content=`
+      <div style="color:var(--accent);font-weight:800;font-size:15px;margin-bottom:14px">🌿 Choose Your Main Variety</div>
+      <div style="color:var(--muted);font-size:12px;margin-bottom:14px">Click a variety to select it as your primary crop. You can grow multiple varieties later.</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${VARIETIES.map(v=>`
+          <div class="variety-card ${_varietyId===v.id?"sel":""}" data-vid="${v.id}" onclick="selVariety('${v.id}')">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:26px;flex-shrink:0">${v.name.split(" ")[0]}</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+                  <div style="font-weight:800;font-size:13px;color:${_varietyId===v.id?"var(--accent)":"var(--text)"}">${v.name}</div>
+                  ${bdg(v.difficulty,v.difficulty==="Easy"?"var(--accent)":v.difficulty==="Medium"?"var(--gold)":"var(--red)")}
+                  ${bdg(v.days+" days","var(--blue)")}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
+                  <div style="font-size:10px;color:var(--muted)">💰 ${v.price}</div>
+                  <div style="font-size:10px;color:var(--muted)">👅 ${v.taste}</div>
+                  <div style="font-size:10px;color:var(--muted)">💧 Water: ${v.water}</div>
+                </div>
+              </div>
+              ${_varietyId===v.id?`<span style="color:var(--accent);font-size:18px">✓</span>`:""}
+            </div>
+          </div>`).join("")}
+      </div>`;
+  }
+  else if(_guideTab==="growing"){
+    content=`
+      <div style="color:var(--accent);font-weight:800;font-size:15px;margin-bottom:14px">💧 Complete Growing Guide</div>
+      ${[
+        {num:1,color:"var(--accent)",title:"Soaking Seeds (Optional)",body:"For large seeds (sunflower, peas): Soak in water for <strong style='color:var(--gold)'>8–12 hours</strong> before planting. This speeds germination. Small seeds (radish, broccoli) do NOT need soaking.",tip:"Use room temperature water. Drain completely before planting."},
+        {num:2,color:"var(--lime)",title:"Prepare Your Tray",body:"Fill a <strong style='color:var(--gold)'>10×20 inch tray</strong> with 1–1.5 inches of growing medium (coconut coir, potting mix, or hemp mats). Moisten the medium thoroughly before seeding.",tip:"Press the medium down lightly to create an even surface."},
+        {num:3,color:"var(--blue)",title:"Seeding",body:"Spread seeds <strong style='color:var(--gold)'>densely and evenly</strong> across the surface. Use approximately <strong style='color:var(--gold)'>1–2 oz of seeds per 10×20 tray</strong> depending on variety. Press seeds gently into the medium.",tip:"Uneven seeding causes uneven germination and patchy harvests."},
+        {num:4,color:"var(--purple)",title:"Blackout Period (Days 1–3)",body:"Stack trays or cover with another tray to block all light. This simulates being underground and promotes <strong style='color:var(--gold)'>strong stem development</strong>. Keep in a warm spot (65–75°F).",tip:"Mist lightly once per day during blackout. Don't overwater."},
+        {num:5,color:"var(--gold)",title:"Light Exposure (Day 3–14)",body:"Once seeds have sprouted 1–2 inches, move to light. Use <strong style='color:var(--gold)'>T5 or LED grow lights</strong> positioned 2–4 inches above trays for 12–16 hours per day. Or use a sunny south-facing window.",tip:"Rotate trays daily for even light distribution."},
+        {num:6,color:"var(--teal)",title:"Watering Schedule",body:"Water <strong style='color:var(--gold)'>once or twice daily</strong> using a spray bottle or bottom watering method. Keep medium moist but NOT waterlogged. Bottom watering (pouring water in a tray below) prevents mold better.",tip:"Never let medium dry out completely. Yellow leaves = underwatered."},
+      ].map(s=>`
+        <div class="grow-step">
+          <div class="step-num" style="background:${s.color}22;border:1px solid ${s.color}55;color:${s.color}">${s.num}</div>
+          <div style="flex:1">
+            <div style="font-weight:800;font-size:13px;margin-bottom:5px">${s.title}</div>
+            <div style="color:var(--muted);font-size:12px;line-height:1.7">${s.body}</div>
+            <div style="margin-top:7px;padding:6px 10px;background:${s.color}18;border-radius:7px;font-size:11px;color:${s.color}">💡 ${s.tip}</div>
+          </div>
+        </div>`).join("")}`;
+  }
+  else if(_guideTab==="harvest"){
+    content=`
+      <div style="color:var(--accent);font-weight:800;font-size:15px;margin-bottom:14px">✂️ Harvest & Post-Harvest Guide</div>
+      <div style="background:#080c18;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px">
+        <div style="color:var(--gold);font-weight:800;font-size:13px;margin-bottom:8px">🎯 When to Harvest</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.8">
+          Harvest when microgreens are <strong style="color:var(--gold)">1–3 inches tall</strong> and first true leaves have just emerged. This is typically <strong style="color:var(--gold)">7–14 days</strong> after seeding depending on variety. Taste a few — they should be vibrant and flavorful.
+        </div>
+      </div>
+      ${[
+        {icon:"✂️",title:"Cutting Technique",body:"Use sharp, clean scissors or a harvest knife. Cut <strong style='color:var(--gold)'>just above the growing medium</strong> — about ¼ inch above soil line. Cut in small sections and work quickly to minimize wilting."},
+        {icon:"🚿",title:"Washing",body:"Rinse gently in <strong style='color:var(--gold)'>cold water</strong>. Use a salad spinner to remove excess water. Avoid washing until ready to sell — dry microgreens last longer."},
+        {icon:"📦",title:"Packaging",body:"Package in <strong style='color:var(--gold)'>clamshell containers or zip bags</strong>. Label with variety name, harvest date, and farm name. Keep refrigerated at 34–38°F."},
+        {icon:"🗓️",title:"Shelf Life",body:"Fresh microgreens last <strong style='color:var(--gold)'>5–10 days</strong> refrigerated. Sell within 3 days of harvest for maximum quality. Never freeze — destroys cell structure."},
+        {icon:"⚖️",title:"Yield Guide",body:"A standard 10×20 tray yields approximately <strong style='color:var(--gold)'>6–12 oz</strong> depending on variety. Dense crops (sunflower, peas) yield more. Delicate varieties (basil, amaranth) yield less."},
+        {icon:"💵",title:"Revenue per Tray",body:"At $5–8/oz and 8oz average yield, each tray produces <strong style='color:var(--gold)'>$40–64 in revenue</strong>. Cost per tray is typically $4–8 in seeds + medium. Profit per tray: <strong style='color:var(--gold)'>$32–56</strong>."},
+      ].map(s=>`
+        <div style="display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--border)">
+          <span style="font-size:22px;flex-shrink:0">${s.icon}</span>
+          <div><div style="font-weight:700;font-size:13px;margin-bottom:4px">${s.title}</div><div style="color:var(--muted);font-size:12px;line-height:1.7">${s.body}</div></div>
+        </div>`).join("")}`;
+  }
+  else if(_guideTab==="problems"){
+    content=`
+      <div style="color:var(--red);font-weight:800;font-size:15px;margin-bottom:14px">⚠️ Common Problems & Solutions</div>
+      ${[
+        {icon:"🍄",problem:"Mold Growth",cause:"Poor airflow, overwatering, or too warm",fix:"Increase air circulation with a small fan. Switch to bottom watering. Keep temperature below 72°F. Discard affected trays immediately.",severity:"high"},
+        {icon:"🐌",problem:"Slow Germination",cause:"Too cold, old seeds, or insufficient moisture",fix:"Move to warmer location (68–75°F). Mist more frequently during blackout. Check seed viability — old seeds germinate poorly.",severity:"medium"},
+        {icon:"🌿",problem:"Leggy / Weak Stems",cause:"Not enough light or too much heat",fix:"Move lights closer (2–3 inches). Increase light hours to 14–16/day. Ensure good airflow around stems.",severity:"medium"},
+        {icon:"💛",problem:"Yellow Leaves",cause:"Underwatering, nutrient deficiency, or root bound",fix:"Increase watering frequency. Check for root rot. Harvest earlier if yellowing spreads quickly.",severity:"low"},
+        {icon:"🐛",problem:"Pest Infestation",cause:"Fungus gnats, thrips or spider mites",fix:"Use yellow sticky traps. Apply food-safe neem oil spray. Keep grow area clean — remove dead plant material immediately.",severity:"high"},
+        {icon:"🦷",problem:"Bitter or Off Taste",cause:"Harvesting too late or environmental stress",fix:"Harvest earlier — at cotyledon stage for milder flavor. Ensure consistent temperature. Avoid drafts near trays.",severity:"low"},
+        {icon:"💧",problem:"Root Rot",cause:"Waterlogged growing medium",fix:"Reduce watering immediately. Improve drainage. Switch to bottom watering method. Discard heavily affected trays.",severity:"high"},
+        {icon:"📉",problem:"Low Yield",cause:"Poor seed quality, incorrect seeding density, or nutrient-poor medium",fix:"Increase seed density. Use fresh seeds. Switch to higher quality growing medium with added nutrients.",severity:"medium"},
+      ].map(p=>`
+        <div class="problem-card" style="background:${p.severity==="high"?"var(--rs)":p.severity==="medium"?"var(--os)":"var(--gs)"}44;border-color:${p.severity==="high"?"var(--red)44":p.severity==="medium"?"var(--orange)44":"var(--accent)44"}">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:22px">${p.icon}</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:13px">${p.problem}</div><div style="color:var(--muted);font-size:11px">${p.cause}</div></div>
+            ${bdg(p.severity+" risk",p.severity==="high"?"var(--red)":p.severity==="medium"?"var(--orange)":"var(--accent)")}
+          </div>
+          <div style="padding:8px 12px;background:#0a0e1a;border-radius:8px;font-size:12px;color:var(--text);line-height:1.6">✅ <strong>Fix:</strong> ${p.fix}</div>
+        </div>`).join("")}`;
+  }
+
+  const selV=VARIETIES.find(v=>v.id===_varietyId);
+  return `
+    ${roundHdr("📖","3","Grow Guide & Varieties","Learn everything about growing microgreens before you start")}
+    <div class="col">
+      <div class="tabs">${tabs.map(t=>`<button class="tab ${_guideTab===t.id?"active":""}" onclick="setGuideTab('${t.id}')" style="${_guideTab===t.id?"background:var(--accent);color:#060a12":""}">${t.lbl}</button>`).join("")}</div>
+      ${card(content)}
+      ${_guideTab==="varieties"?card(`
+        <div style="color:var(--accent);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:12px">✓ Selected: ${selV.name}</div>
+        <div class="g4">
+          ${st("Grow Time",selV.days,"var(--accent)")}
+          ${st("Difficulty",selV.difficulty,selV.difficulty==="Easy"?"var(--accent)":selV.difficulty==="Medium"?"var(--gold)":"var(--red)")}
+          ${st("Price Range",selV.price,"var(--gold)")}
+          ${st("Germ Time",selV.germTime,"var(--blue)")}
+        </div>`,"glow-green","background:var(--gs)"):""}
+      ${b("Round 4: Setup Diagram →","submitGrowGuide()","primary","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function setGuideTab(tab){_guideTab=tab;render();}
+function selVariety(id){
+  _varietyId=id;
+  document.querySelectorAll(".variety-card").forEach(el=>{
+    const s=el.getAttribute("data-vid")===id;
+    el.classList.toggle("sel",s);
+    el.style.borderColor=s?"var(--accent)":"var(--border)";
+    el.style.background=s?"var(--as)":"var(--card)";
+  });
+}
+function submitGrowGuide(){S.strategy.variety=_varietyId;advance();}
+
+// ═══════════════════════════════════
+// ROUND 4 — SETUP DIAGRAM
+// ═══════════════════════════════════
+function renderSetupDiagram(){
+  const diagTabs=[{id:"side",lbl:"📐 Side View"},{id:"top",lbl:"🗺️ Top View"},{id:"equip",lbl:"🛒 Equipment List"}];
+  const dTab=S.strategy.diagTab||"side";
+
+  let diagContent="";
+  if(dTab==="side"){
+    diagContent=`
+      <div style="color:var(--accent);font-weight:800;font-size:14px;margin-bottom:14px;text-align:center">📐 Grow Shelf — Side View</div>
+      <div class="shelf-unit">
+        <!-- Lights -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:#1a1a08;border:1px solid var(--gold)44;border-radius:8px;margin-bottom:8px">
+          <div style="font-size:16px">💡</div>
+          <div style="flex:1">
+            <div class="light-bar"></div>
+          </div>
+          <div style="font-size:16px">💡</div>
+          <div style="color:var(--gold);font-size:11px;font-weight:700;margin-left:8px">T5/LED Grow Light</div>
+          <div class="tooltip-wrap" style="cursor:help">
+            <div style="color:var(--gold);font-size:12px;margin-left:4px">ℹ️</div>
+            <div class="tooltip">Keep lights 2–4 inches above trays. Run 12–16 hrs/day on timer.</div>
+          </div>
+        </div>
+        <!-- Arrow down -->
+        <div style="text-align:center;color:var(--gold);font-size:16px;margin:-4px 0">↕ 2–4 inches</div>
+        <!-- Shelf 1 -->
+        <div style="color:var(--accent);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin:4px 0 2px;padding-left:16px">SHELF 1 — Ready to Harvest (Day 10–14)</div>
+        <div class="shelf">
+          <div class="shelf-bracket"></div>
+          <div class="tray">
+            <div class="tray-label">🌿 Tray A — ${VARIETIES.find(v=>v.id===_varietyId)?.name||"Sunflower"}</div>
+            <div class="tray-status">Full canopy • Ready to cut ✂️</div>
+          </div>
+          <div class="tray" style="margin-left:8px">
+            <div class="tray-label">🌿 Tray B — Radish</div>
+            <div class="tray-status">First true leaves showing</div>
+          </div>
+          <div class="tooltip-wrap" style="cursor:help;margin-left:8px">
+            <div style="color:var(--accent);font-size:14px">ℹ️</div>
+            <div class="tooltip">These trays are ready to harvest. Cut just above soil line with clean scissors.</div>
+          </div>
+        </div>
+        <!-- Shelf 2 -->
+        <div style="color:var(--lime);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin:6px 0 2px;padding-left:16px">SHELF 2 — Active Growth (Day 4–9)</div>
+        <div class="shelf" style="border-color:var(--lime)44">
+          <div class="shelf-bracket" style="background:var(--lime)66"></div>
+          <div class="tray" style="border-color:var(--lime)66">
+            <div class="tray-label" style="color:var(--lime)">🌱 Tray C — Pea Shoots</div>
+            <div class="tray-status">2 inches tall • Growing fast</div>
+          </div>
+          <div class="tray" style="margin-left:8px;border-color:var(--lime)66">
+            <div class="tray-label" style="color:var(--lime)">🌱 Tray D — Broccoli</div>
+            <div class="tray-status">Cotyledons open • Good color</div>
+          </div>
+          <div class="tooltip-wrap" style="cursor:help;margin-left:8px">
+            <div style="color:var(--lime);font-size:14px">ℹ️</div>
+            <div class="tooltip">Water once daily. Bottom watering preferred to prevent mold.</div>
+          </div>
+        </div>
+        <!-- Fan -->
+        <div style="display:flex;justify-content:flex-end;padding:4px 16px">
+          <div style="background:#0e1a1a;border:1px solid var(--teal)44;border-radius:8px;padding:5px 10px;font-size:11px;color:var(--teal);display:flex;align-items:center;gap:6px">
+            🌀 Small fan — gentle airflow prevents mold
+            <div class="tooltip-wrap"><div style="color:var(--teal);font-size:12px">ℹ️</div><div class="tooltip">Run fan on low 24/7. Airflow is critical for preventing mold and strengthening stems.</div></div>
+          </div>
+        </div>
+        <!-- Shelf 3 -->
+        <div style="color:var(--blue);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin:6px 0 2px;padding-left:16px">SHELF 3 — Blackout / Germination (Day 1–3)</div>
+        <div class="shelf" style="border-color:var(--blue)44">
+          <div class="shelf-bracket" style="background:var(--blue)66"></div>
+          <div class="tray" style="border-color:var(--blue)66;background:#06080e">
+            <div class="tray-label" style="color:var(--blue)">🌑 Tray E — Freshly Seeded</div>
+            <div class="tray-status">Covered with blackout dome 🖤</div>
+          </div>
+          <div class="tray" style="margin-left:8px;border-color:var(--blue)66;background:#06080e">
+            <div class="tray-label" style="color:var(--blue)">🌑 Tray F — Day 2</div>
+            <div class="tray-status">Roots forming • Keep dark & moist</div>
+          </div>
+          <div class="tooltip-wrap" style="cursor:help;margin-left:8px">
+            <div style="color:var(--blue);font-size:14px">ℹ️</div>
+            <div class="tooltip">Stack empty tray on top or use a blackout dome. Keeps humid and dark for 2–3 days.</div>
+          </div>
+        </div>
+        <!-- Bottom -->
+        <div style="color:var(--gold);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin:6px 0 2px;padding-left:16px">BOTTOM — Supply Station</div>
+        <div class="shelf" style="border-color:var(--gold)44;background:#1a1000">
+          <div class="shelf-bracket" style="background:var(--gold)66"></div>
+          <div style="flex:1;font-size:12px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+            <span>💧 Water spray bottle</span>
+            <span>🌱 Seed storage bags</span>
+            <span>🪣 Bottom water tray</span>
+            <span>✂️ Harvest scissors</span>
+          </div>
+          <div class="tooltip-wrap" style="cursor:help">
+            <div style="color:var(--gold);font-size:14px">ℹ️</div>
+            <div class="tooltip">Keep supplies organized at bottom. Label everything with variety and seeding date.</div>
+          </div>
+        </div>
+        <!-- Legs -->
+        <div style="display:flex;gap:20px;justify-content:space-between;padding:0 20px;margin-top:2px">
+          ${[1,2,3,4].map(()=>`<div style="width:8px;height:20px;background:var(--accent)33;border-radius:2px"></div>`).join("")}
+        </div>
+      </div>
+      <!-- Thermometer & humidity -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+        <div style="background:#080c18;border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:24px;margin-bottom:5px">🌡️</div>
+          <div style="color:var(--gold);font-weight:700;font-size:13px">Temperature</div>
+          <div style="color:var(--accent);font-size:18px;font-weight:800;font-family:'Space Mono',monospace">65–75°F</div>
+          <div style="color:var(--muted);font-size:10px">18–24°C optimal</div>
+        </div>
+        <div style="background:#080c18;border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:24px;margin-bottom:5px">💨</div>
+          <div style="color:var(--blue);font-weight:700;font-size:13px">Humidity</div>
+          <div style="color:var(--accent);font-size:18px;font-weight:800;font-family:'Space Mono',monospace">40–60%</div>
+          <div style="color:var(--muted);font-size:10px">Higher = mold risk</div>
+        </div>
+      </div>`;
+  }
+  else if(dTab==="top"){
+    diagContent=`
+      <div style="color:var(--accent);font-weight:800;font-size:14px;margin-bottom:14px;text-align:center">🗺️ Grow Room — Top View (Floor Plan)</div>
+      <div style="background:#060e08;border:2px solid var(--accent)33;border-radius:12px;padding:16px;position:relative;min-height:340px;font-size:11px">
+        <!-- Room outline label -->
+        <div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px">ROOM / GARAGE / BASEMENT</div>
+        <!-- Shelving unit -->
+        <div style="position:absolute;top:40px;left:20px;width:200px;background:var(--accent)22;border:2px solid var(--accent)55;border-radius:8px;padding:10px;text-align:center">
+          <div style="color:var(--accent);font-weight:700;font-size:11px">🌿 SHELVING UNIT A</div>
+          <div style="color:var(--muted);font-size:10px">3 shelves × 6 trays = 18 trays</div>
+          <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px">
+            ${Array(6).fill("").map(()=>`<div style="background:var(--accent)33;border-radius:3px;padding:4px;font-size:8px;text-align:center">🌱</div>`).join("")}
+          </div>
+        </div>
+        <!-- Shelving unit B -->
+        <div style="position:absolute;top:40px;right:20px;width:200px;background:var(--lime)22;border:2px solid var(--lime)55;border-radius:8px;padding:10px;text-align:center">
+          <div style="color:var(--lime);font-weight:700;font-size:11px">🌿 SHELVING UNIT B</div>
+          <div style="color:var(--muted);font-size:10px">3 shelves × 6 trays = 18 trays</div>
+          <div style="margin-top:6px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px">
+            ${Array(6).fill("").map(()=>`<div style="background:var(--lime)33;border-radius:3px;padding:4px;font-size:8px;text-align:center">🌱</div>`).join("")}
+          </div>
+        </div>
+        <!-- Walkway -->
+        <div style="position:absolute;top:40px;left:50%;transform:translateX(-50%);width:60px;background:var(--border);border-radius:4px;height:140px;display:flex;align-items:center;justify-content:center">
+          <div style="color:var(--muted);font-size:9px;transform:rotate(90deg);white-space:nowrap">WALKWAY 24"</div>
+        </div>
+        <!-- Fan -->
+        <div style="position:absolute;top:200px;left:50%;transform:translateX(-50%);background:var(--teal)22;border:1px solid var(--teal)55;border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:20px" title="Oscillating fan — points toward trays">🌀</div>
+        <!-- Water station -->
+        <div style="position:absolute;bottom:20px;left:20px;background:var(--blue)22;border:1px solid var(--blue)55;border-radius:8px;padding:8px 12px;font-size:10px;color:var(--blue)">
+          💧 Water Station<br><span style="color:var(--muted)">Spray bottles, bottom trays</span>
+        </div>
+        <!-- Harvest station -->
+        <div style="position:absolute;bottom:20px;right:20px;background:var(--gold)22;border:1px solid var(--gold)55;border-radius:8px;padding:8px 12px;font-size:10px;color:var(--gold);text-align:right">
+          ✂️ Harvest Station<br><span style="color:var(--muted)">Cutting, washing, packaging</span>
+        </div>
+        <!-- Door -->
+        <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:10px;text-align:center">
+          🚪 Door<br><span style="font-size:9px">Keep closed — temperature control</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+        ${[["🌡️","Temperature probe","Mount at tray height near Unit A"],["💡","Timer controller","Plug lights into 12–16hr timer"],["🌀","Oscillating fan","Aim between shelving units"],["📋","Grow log","Track seeding dates per tray"]].map(([ic,t,d])=>`
+          <div style="background:#080c18;border:1px solid var(--border);border-radius:9px;padding:10px;display:flex;gap:9px">
+            <span style="font-size:20px">${ic}</span>
+            <div><div style="font-weight:700;font-size:11px">${t}</div><div style="color:var(--muted);font-size:10px">${d}</div></div>
+          </div>`).join("")}
+      </div>`;
+  }
+  else if(dTab==="equip"){
+    const equipList=[
+      {cat:"🏗️ Structure",items:[
+        {name:"Metro Wire Shelving (4-tier)",qty:"1–2 units",cost:"$80–150",tip:"48-inch wide fits four 10×20 trays per shelf"},
+        {name:"10×20 Inch Growing Trays (with holes)",qty:"20–40",cost:"$30–60",tip:"Always pair with a solid tray below for bottom watering"},
+        {name:"10×20 Inch Solid Trays (no holes)",qty:"20–40",cost:"$25–50",tip:"Used as water reservoirs under growing trays"},
+      ]},
+      {cat:"💡 Lighting",items:[
+        {name:"T5 HO Grow Light (4-bulb, 4-ft)",qty:"1 per shelf",cost:"$50–80/shelf",tip:"Best all-around for microgreens. Position 2–4 inches above trays"},
+        {name:"LED Grow Light Strip",qty:"1 per shelf",cost:"$30–60/shelf",tip:"More energy-efficient. Look for 4000K–6500K color temperature"},
+        {name:"Timer Outlet",qty:"1–2",cost:"$10–20",tip:"Set for 14–16 hours on, 8–10 hours off daily"},
+      ]},
+      {cat:"🌱 Growing Medium",items:[
+        {name:"Coconut Coir Brick",qty:"2–4 bricks",cost:"$15–30",tip:"Expand with water. Lightweight, sterile, and reusable"},
+        {name:"Organic Potting Mix",qty:"2 bags",cost:"$20–35",tip:"Good for most varieties. Mix with perlite for better drainage"},
+        {name:"Hemp Grow Mats",qty:"20–40",cost:"$20–40",tip:"Best for soil-free growing. Radish and sunflower thrive on mats"},
+      ]},
+      {cat:"🌿 Seeds (per month estimate)",items:[
+        {name:"Sunflower Seeds",qty:"2–4 lbs",cost:"$15–25",tip:"One of the best sellers. Use black oil sunflower seeds"},
+        {name:"Pea Seeds",qty:"2–4 lbs",cost:"$10–20",tip:"High yield, very popular. Use whole field peas"},
+        {name:"Radish Seeds",qty:"0.5–1 lb",cost:"$8–15",tip:"Fast grower. Daikon and China Rose are top varieties"},
+        {name:"Broccoli Seeds",qty:"0.5–1 lb",cost:"$12–22",tip:"High nutritional value. Good restaurant seller"},
+      ]},
+      {cat:"🛠️ Tools & Supplies",items:[
+        {name:"Spray Bottle (32 oz)",qty:"2–3",cost:"$8–15",tip:"For top misting during germination phase"},
+        {name:"Harvest Scissors or Knife",qty:"2",cost:"$10–20",tip:"Keep blades sharp and sanitized between harvests"},
+        {name:"Small Oscillating Fan",qty:"1–2",cost:"$15–30",tip:"Critical for airflow. Prevents mold and strengthens stems"},
+        {name:"Clamshell Containers (4–8 oz)",qty:"50–100",cost:"$20–40",tip:"Label with variety, harvest date, and farm name"},
+        {name:"Digital Thermometer/Hygrometer",qty:"1",cost:"$10–20",tip:"Monitor temp 65–75°F and humidity 40–60%"},
+      ]},
+    ];
+    content=`
+      <div style="color:var(--gold);font-weight:800;font-size:15px;margin-bottom:14px">🛒 Complete Equipment List</div>
+      ${equipList.map(cat=>`
+        <div style="margin-bottom:16px">
+          <div style="color:var(--accent);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${cat.cat}</div>
+          ${cat.items.map(item=>`
+            <div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border)22">
+              <div style="flex:1">
+                <div style="font-weight:700;font-size:12px">${item.name}</div>
+                <div style="color:var(--muted);font-size:11px;margin-top:2px">💡 ${item.tip}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                ${bdg(item.qty,"var(--blue)")}
+                <div style="color:var(--gold);font-weight:700;font-size:12px;margin-top:4px">${item.cost}</div>
+              </div>
+            </div>`).join("")}
+        </div>`).join("")}`;
+    diagContent=content;
+  }
+
+  return `
+    ${roundHdr("🏗️","4","Setup Diagram & Equipment","Interactive grow room layout + full equipment list")}
+    <div class="col">
+      <div class="tabs">${diagTabs.map(t=>`<button class="tab ${dTab===t.id?"active":""}" onclick="setDiagTab('${t.id}')" style="${dTab===t.id?"background:var(--accent);color:#060a12":""}">${t.lbl}</button>`).join("")}</div>
+      <div class="diagram-wrap">${diagContent}</div>
+      ${b("Round 5: Set Your Pricing →","submitDiagram()","primary","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function setDiagTab(tab){S.strategy.diagTab=tab;render();}
+function submitDiagram(){advance();}
+
+// ═══════════════════════════════════
+// ROUND 5 — PRICING
+// ═══════════════════════════════════
+function renderPricing(){
+  const p=PROFILES.find(x=>x.id===S.farm.profileId);
+  const seedCost=S.strategy.seedCost||2.50;
+  const mediumCost=S.strategy.mediumCost||1.50;
+  const laborCost=S.farm.solo?0:1.00;
+  const miscCost=0.75;
+  const totalCOGS=seedCost+mediumCost+laborCost+miscCost;
+  const price=S.farm.pricePerOz||p.price;
+  const avgYield=8;
+  const revenuePerTray=price*avgYield;
+  const profitPerTray=revenuePerTray-(totalCOGS*avgYield);
+  const margin=revenuePerTray>0?profitPerTray/revenuePerTray:0;
+  const breakEven=Math.ceil(totalCOGS*avgYield/price);
+
+  return `
+    ${roundHdr("💰","5","Pricing Strategy","Calculate your cost per oz, profit per tray & break-even point")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:11px">📐 BUAD222 Contribution Margin Formula</div>
+        <div style="background:#080c18;border-radius:9px;padding:12px;font-family:'Space Mono',monospace;font-size:12px;line-height:2">
+          <div><span style="color:var(--gold)">Revenue/Tray</span> = Price × Avg Yield (${avgYield}oz)</div>
+          <div><span style="color:var(--red)">COGS/Tray</span> = Seeds + Medium + Labor + Misc</div>
+          <div><span style="color:var(--accent)">Profit/Tray</span> = Revenue − COGS</div>
+          <div><span style="color:var(--teal)">Break-Even</span> = COGS ÷ Price per oz</div>
+        </div>`,"","background:#080c18")}
+      <div class="g2">
+        ${inp("Your Price per oz","price-oz","number",price,"$","/oz",`Market range for your variety`)}
+        ${inp("Seed Cost per tray","seed-cost","number",seedCost,"$","/tray","Avg 1–2oz seeds per 10×20 tray")}
+        ${inp("Growing Medium per tray","medium-cost","number",mediumCost,"$","/tray","Coir, potting mix, or hemp mat")}
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">📊 Per-Tray Analysis</div>
+        <div class="g4">
+          ${st("Revenue/Tray",fmt(revenuePerTray),"var(--accent)")}
+          ${st("COGS/Tray",fmt(totalCOGS*avgYield),"var(--red)")}
+          ${st("Profit/Tray",fmt(profitPerTray),profitPerTray>0?"var(--accent)":"var(--red)")}
+          ${st("Margin %",pct(profitPerTray,revenuePerTray),margin>0.4?"var(--accent)":margin>0.2?"var(--gold)":"var(--red)")}
+        </div>
+        <div style="margin-top:12px">${pb(margin*100,margin>0.4?"var(--accent)":margin>0.2?"var(--gold)":"var(--red)",10)}</div>
+        <div style="margin-top:10px;padding:8px 12px;background:${profitPerTray>0?"var(--as)":"var(--rs)"};border-radius:8px;display:flex;justify-content:space-between;font-size:12px">
+          <span style="color:var(--muted)">Break-even point</span>
+          <span style="color:${profitPerTray>0?"var(--accent)":"var(--red)"};font-weight:700;font-family:'Space Mono',monospace">${breakEven} oz to cover tray costs</span>
+        </div>`,"glow-gold","background:var(--gs)")}
+      ${b("Round 6: Marketing Plan →","submitPricing()","primary","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitPricing(){
+  S.farm.pricePerOz=+(document.getElementById("price-oz")?.value||S.farm.pricePerOz);
+  S.strategy.seedCost=+(document.getElementById("seed-cost")?.value||2.50);
+  S.strategy.mediumCost=+(document.getElementById("medium-cost")?.value||1.50);
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 6 — MARKETING
+// ═══════════════════════════════════
+function renderMarketing(){
+  const channels=[
+    {id:"market",  icon:"🏪", name:"Farmers Market",     reach:40, rev:600,  cost:50,  desc:"Best for building a loyal local customer base"},
+    {id:"resto",   icon:"🍽️", name:"Restaurant Direct",  reach:25, rev:900,  cost:30,  desc:"Consistent weekly orders, premium pricing"},
+    {id:"social",  icon:"📱", name:"Social Media Sales",  reach:80, rev:500,  cost:20,  desc:"Instagram/TikTok — high reach, variable orders"},
+    {id:"online",  icon:"🌐", name:"Online Store/Etsy",   reach:100,rev:700,  cost:40,  desc:"Ship nationwide, subscription boxes"},
+    {id:"health",  icon:"💆", name:"Health Food Stores",  reach:60, rev:800,  cost:25,  desc:"Steady wholesale account, lower margin"},
+    {id:"csa",     icon:"📦", name:"CSA / Weekly Box",    reach:30, rev:650,  cost:15,  desc:"Community Supported Agriculture — predictable income"},
+  ];
+  const chosen=S.strategy.channels||[];
+  const totalRev=channels.filter(c=>chosen.includes(c.id)).reduce((a,c)=>a+c.rev,0);
+  const totalCost=channels.filter(c=>chosen.includes(c.id)).reduce((a,c)=>a+c.cost,0);
+
+  return `
+    ${roundHdr("📣","6","Marketing Plan","Choose your sales channels — applies for all 8 months")}
+    <div class="col">
+      <div style="color:var(--text);font-size:13px">Select all channels you'll use to sell your microgreens:</div>
+      <div class="col">
+        ${channels.map(c=>{
+          const sel=chosen.includes(c.id);
+          return `<div onclick="toggleChannel('${c.id}')" style="border:1px solid ${sel?"var(--accent)44":"var(--border)"};background:${sel?"var(--as)":"var(--card)"};border-radius:11px;padding:13px 15px;cursor:pointer;display:flex;gap:13px;align-items:center;transition:all .13s">
+            <span style="font-size:26px">${c.icon}</span>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:13px;color:${sel?"var(--accent)":"var(--text)"}">${c.name}</div>
+              <div style="color:var(--muted);font-size:11px;margin-top:2px">${c.desc}</div>
+              <div style="display:flex;gap:8px;margin-top:5px">
+                ${bdg(fmt(c.rev)+"/mo potential","var(--gold)")}
+                ${bdg(fmt(c.cost)+"/mo cost","var(--red)")}
+                ${bdg("Reach: "+c.reach+" customers","var(--blue)")}
+              </div>
+            </div>
+            ${sel?`<span style="color:var(--accent);font-size:18px;flex-shrink:0">✓</span>`:""}
+          </div>`;
+        }).join("")}
+      </div>
+      ${card(`<div class="g3">
+        ${st("Monthly Revenue Potential",fmt(totalRev),"var(--accent)")}
+        ${st("Monthly Marketing Cost",fmt(totalCost),"var(--red)")}
+        ${st("Net Potential",fmt(totalRev-totalCost),(totalRev-totalCost)>0?"var(--gold)":"var(--red)")}
+      </div>`,"glow-green","background:var(--as)")}
+      ${b("Round 7: First Harvest Setup →","submitMarketing()","primary","lg full",chosen.length===0,"id='mkt-btn'")}
+      ${chosen.length===0?`<div style="text-align:center;color:var(--muted);font-size:11px">Select at least 1 channel to continue</div>`:""}
+      ${restartLink()}
+    </div>`;
+}
+
+function toggleChannel(id){
+  if(!S.strategy.channels) S.strategy.channels=[];
+  const idx=S.strategy.channels.indexOf(id);
+  if(idx>=0) S.strategy.channels.splice(idx,1); else S.strategy.channels.push(id);
+  render();
+}
+function submitMarketing(){advance();}
+
+// ═══════════════════════════════════
+// ROUND 7 — FIRST HARVEST SETUP
+// ═══════════════════════════════════
+function renderFirstHarvest(){
+  const p=PROFILES.find(x=>x.id===S.farm.profileId);
+  const variety=VARIETIES.find(v=>v.id===_varietyId)||VARIETIES[0];
+  const trays=S.strategy.startTrays||p.trays;
+  const avgYield=8;
+  const estRevenue=Math.round(trays*avgYield*S.farm.pricePerOz);
+  const estCOGS=Math.round(trays*(+(S.strategy.seedCost||2.50) + +(S.strategy.mediumCost||1.50)+0.75));
+  const estProfit=estRevenue-estCOGS;
+
+  return `
+    ${roundHdr("🌿","7","First Harvest Setup","Plan your first grow cycle before operations begin")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--lime);font-weight:800;font-size:14px;margin-bottom:13px">🗓️ ${variety.name} — Grow Timeline</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          ${[
+            {day:"Day 1",  label:"Seeding Day",      icon:"🌑", color:"var(--purple)", desc:"Soak seeds (if needed). Fill trays. Spread seeds. Cover with blackout tray."},
+            {day:"Day "+variety.germTime.split("–")[1].replace(" days",""),label:"Germination",icon:"🌱",color:"var(--accent)",desc:"Seeds have sprouted. Roots forming. Keep covered and moist."},
+            {day:"Day 4",  label:"Uncover & Light",   icon:"💡", color:"var(--gold)",   desc:"Remove blackout cover. Move under grow lights 2–4 inches above."},
+            {day:"Day 7",  label:"Active Growth",     icon:"🌿", color:"var(--lime)",   desc:"Strong growth. Water daily. Rotate trays for even light."},
+            {day:variety.days.split("–")[0]+"–"+variety.days.split("–")[1]+" days",label:"HARVEST",icon:"✂️",color:"var(--teal)",desc:"First true leaves showing. Cut just above soil line. Rinse, dry, package."},
+          ].map((step,i)=>`
+            <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:${i>0?"1px solid var(--border)22":"none"}">
+              <div style="text-align:center;flex-shrink:0;width:55px">
+                <div style="font-size:20px">${step.icon}</div>
+                <div style="color:${step.color};font-size:9px;font-weight:700;text-transform:uppercase">${step.day}</div>
+              </div>
+              <div>
+                <div style="font-weight:700;font-size:13px;color:${step.color}">${step.label}</div>
+                <div style="color:var(--muted);font-size:11px;margin-top:3px">${step.desc}</div>
+              </div>
+            </div>`).join("")}
+        </div>`,"","background:#080c18")}
+      ${inp("Starting Tray Count","start-trays","number",p.trays,"","trays","How many trays you'll grow in Month 1")}
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">📊 Month 1 Projection</div>
+        <div class="g4">
+          ${st("Trays",trays,"var(--lime)")}
+          ${st("Est. Revenue",fmt(estRevenue),"var(--accent)")}
+          ${st("Est. COGS",fmt(estCOGS),"var(--red)")}
+          ${st("Est. Profit",fmt(estProfit),estProfit>0?"var(--accent)":"var(--red)")}
+        </div>`,"glow-green","background:var(--gs)")}
+      ${b("Start January — Month 1 →","submitFirstHarvest()","primary","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitFirstHarvest(){
+  S.strategy.startTrays=+(document.getElementById("start-trays")?.value||PROFILES.find(x=>x.id===S.farm.profileId).trays);
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUNDS 8-15 — MONTHLY OPERATIONS
+// ═══════════════════════════════════
+function renderMonth(mi){
+  _diceRolled=false;_chosenEvent=null;
+  const prevCash=S.months.length>0?S.months[S.months.length-1].cashEnd:S.farm.totalCash;
+  const prevTrays=S.months.length>0?S.months[S.months.length-1].traysActive:S.strategy.startTrays||PROFILES.find(x=>x.id===S.farm.profileId).trays;
+
+  return `
+    ${roundHdr("📅",mi+8,MONTH_NAMES[mi]+" — Month "+(mi+1)+" of 8","Set your growing plan, then roll 2 dice for your farm event")}
+    <div class="col">
+      <div class="month-banner">
+        <div style="font-size:26px">🌱</div>
+        <div>
+          <div style="color:var(--accent);font-weight:800;font-size:15px">${MONTH_NAMES[mi]} — Month ${mi+1} of 8</div>
+          <div style="color:var(--muted);font-size:10px;margin-top:2px">Set expenses → roll 2 dice → farm event auto-applied</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="color:var(--muted);font-size:9px;text-transform:uppercase">Cash Available</div>
+          <div style="color:var(--gold);font-weight:800;font-family:'Space Mono',monospace;font-size:15px">${fmt(prevCash)}</div>
+        </div>
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📊 ${MONTH_NAMES[mi]} Starting Position</div>
+        <div class="g3">
+          ${st("Active Trays",prevTrays+" trays","var(--lime)")}
+          ${st("Cash Available",fmt(prevCash),"var(--gold)")}
+          ${st("Price/oz",fmt(S.farm.pricePerOz),"var(--accent)")}
+        </div>`,"","background:#080c18")}
+      <div class="g2">
+        ${inp("Seeds & Growing Medium","seeds-cost","number",Math.round(prevTrays*(+(S.strategy.seedCost||2.50) + +(S.strategy.mediumCost||1.50))),"$","","Cost to grow all trays this month")}
+        ${inp("Utilities (lights, water)","util-cost","number",60,"$","","Electricity & water for grow room")}
+        ${inp("Packaging & Supplies","pkg-cost","number",40,"$","","Containers, labels, bags")}
+        ${inp("Marketing & Market Fees","mkt-cost","number",30,"$","","Farmers market fees, ads, etc.")}
+      </div>
+      <div class="card glow-purple" style="background:linear-gradient(135deg,#110a28,#0a1020)">
+        <div style="color:var(--purple);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">
+          🎲 ${MONTH_NAMES[mi]} Farm Event — Roll 2 Dice
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:13px">
+          <div style="display:flex;gap:18px;align-items:center">
+            <div id="d1" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="d2" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="dice-sum" style="display:none;flex-direction:column;align-items:center;gap:3px">
+              <div style="color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:1px">Sum</div>
+              <div id="sum-val" style="color:var(--gold);font-size:28px;font-weight:900;font-family:'Space Mono',monospace;text-shadow:0 0 16px #f5b73188"></div>
+            </div>
+          </div>
+          <div id="dice-ctrl">${b("🎲 Roll 2 Dice","rollDice("+mi+")","purple","lg")}</div>
+          <div id="event-reveal" style="width:100%;display:none"></div>
+        </div>
+      </div>
+      <div id="results-preview" style="display:none"></div>
+      ${b("Close "+MONTH_NAMES[mi]+" Books →","submitMonth("+mi+")","primary","lg full",true,"id='close-btn'")}
+      ${restartLink()}
+    </div>`;
+}
+
+function rollDice(mi){
+  if(_diceRolled) return;
+  let count=0;
+  const d1=document.getElementById("d1"),d2=document.getElementById("d2"),ctrl=document.getElementById("dice-ctrl");
+  ctrl.innerHTML=`<div style="color:var(--purple);font-weight:800;font-size:13px;animation:pulse 0.45s infinite">Rolling…</div>`;
+  d1.classList.add("shake");d2.classList.add("shake");
+  d1.style.border="2px solid var(--purple)";d1.style.background="var(--ps)";
+  d2.style.border="2px solid var(--purple)";d2.style.background="var(--ps)";
+  _diceInterval=setInterval(()=>{
+    const r1=Math.floor(Math.random()*6),r2=Math.floor(Math.random()*6);
+    d1.textContent=DICE_FACES[r1];d2.textContent=DICE_FACES[r2];count++;
+    if(count>=20){
+      clearInterval(_diceInterval);
+      const f1=Math.floor(Math.random()*6),f2=Math.floor(Math.random()*6);
+      d1.textContent=DICE_FACES[f1];d2.textContent=DICE_FACES[f2];
+      d1.classList.remove("shake");d2.classList.remove("shake");
+      d1.style.border="2px solid var(--gold)";d1.style.background="var(--gs)";d1.style.boxShadow="0 0 20px #f5b73166";
+      d2.style.border="2px solid var(--gold)";d2.style.background="var(--gs)";d2.style.boxShadow="0 0 20px #f5b73166";
+      const sum=f1+f2+2;
+      const sumEl=document.getElementById("dice-sum");sumEl.style.display="flex";
+      document.getElementById("sum-val").textContent=sum;
+      ctrl.innerHTML=`<div style="display:flex;gap:8px">${bdg("Die 1: "+(f1+1),"var(--gold)")} ${bdg("Die 2: "+(f2+1),"var(--gold)")}</div>`;
+      _diceRolled=true;
+      _chosenEvent=pickEvent(f1,f2,mi);
+      showEventReveal(_chosenEvent);
+    }
+  },65);
+}
+
+function showEventReveal(ev){
+  const revEl=document.getElementById("event-reveal");
+  revEl.style.display="block";
+  revEl.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px">🎴 Dice Roll → Farm Event Drawn</div>
+    <div id="ev-face-down" style="background:linear-gradient(135deg,#061a0a,#040c08);border:2px solid var(--purple)88;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;animation:pulse 0.6s infinite">
+      <span style="font-size:34px">🎴</span><span style="color:var(--purple);font-weight:800;font-size:13px">Revealing…</span>
+    </div>`;
+  setTimeout(()=>{
+    const fd=document.getElementById("ev-face-down");
+    if(!fd) return;
+    fd.style.animation="none";fd.className="reveal";
+    fd.style.background=ev.c+"22";fd.style.border=`2px solid ${ev.c}`;fd.style.boxShadow=`0 0 26px ${ev.c}55`;
+    fd.style.display="flex";fd.style.alignItems="center";fd.style.gap="14px";fd.style.padding="15px 17px";fd.style.borderRadius="14px";
+    fd.innerHTML=`<span style="font-size:32px;flex-shrink:0">${ev.e}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="color:${ev.c};font-weight:900;font-size:14px">${ev.t}</div>${bdg(ev.lbl,ev.c)}
+        </div>
+        <div style="color:var(--muted);font-size:11px">${ev.d}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:center"><div style="color:${ev.c};font-size:11px;font-weight:800">AUTO</div><div style="color:${ev.c};font-size:9px">APPLIED</div></div>`;
+    setTimeout(()=>showMonthResults(),380);
+    setTimeout(()=>{const cb=document.getElementById("close-btn");if(cb)cb.disabled=false;},500);
+  },680);
+}
+
+function showMonthResults(){
+  const mi=S.round-8;
+  const ev=_chosenEvent;
+  const prevCash=S.months.length>0?S.months[S.months.length-1].cashEnd:S.farm.totalCash;
+  const prevTrays=S.months.length>0?S.months[S.months.length-1].traysActive:S.strategy.startTrays||PROFILES.find(x=>x.id===S.farm.profileId).trays;
+  const seedsCost=+(document.getElementById("seeds-cost")?.value||0);
+  const utilCost=+(document.getElementById("util-cost")?.value||60);
+  const pkgCost=+(document.getElementById("pkg-cost")?.value||40);
+  const mktCost=+(document.getElementById("mkt-cost")?.value||30);
+  const empCost=S.farm.solo?0:300;
+  const loanPmt=S.farm.loan?Math.round(S.farm.loanAmt*0.10):0;
+  const baseExpenses=seedsCost+utilCost+pkgCost+mktCost+empCost+loanPmt;
+  let traysActive=prevTrays, revenueAdj=0, expenseAdj=0, traysLost=0;
+  if(ev.ef==="trays"){traysLost=Math.abs(ev.v);traysActive=Math.max(0,prevTrays+ev.v);}
+  if(ev.ef==="revenue") revenueAdj=ev.v;
+  if(ev.ef==="expense") expenseAdj=ev.v;
+  const avgYield=8;
+  const baseRevenue=Math.round(traysActive*avgYield*S.farm.pricePerOz);
+  const revenue=Math.max(0,baseRevenue+revenueAdj);
+  const expenses=Math.max(0,baseExpenses+expenseAdj);
+  const profit=revenue-expenses;
+  const cashEnd=prevCash+revenue-expenses;
+  const debt=S.farm.loan?Math.max(0,S.farm.loanAmt-loanPmt*(mi+1)):0;
+  const prv=document.getElementById("results-preview");
+  if(!prv) return;
+  prv.style.display="block";
+  prv.innerHTML=card(`
+    <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">🌱 ${MONTH_NAMES[mi]} — Harvest Results</div>
+    <div class="g4">
+      ${st("Trays Active",traysActive,traysLost>0?"var(--orange)":"var(--lime)")}
+      ${st("Revenue",fmt(revenue),"var(--accent)")}
+      ${st("Expenses",fmt(expenses),"var(--red)")}
+      ${st("Profit",fmt(profit),profit>=0?"var(--accent)":"var(--red)")}
+    </div>
+    <div class="g2" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      ${st("Cash Start",fmt(prevCash),"var(--muted)")}
+      ${st("Cash End",fmt(cashEnd),cashEnd>=0?"var(--gold)":"var(--red)")}
+    </div>
+    ${traysLost>0?`<div style="margin-top:10px;padding:8px 12px;background:var(--rs);border-radius:8px;font-size:11px;color:var(--red)">⚠️ Lost ${traysLost} tray${traysLost>1?"s":""} this month — ${ev.d}</div>`:""}
+    <div style="margin-top:10px;padding:9px 13px;background:${ev.c}18;border:1px solid ${ev.c}44;border-radius:9px;display:flex;align-items:center;gap:9px">
+      <span style="font-size:20px">${ev.e}</span>
+      <div><div style="color:${ev.c};font-weight:700;font-size:12px">${ev.t}</div><div style="color:var(--muted);font-size:11px">${ev.d} → <strong style="color:${ev.c}">${ev.lbl}</strong></div></div>
+    </div>
+  `,"glow-green","background:#080c18;border:1px solid var(--accent)33");
+}
+
+function submitMonth(mi){
+  if(!_chosenEvent){alert("Roll the dice first!");return;}
+  const ev=_chosenEvent;
+  const prevCash=S.months.length>0?S.months[S.months.length-1].cashEnd:S.farm.totalCash;
+  const prevTrays=S.months.length>0?S.months[S.months.length-1].traysActive:S.strategy.startTrays||PROFILES.find(x=>x.id===S.farm.profileId).trays;
+  const seedsCost=+(document.getElementById("seeds-cost")?.value||0);
+  const utilCost=+(document.getElementById("util-cost")?.value||60);
+  const pkgCost=+(document.getElementById("pkg-cost")?.value||40);
+  const mktCost=+(document.getElementById("mkt-cost")?.value||30);
+  const empCost=S.farm.solo?0:300;
+  const loanPmt=S.farm.loan?Math.round(S.farm.loanAmt*0.10):0;
+  const baseExpenses=seedsCost+utilCost+pkgCost+mktCost+empCost+loanPmt;
+  let traysActive=prevTrays, revenueAdj=0, expenseAdj=0, traysLost=0;
+  if(ev.ef==="trays"){traysLost=Math.abs(ev.v);traysActive=Math.max(0,prevTrays+ev.v);}
+  if(ev.ef==="revenue") revenueAdj=ev.v;
+  if(ev.ef==="expense") expenseAdj=ev.v;
+  const avgYield=8;
+  const baseRevenue=Math.round(traysActive*avgYield*S.farm.pricePerOz);
+  const revenue=Math.max(0,baseRevenue+revenueAdj);
+  const expenses=Math.max(0,baseExpenses+expenseAdj);
+  const profit=revenue-expenses;
+  const cashEnd=prevCash+revenue-expenses;
+  const debt=S.farm.loan?Math.max(0,S.farm.loanAmt-loanPmt*(mi+1)):0;
+  S.months.push({month:mi+1,monthName:MONTH_NAMES[mi],seedsCost,utilCost,pkgCost,mktCost,empCost,loanPmt,
+    baseExpenses,expenses,cashAdj:revenueAdj||expenseAdj,revenue,profit,cashEnd,cashStart:prevCash,
+    traysActive,traysLost,debt,mktSpend:mktCost,event:ev});
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 16 — FULL AUDIT
+// ═══════════════════════════════════
+function renderAudit(){
+  const months=S.months; if(!months.length) return "<p>No data found.</p>";
+  const last=months[months.length-1];
+  const totalRevenue=months.reduce((a,m)=>a+(m.revenue||0),0);
+  const totalExpenses=months.reduce((a,m)=>a+(m.expenses||0),0);
+  const totalProfit=totalRevenue-totalExpenses;
+  const cashEnd=last.cashEnd||0;
+  const cashStart=S.farm.totalCash;
+  const debt=last.debt||0;
+  const totalLoanPmts=months.reduce((a,m)=>a+(m.loanPmt||0),0);
+  const totalSeeds=months.reduce((a,m)=>a+(m.seedsCost||0),0);
+  const totalUtil=months.reduce((a,m)=>a+(m.utilCost||0),0);
+  const totalPkg=months.reduce((a,m)=>a+(m.pkgCost||0),0);
+  const totalMkt=months.reduce((a,m)=>a+(m.mktCost||0),0);
+  const totalEmp=months.reduce((a,m)=>a+(m.empCost||0),0);
+  const totalTraysLost=months.reduce((a,m)=>a+(m.traysLost||0),0);
+  const inventory=Math.round((S.strategy.startTrays||10)*8*(+(S.strategy.seedCost||2.50) + +(S.strategy.mediumCost||1.50)));
+  const equity=cashEnd+inventory-debt;
+  const nwStart=cashStart-S.farm.loanAmt;
+  const nwEnd=equity;
+  const nwChange=nwEnd-nwStart;
+
+  const flagCount=Object.values(S.auditChecks).filter(v=>v==="flag").length;
+  const passCount=Object.values(S.auditChecks).filter(v=>v==="pass").length;
+  const allChecked=AUDIT_CHECKS.every(c=>S.auditChecks[c.id]);
+  let opinion,opinionColor,opinionIcon;
+  if(!allChecked){opinion="Incomplete";opinionColor="var(--muted)";opinionIcon="⏳";}
+  else if(flagCount<=1&&cashEnd>0&&totalProfit>0){opinion="Unqualified (Clean)";opinionColor="var(--accent)";opinionIcon="✅";}
+  else if(flagCount<=3){opinion="Qualified Opinion";opinionColor="var(--gold)";opinionIcon="⚠️";}
+  else{opinion="Adverse / Disclaimer";opinionColor="var(--red)";opinionIcon="🚨";}
+
+  const scores=calcScores(months,S.farm);
+  const tabs=[
+    {id:"income",lbl:"📈 Income"},{id:"balance",lbl:"⚖️ Balance"},
+    {id:"cashflow",lbl:"💵 Cash Flow"},{id:"trial",lbl:"📋 Trial Balance"},
+    {id:"checklist",lbl:"✅ Checklist"},{id:"opinion",lbl:"🏆 Opinion"},
+  ];
+
+  let tabContent="";
+  if(_auditTab==="income"){
+    const rows=[
+      {l:"Sales Revenue",a:totalRevenue,type:"rev"},
+      {l:"  Seeds & Growing Medium",a:-totalSeeds,type:"exp"},
+      {l:"  Utilities",a:-totalUtil,type:"exp"},
+      {l:"  Packaging",a:-totalPkg,type:"exp"},
+      {l:"  Marketing",a:-totalMkt,type:"exp"},
+      {l:"  Labor / Help",a:-totalEmp,type:"exp"},
+      {l:"  Loan Interest",a:-totalLoanPmts,type:"exp"},
+      {l:"Total Expenses",a:-totalExpenses,type:"sub"},
+      {l:"NET INCOME / (LOSS)",a:totalProfit,type:"total"},
+    ];
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:11px">📈 ${S.farm.name} · Income Statement · 8-Month Period</div>
+      ${rows.map(r=>{
+        const isT=r.type==="total",isS=r.type==="sub";
+        return `<div class="stmt-row" style="border-top:${isT||isS?"2px":"1px"} solid var(--border);font-weight:${isT||isS?"800":"400"}">
+          <span style="color:${isT||isS?"var(--text)":"var(--muted)"};padding-left:${r.l.startsWith("  ")?14:0}px">${r.l.trim()}</span>
+          <span style="color:${isT?(r.a>=0?"var(--accent)":"var(--red)"):isS?"var(--red)":(r.a>=0?"var(--accent)":"var(--red)")};font-family:'Space Mono',monospace;font-weight:${isT||isS?"800":"500"}">
+            ${r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")"}</span>
+        </div>`;
+      }).join("")}
+      <div style="margin-top:10px;padding:9px 13px;background:${totalProfit>=0?"var(--as)":"var(--rs)"};border-radius:9px;display:flex;justify-content:space-between">
+        <span style="color:${totalProfit>=0?"var(--accent)":"var(--red)"};font-weight:800;font-size:12px">Profit Margin</span>
+        <span style="color:${totalProfit>=0?"var(--accent)":"var(--red)"};font-family:'Space Mono',monospace;font-weight:800">${pct(totalProfit,totalRevenue)}</span>
+      </div>`;
+  }
+  else if(_auditTab==="balance"){
+    const rows=[
+      {h:"ASSETS"},{l:"  Cash",a:cashEnd},{l:"  Inventory (seed/medium stock)",a:inventory},{l:"  Total Assets",a:cashEnd+inventory,bold:true},
+      {h:"LIABILITIES"},{l:"  Loan Payable",a:debt},{l:"  Total Liabilities",a:debt,bold:true},
+      {h:"OWNER'S EQUITY"},{l:"  Starting Capital",a:cashStart},{l:"  Net Income/(Loss)",a:totalProfit},{l:"  Total Equity",a:equity,bold:true},
+      {l:"TOTAL LIAB + EQUITY",a:debt+equity,bold:true,teal:true},
+    ];
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:11px">⚖️ ${S.farm.name} · Balance Sheet · End of Period</div>
+      ${rows.map(r=>{
+        if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+        const col=r.teal?"var(--teal)":r.bold?(r.a>=0?"var(--gold)":"var(--red)"):(r.a>=0?"var(--accent)":"var(--red)");
+        return `<div class="stmt-row" style="font-weight:${r.bold?"800":"400"}">
+          <span style="color:${r.bold?"var(--text)":"var(--muted)"};padding-left:${r.l?.startsWith("  ")?14:0}px">${r.l?.trim()}</span>
+          <span style="color:${col};font-family:'Space Mono',monospace;font-weight:${r.bold?"800":"500"}">${r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")"}</span>
+        </div>`;
+      }).join("")}`;
+  }
+  else if(_auditTab==="cashflow"){
+    const rows=[
+      {h:"OPERATING ACTIVITIES"},{l:"  Cash from Harvests",a:totalRevenue},{l:"  Cash for Expenses",a:-totalExpenses},
+      {l:"  Net Operating Cash",a:totalRevenue-totalExpenses,bold:true},
+      {h:"FINANCING ACTIVITIES"},{l:"  Loan Proceeds",a:S.farm.loan?S.farm.loanAmt:0},{l:"  Loan Repayments",a:-totalLoanPmts},
+      {l:"  Net Financing Cash",a:(S.farm.loan?S.farm.loanAmt:0)-totalLoanPmts,bold:true},
+      {l:"NET CHANGE IN CASH",a:cashEnd-cashStart,bold:true,teal:true},
+      {l:"Beginning Cash Balance",a:cashStart},{l:"ENDING CASH BALANCE",a:cashEnd,bold:true},
+    ];
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:11px">💵 ${S.farm.name} · Cash Flow Statement · 8-Month Period</div>
+      ${rows.map(r=>{
+        if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+        const col=r.teal?"var(--teal)":r.bold?(r.a>=0?"var(--gold)":"var(--red)"):(r.a>=0?"var(--accent)":"var(--red)");
+        return `<div class="stmt-row" style="font-weight:${r.bold?"800":"400"}">
+          <span style="color:${r.bold?"var(--text)":"var(--muted)"};padding-left:${r.l?.startsWith("  ")?14:0}px">${r.l?.trim()}</span>
+          <span style="color:${col};font-family:'Space Mono',monospace;font-weight:${r.bold?"800":"500"}">${r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")"}</span>
+        </div>`;
+      }).join("")}`;
+  }
+  else if(_auditTab==="trial"){
+    const drTotal=cashEnd+inventory+totalExpenses;
+    const crTotal=debt+equity+totalRevenue;
+    const balanced=Math.abs(drTotal-crTotal)<10;
+    const rows=[
+      {l:"Cash",dr:cashEnd,cr:0},{l:"Inventory/Supplies",dr:inventory,cr:0},
+      {l:"Loan Payable",dr:0,cr:debt},{l:"Owner's Equity",dr:0,cr:equity},
+      {l:"Sales Revenue",dr:0,cr:totalRevenue},{l:"Seeds & Medium",dr:totalSeeds,cr:0},
+      {l:"Utilities",dr:totalUtil,cr:0},{l:"Packaging",dr:totalPkg,cr:0},
+      {l:"Marketing",dr:totalMkt,cr:0},{l:"Labor",dr:totalEmp,cr:0},
+      {l:"Loan Interest",dr:totalLoanPmts,cr:0},
+    ];
+    tabContent=`<table style="width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:12px">
+      <thead><tr><th style="color:var(--dim);font-size:9px;text-transform:uppercase;padding:5px 8px;text-align:left">Account</th>
+      <th style="color:var(--accent);font-size:9px;text-transform:uppercase;padding:5px 8px;text-align:left">Debit</th>
+      <th style="color:var(--gold);font-size:9px;text-transform:uppercase;padding:5px 8px;text-align:left">Credit</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr style="border-top:1px solid var(--border)">
+        <td style="padding:7px 8px">${r.l}</td>
+        <td style="padding:7px 8px;color:${r.dr>0?"var(--accent)":"var(--dim)"};font-weight:${r.dr>0?700:400}">${r.dr>0?fmt(r.dr):"—"}</td>
+        <td style="padding:7px 8px;color:${r.cr>0?"var(--gold)":"var(--dim)"};font-weight:${r.cr>0?700:400}">${r.cr>0?fmt(r.cr):"—"}</td>
+      </tr>`).join("")}
+      <tr style="border-top:2px solid var(--border)">
+        <td style="padding:9px 8px;font-weight:800">TOTALS</td>
+        <td style="padding:9px 8px;color:var(--accent);font-weight:800">${fmt(drTotal)}</td>
+        <td style="padding:9px 8px;color:var(--gold);font-weight:800">${fmt(crTotal)}</td>
+      </tr></tbody></table>
+      <div style="margin-top:10px;padding:9px 13px;background:${balanced?"var(--as)":"var(--rs)"};border:1px solid ${balanced?"var(--accent)":"var(--red)"}44;border-radius:9px;font-size:12px;color:${balanced?"var(--accent)":"var(--red)"};font-weight:700">
+        ${balanced?"✓ Trial Balance is BALANCED — Debits equal Credits":"⚠ Trial Balance is OUT OF BALANCE — Review your entries"}
+      </div>`;
+  }
+  else if(_auditTab==="checklist"){
+    tabContent=`${AUDIT_CHECKS.map(c=>{
+      const val=S.auditChecks[c.id];
+      return `<div class="audit-item" style="background:${val==="pass"?"var(--as)":val==="flag"?"var(--rs)":"var(--card)"};border-color:${val==="pass"?"var(--accent)44":val==="flag"?"var(--red)44":"var(--border)"}">
+        <div style="display:flex;gap:11px;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:12px">${c.lbl}</div>
+            <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
+              ${bdg(c.cat,"var(--blue)")}
+              ${bdg("Risk: "+c.risk,c.risk==="high"?"var(--red)":c.risk==="medium"?"var(--gold)":"var(--accent)")}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn sm ${val==="pass"?"primary":"ghost"}" onclick="setCheck('${c.id}','pass')">✓ Pass</button>
+            <button class="btn sm ${val==="flag"?"red":"ghost"}" style="${val==="flag"?"":"color:var(--red);border-color:var(--red)55"}" onclick="setCheck('${c.id}','flag')">⚑ Flag</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("")}
+    ${card(`<div class="g3">${st("Checked",`${passCount+flagCount}/${AUDIT_CHECKS.length}`,"var(--blue)")}${st("Passed",passCount,"var(--accent)")}${st("Flagged",flagCount,flagCount>0?"var(--red)":"var(--muted)")}</div>`,"","background:#080c18")}
+    ${allChecked?b("🏆 View Audit Opinion →","setAuditTab('opinion')","teal","lg full"):""}`;
+  }
+  else if(_auditTab==="opinion"){
+    if(!allChecked){
+      tabContent=card(`<div style="text-align:center;padding:22px 0">
+        <div style="font-size:34px;margin-bottom:10px">⏳</div>
+        <div style="color:var(--gold);font-weight:800;font-size:15px">Complete the Checklist First</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:6px;line-height:1.7">All 12 items must be marked Pass or Flag.</div>
+        <div style="margin-top:14px">${b("Go to Checklist →","setAuditTab('checklist')","gold","md")}</div>
+      </div>`,"glow-gold");
+    } else {
+      const opBody=flagCount<=1&&totalProfit>0
+        ?"In our opinion, the farm's financial statements present fairly in all material respects. Revenue was generated consistently, expenses were managed well, and the business demonstrated strong growth potential."
+        :flagCount<=3
+        ?`Except for the ${flagCount} flagged item(s), the statements present fairly. Management should address the noted concerns before the next growing season.`
+        :"Multiple material exceptions were found. The auditor cannot confirm the statements present fairly. Significant operational and financial improvements are required.";
+
+      const maxAbs=Math.max(...months.map(m=>Math.abs(m.profit||0)),1);
+      const profitChart=months.map((m,i)=>{
+        const w=Math.min(50,Math.abs(m.profit)/maxAbs*50);
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="color:var(--muted);font-size:9px;width:18px;flex-shrink:0">M${i+1}</span>
+          <span style="color:var(--dim);font-size:9px;width:55px;flex-shrink:0">${m.monthName.slice(0,3)}</span>
+          <div style="flex:1;background:#151f35;border-radius:3px;height:12px;position:relative;overflow:hidden">
+            <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)"></div>
+            <div style="position:absolute;top:0;bottom:0;left:${m.profit>=0?"50%":`${50-w}%`};width:${w}%;background:${m.profit>=0?"var(--accent)":"var(--red)"}"></div>
+          </div>
+          <span style="color:${m.profit>=0?"var(--accent)":"var(--red)"};font-size:9px;font-family:'Space Mono',monospace;width:55px;text-align:right;flex-shrink:0">${fmtS(m.profit)}</span>
+          <span style="font-size:12px;flex-shrink:0">${m.event?.e||""}</span>
+        </div>`;
+      }).join("");
+
+      tabContent=`
+        <div style="border-radius:14px;padding:24px 18px;text-align:center;background:${opinionColor}18;border:1px solid ${opinionColor}55;margin-bottom:13px">
+          <div style="font-size:42px;margin-bottom:8px">${opinionIcon}</div>
+          <div style="color:${opinionColor};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px">Farm Business Audit Opinion</div>
+          <div style="color:${opinionColor};font-size:19px;font-weight:900">${opinion}</div>
+          <div style="color:var(--muted);font-size:12px;line-height:1.75;max-width:420px;margin:10px auto 0">${opBody}</div>
+        </div>
+        ${card(`
+          <div style="color:var(--gold);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:13px">📊 8-Month Farm Performance Summary</div>
+          <div class="g3" style="margin-bottom:13px">
+            ${st("Total Revenue",fmt(totalRevenue),"var(--accent)")}
+            ${st("Total Expenses",fmt(totalExpenses),"var(--red)")}
+            ${st("Net Profit",fmt(totalProfit),totalProfit>=0?"var(--accent)":"var(--red)")}
+            ${st("Ending Cash",fmt(cashEnd),"var(--gold)")}
+            ${st("Trays Lost",totalTraysLost,totalTraysLost===0?"var(--accent)":"var(--red)")}
+            ${st("Net Worth",fmt(nwEnd),nwChange>=0?"var(--lime)":"var(--red)")}
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:13px">
+            <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:9px">Month-by-Month Profit</div>
+            ${profitChart}
+          </div>`,"glow-gold","background:var(--gs)")}
+        ${card(`
+          <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">🎯 Final Performance Scores</div>
+          ${[{k:"revenue",l:"Revenue Achievement",i:"💰"},{k:"profit",l:"Profit Management",i:"📈"},{k:"growth",l:"Tray Growth",i:"🌱"},{k:"quality",l:"Crop Quality",i:"✨"},{k:"decisions",l:"Business Decisions",i:"🎯"}].map(s=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-size:12px">${s.i} ${s.l}</span>
+                <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace">${scores[s.k]}/100</span>
+              </div>
+              <div class="pbar-wrap" style="height:8px"><div class="pbar-fill" style="width:${clamp(scores[s.k],0,100)}%;background:${scores[s.k]>70?"var(--accent)":scores[s.k]>40?"var(--gold)":"var(--red)"}"></div></div>
+            </div>`).join("")}
+          <div style="background:var(--as);border:1px solid var(--accent)44;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-weight:800;font-size:14px">🏆 Overall Score</span>
+            <span style="color:var(--gold);font-weight:900;font-size:26px;font-family:'Space Mono',monospace">${scores.total}/100</span>
+          </div>
+        `)}
+        <div class="cert">
+          <div style="font-size:46px;margin-bottom:8px">🏆</div>
+          <div style="color:var(--gold);font-size:19px;font-weight:900">Certificate of Completion</div>
+          <div style="color:var(--text);font-size:13px;margin-top:5px">nugO Microgreens Business Lab</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:12px">This certifies that</div>
+          <div style="color:var(--gold);font-size:18px;font-weight:800;margin:5px 0">🌱 ${S.farm.name}</div>
+          <div style="color:var(--muted);font-size:12px">completed all 16 rounds including a Full Business Audit</div>
+          <div style="color:var(--accent);font-size:13px;font-weight:700;margin-top:3px">${S.farm.profileLabel} · 8-Month Grow & Sell Journey</div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+            ${bdg("Score: "+scores.total+"/100","var(--gold)","lg")}
+            ${bdg(opinionIcon+" "+opinion,opinionColor,"lg")}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;text-align:left">
+            ${["Farm Profile Setup","Grow Guide (8 Varieties)","Setup Diagram","Equipment Planning","Pricing & Margins","Marketing Channels","8-Month Operations","20 Farm Event Cards","Income Statement","Balance Sheet","Cash Flow Statement","Trial Balance","Audit Checklist","Audit Opinion","nugO Portfolio"].map(s=>`
+              <div style="display:flex;gap:6px;align-items:center"><span style="color:var(--accent);font-size:11px">✓</span><span style="color:var(--muted);font-size:10px">${s}</span></div>`).join("")}
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px">${b("↺ Start New Farm","restartFull()","ghost","md")}</div>`;
+    }
+  }
+
+  return `
+    ${roundHdr("🔍","16","Full Business Audit","Income Statement → Balance Sheet → Cash Flow → Audit Opinion")}
+    <div style="background:linear-gradient(135deg,#061a0a,#040c08);border:1px solid var(--teal)44;border-radius:13px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="font-size:28px">🌱</div>
+      <div style="flex:1"><div style="color:var(--teal);font-weight:900;font-size:14px">${S.farm.name} — Annual Farm Audit</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${S.farm.profileLabel} · 8-Month Operating Period</div></div>
+      <div style="display:flex;gap:13px;flex-wrap:wrap">
+        ${st("Net Profit",fmt(totalProfit),totalProfit>=0?"var(--accent)":"var(--red)","sm")}
+        ${st("Cash End",fmt(cashEnd),"var(--gold)","sm")}
+        ${st("Opinion",opinionIcon+" "+opinion.split(" ")[0],opinionColor,"sm")}
+      </div>
+    </div>
+    <div class="tabs">${tabs.map(t=>`<button class="tab ${_auditTab===t.id?"active":""}" onclick="setAuditTab('${t.id}')" style="${_auditTab===t.id?"background:var(--teal);color:#060a12":""}">${t.lbl}</button>`).join("")}</div>
+    ${card(tabContent)}
+    ${restartLink()}`;
+}
+
+function setCheck(id,val){S.auditChecks[id]=val;saveGame();render();}
+function setAuditTab(tab){_auditTab=tab;render();}
+
+// ═══════════════════════════════════
+// HOW TO PLAY
+// ═══════════════════════════════════
+function openHTP(){_htpStep=0;renderHTP();document.getElementById("htp-modal").style.display="flex";}
+function closeHTP(){document.getElementById("htp-modal").style.display="none";}
+function htpNav(dir){_htpStep=Math.max(0,Math.min(HTP.length-1,_htpStep+dir));renderHTP();}
+function renderHTP(){
+  const s=HTP[_htpStep];
+  document.getElementById("htp-step-lbl").textContent=`Step ${_htpStep+1} of ${HTP.length}`;
+  document.getElementById("htp-dots").innerHTML=HTP.map((_,i)=>`<div class="modal-prog-seg" onclick="_htpStep=${i};renderHTP()" style="background:${i<=_htpStep?s.color:"var(--border)"}"></div>`).join("");
+  document.getElementById("htp-content").innerHTML=`<div style="font-size:50px;text-align:center;margin-bottom:12px">${s.icon}</div><div style="color:${s.color};font-weight:900;font-size:16px;text-align:center;margin-bottom:10px">${s.title}</div><div style="color:var(--muted);font-size:13px;line-height:1.8;text-align:center">${s.body}</div>`;
+  document.getElementById("htp-prev").style.display=_htpStep===0?"none":"inline-block";
+  const nx=document.getElementById("htp-next");
+  if(_htpStep===HTP.length-1){nx.textContent="Let's Grow! 🌱";nx.className="btn primary md";nx.onclick=closeHTP;}
+  else{nx.textContent="Next →";nx.className="btn blue md";nx.onclick=()=>htpNav(1);}
+  const box=document.getElementById("htp-box");
+  box.style.borderColor=s.color+"55";box.style.boxShadow=`0 0 48px ${s.color}33`;
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+window.onload=function(){_auditTab="income";_guideTab="overview";render();};
+</script>
+</body>
+</html>
