@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nugO Personal Finance Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--card:#0e1320;--border:#1a2640;
+  --accent:#00c896;--as:#00c89618;
+  --gold:#f5b731;--gs:#f5b73118;
+  --red:#f04060;--rs:#f0406018;
+  --blue:#3d9eff;--bs:#3d9eff18;
+  --purple:#a875f0;--ps:#a875f018;
+  --orange:#ff7c3a;--os:#ff7c3a18;
+  --teal:#00d4d4;--ts:#00d4d418;
+  --pink:#ff6eb4;--pks:#ff6eb418;
+  --green:#4cdb8a;--grs:#4cdb8a18;
+  --text:#ddeeff;--muted:#7a90b0;--dim:#374a66;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select,textarea{font-family:'Syne',sans-serif;}
+button{font-family:'Space Mono',monospace;cursor:pointer;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes diceShake{0%{transform:rotate(-10deg)scale(1.12)}50%{transform:rotate(10deg)scale(0.91)}100%{transform:rotate(-5deg)scale(1.05)}}
+@keyframes cardReveal{0%{opacity:0;transform:scale(0.85)translateY(12px)}100%{opacity:1;transform:scale(1)translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp 0.32s ease forwards;}
+.shake{animation:diceShake 0.07s infinite;}
+.reveal{animation:cardReveal 0.4s ease forwards;}
+#app{max-width:720px;margin:0 auto;padding:0 16px 80px;}
+#hdr{background:linear-gradient(180deg,#0d1520,transparent);padding:20px 18px 0;margin-bottom:6px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+#hdr-inner{max-width:720px;margin:0 auto;}
+.hdr-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.logo-box{background:var(--as);border:1px solid #00c89633;border-radius:11px;padding:7px 13px;font-size:19px;flex-shrink:0;}
+.logo-title{color:var(--accent);font-weight:900;font-size:16px;letter-spacing:-0.5px;}
+.logo-sub{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.save-flash{color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.prog-wrap{margin-top:14px;margin-bottom:2px;}
+.prog-bar{display:flex;gap:2px;}
+.prog-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;}
+.prog-labels{display:flex;justify-content:space-between;margin-top:4px;}
+.prog-labels span{color:var(--muted);font-size:9px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 2px 20px #00000055;}
+.glow-accent{border-color:#00c89655!important;box-shadow:0 0 28px #00c89622!important;}
+.glow-gold{border-color:#f5b73155!important;box-shadow:0 0 28px #f5b73122!important;}
+.glow-teal{border-color:#00d4d455!important;box-shadow:0 0 28px #00d4d422!important;}
+.glow-purple{border-color:#a875f055!important;box-shadow:0 0 28px #a875f022!important;}
+.glow-blue{border-color:#3d9eff55!important;box-shadow:0 0 28px #3d9eff22!important;}
+.glow-green{border-color:#4cdb8a55!important;box-shadow:0 0 28px #4cdb8a22!important;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.col{display:flex;flex-direction:column;gap:15px;}
+.stat{text-align:center;}
+.stat .val{font-family:'Space Mono',monospace;font-weight:800;line-height:1;}
+.stat .lbl{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.badge{display:inline-block;border-radius:99px;font-weight:700;white-space:nowrap;}
+.pbar-wrap{background:#151f35;border-radius:99px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,2,.6,1);}
+.inp-wrap{display:flex;flex-direction:column;gap:5px;}
+.inp-label{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.inp-hint{color:var(--dim);font-size:10px;margin-top:-3px;}
+.inp-row{display:flex;align-items:center;background:#080c18;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.inp-pre{color:var(--muted);padding:9px 11px;background:#111825;font-size:12px;border-right:1px solid var(--border);}
+.inp-suf{color:var(--muted);padding:9px 11px;font-size:11px;}
+.inp-row input,.inp-row select{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:9px 13px;font-size:14px;font-family:'Space Mono',monospace;width:100%;}
+.btn{border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.3px;transition:opacity .15s,transform .1s;border:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.primary{background:var(--accent);color:#060a12;}
+.btn.gold{background:var(--gold);color:#060a12;}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid #00c89655;}
+.btn.purple{background:var(--purple);color:#fff;}
+.btn.blue{background:var(--blue);color:#060a12;}
+.btn.teal{background:var(--teal);color:#060a12;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.dark{background:#151f35;color:var(--muted);border:1px solid var(--border);}
+.btn.green{background:var(--green);color:#060a12;}
+.btn.sm{padding:6px 14px;font-size:11px;}
+.btn.md{padding:9px 20px;}
+.btn.lg{padding:13px 28px;font-size:14px;}
+.btn.xl{padding:15px 38px;font-size:16px;}
+.btn.full{width:100%;}
+.toggle{width:42px;height:22px;border-radius:99px;cursor:pointer;position:relative;transition:background .2s;border:none;flex-shrink:0;}
+.toggle .knob{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{background:#0a0e1a;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;transition:all .13s;}
+.dice-face{width:72px;height:72px;border-radius:14px;font-size:42px;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s,box-shadow .3s;flex-shrink:0;}
+.round-hdr{border-radius:14px;padding:14px 17px;margin-bottom:15px;display:flex;gap:13px;align-items:center;}
+.profile-opt{border-radius:13px;padding:14px;cursor:pointer;transition:all .13s;border:2px solid var(--border);background:var(--card);}
+.profile-opt.sel{border-color:var(--accent);background:var(--as);}
+.option-card{border-radius:13px;padding:15px;cursor:pointer;transition:all .13s;border:2px solid var(--border);}
+.option-card.sel{border-color:var(--accent);background:var(--as);}
+.modal-overlay{position:fixed;inset:0;background:#000000bb;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--card);border-radius:20px;padding:26px;max-width:480px;width:100%;animation:slideDown .25s ease;}
+.modal-progress{display:flex;gap:5px;margin-bottom:20px;}
+.modal-prog-seg{flex:1;height:3px;border-radius:99px;cursor:pointer;transition:background .3s;}
+.resume-banner{background:linear-gradient(135deg,#0e1a10,#0a1520);border:1px solid #00c89655;border-radius:14px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:16px;}
+.cert{background:linear-gradient(135deg,#1a1300,#0e1a0a);border:1px solid #f5b73155;border-radius:16px;padding:26px 18px;text-align:center;}
+.budget-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);}
+.budget-row .lbl{flex:1;font-size:13px;}
+.budget-row .amt{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;min-width:70px;text-align:right;}
+.budget-row .pct{color:var(--muted);font-size:10px;min-width:35px;text-align:right;}
+.debt-card{border-radius:12px;padding:13px 15px;border:1px solid var(--border);margin-bottom:8px;transition:all .15s;}
+.invest-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--border);}
+.month-ev{border-radius:14px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-top:12px;}
+.nw-row{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border)22;font-size:12px;}
+.audit-item{border-radius:11px;padding:12px 14px;border:1px solid var(--border);margin-bottom:8px;transition:all .15s;}
+.score-row{margin-bottom:12px;}
+.stmt-row{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #1a264022;font-size:12px;}
+.life-banner{background:linear-gradient(135deg,#0e1730,#131b2e);border:1px solid var(--blue)33;border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:12px;}
+@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-inner">
+    <div class="hdr-row">
+      <div class="logo-box">💰</div>
+      <div><div class="logo-title">nugO Personal Finance Lab</div><div class="logo-sub">12-Month Life Simulation · Budgeting · Financial Audit</div></div>
+      <div class="hdr-right">
+        <div id="save-flash" class="save-flash" style="display:none">💾 Saved</div>
+        <button class="btn dark sm" onclick="openHTP()" style="background:var(--ps);border:1px solid var(--purple)55;color:var(--purple)">❓ How to Play</button>
+        <div id="prof-hdr" style="display:none;text-align:right">
+          <div id="prof-hdr-name" style="color:var(--gold);font-weight:800;font-size:12px"></div>
+          <div id="prof-hdr-type" style="color:var(--muted);font-size:9px"></div>
+        </div>
+      </div>
+    </div>
+    <div id="prog-wrap" class="prog-wrap" style="display:none">
+      <div class="prog-bar" id="prog-bar"></div>
+      <div class="prog-labels"><span id="prog-l">Round 1 of 19</span><span id="prog-r" style="color:var(--accent)">0%</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="htp-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeHTP()">
+  <div class="modal-box" id="htp-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div><div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px">How to Play</div><div style="color:var(--muted);font-size:11px;margin-top:2px" id="htp-step-lbl">Step 1 of 10</div></div>
+      <button class="btn dark sm" onclick="closeHTP()">✕ Close</button>
+    </div>
+    <div class="modal-progress" id="htp-dots"></div>
+    <div id="htp-content"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn ghost sm" id="htp-prev" onclick="htpNav(-1)">← Back</button>
+      <div style="flex:1"></div>
+      <button class="btn blue md" id="htp-next" onclick="htpNav(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="app"><div id="screen"></div></div>
+
+<script>
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const PROFILES = [
+  {id:"grad",    icon:"🎓", label:"Recent Graduate",      desc:"First job, student loans, building credit",       income:3800, rent:1100, groceries:300, transport:200, utilities:120, debt:28000, debtRate:0.055, savings:500,  investPct:0.03, color:"var(--blue)"},
+  {id:"family",  icon:"🏠", label:"Young Family",          desc:"Mortgage, kids, dual income, emergency fund",     income:7200, rent:1800, groceries:600, transport:500, utilities:220, debt:185000,debtRate:0.065, savings:4000, investPct:0.06, color:"var(--green)"},
+  {id:"single",  icon:"🚗", label:"Single Professional",   desc:"Car payment, rent, investing, side hustle",       income:5500, rent:1400, groceries:350, transport:450, utilities:150, debt:12000, debtRate:0.08,  savings:2000, investPct:0.08, color:"var(--purple)"},
+  {id:"student", icon:"📚", label:"College Student",       desc:"Financial aid, part-time job, budgeting basics",  income:1400, rent:600,  groceries:200, transport:100, utilities:60,  debt:8000,  debtRate:0.045, savings:200,  investPct:0.0,  color:"var(--gold)"},
+  {id:"retire",  icon:"🏖️", label:"Pre-Retirement",        desc:"401k, paying off debt, healthcare planning",      income:8500, rent:1600, groceries:500, transport:300, utilities:200, debt:45000, debtRate:0.04,  savings:120000,investPct:0.15, color:"var(--orange)"},
+  {id:"founder", icon:"💡", label:"Self-Employed",         desc:"Variable income, self-employment taxes, savings",  income:4200, rent:1300, groceries:380, transport:320, utilities:130, debt:22000, debtRate:0.09,  savings:3000, investPct:0.05, color:"var(--pink)"},
+  {id:"buyer",   icon:"🏡", label:"First-Time Homebuyer",  desc:"Saving for down payment, credit score building",   income:5000, rent:1250, groceries:320, transport:280, utilities:140, debt:15000, debtRate:0.07,  savings:8000, investPct:0.04, color:"var(--teal)"},
+];
+
+const LIFE_EVENTS = [
+  {id:"carbreak",  e:"🚗", t:"Car Broke Down",         d:"Unexpected repair bill this month.",                      ef:"expense", v:800,   lbl:"-$800 Repair",      c:"var(--red)"},
+  {id:"medical",   e:"🏥", t:"Medical Bill",           d:"Surprise medical expense hit your budget.",                ef:"expense", v:600,   lbl:"-$600 Medical",     c:"var(--red)"},
+  {id:"raise",     e:"📈", t:"Got a Raise!",           d:"Your employer increased your monthly salary.",             ef:"income",  v:300,   lbl:"+$300/mo Income",   c:"var(--accent)"},
+  {id:"layoff",    e:"😰", t:"Hours Cut",              d:"Work hours reduced — lower income this month.",            ef:"income",  v:-500,  lbl:"-$500 Income",      c:"var(--red)"},
+  {id:"theft",     e:"🚨", t:"Identity Theft Alert",   d:"Fraudulent charge — your bank refunds but delays cash.",   ef:"expense", v:400,   lbl:"-$400 Fraud Loss",  c:"var(--red)"},
+  {id:"refund",    e:"💸", t:"Tax Refund Arrived!",    d:"Your tax refund hit your account this month.",             ef:"income",  v:1200,  lbl:"+$1,200 Refund",    c:"var(--gold)"},
+  {id:"sidehustle",e:"💻", t:"Side Hustle Pays Off",   d:"Your side gig brought in extra cash.",                     ef:"income",  v:450,   lbl:"+$450 Side Income", c:"var(--accent)"},
+  {id:"rentup",    e:"🏠", t:"Rent Increased",         d:"Landlord raised your rent starting this month.",           ef:"expense", v:150,   lbl:"+$150 Rent Hike",   c:"var(--red)"},
+  {id:"bonus",     e:"🎉", t:"Year-End Bonus!",        d:"Your employer paid out a performance bonus.",              ef:"income",  v:1500,  lbl:"+$1,500 Bonus",     c:"var(--gold)"},
+  {id:"invdip",    e:"📉", t:"Investment Dip",         d:"Market pulled back — portfolio value dropped temporarily.", ef:"invest",  v:-0.08, lbl:"-8% Portfolio",     c:"var(--orange)"},
+  {id:"invgain",   e:"📊", t:"Investment Gains",       d:"Strong market month — portfolio gained value.",            ef:"invest",  v:0.06,  lbl:"+6% Portfolio",     c:"var(--accent)"},
+  {id:"emergency", e:"🔥", t:"Home Emergency",         d:"Appliance broke or pipe burst — repair needed.",           ef:"expense", v:950,   lbl:"-$950 Emergency",   c:"var(--red)"},
+  {id:"freelance", e:"🤝", t:"Freelance Project",      d:"Extra freelance work came your way this month.",           ef:"income",  v:700,   lbl:"+$700 Freelance",   c:"var(--accent)"},
+  {id:"subscriptions",e:"📱",t:"Subscription Creep",  d:"You realized you've been overpaying on subscriptions.",    ef:"expense", v:120,   lbl:"-$120 Subscriptions",c:"var(--orange)"},
+  {id:"foodinfl",  e:"🛒", t:"Grocery Prices Up",      d:"Inflation hit the grocery store hard this month.",         ef:"expense", v:100,   lbl:"+$100 Food Costs",  c:"var(--red)"},
+  {id:"windfall",  e:"🎁", t:"Unexpected Windfall",    d:"Birthday gift, inheritance, or lottery scratch ticket win.",ef:"income",  v:500,   lbl:"+$500 Windfall",    c:"var(--gold)"},
+  {id:"creditup",  e:"⭐", t:"Credit Score Boost",     d:"On-time payments boosted your credit score this month.",   ef:"credit",  v:15,    lbl:"+15 Credit Points", c:"var(--accent)"},
+  {id:"creditdn",  e:"⚠️", t:"Missed Payment",         d:"You missed a payment — credit score took a hit.",          ef:"credit",  v:-25,   lbl:"-25 Credit Points", c:"var(--red)"},
+  {id:"sale",      e:"🏷️", t:"Big Sale — Smart Buy",  d:"You found a great deal and saved on a planned purchase.",  ef:"expense", v:-200,  lbl:"-$200 Saved",       c:"var(--accent)"},
+  {id:"pet",       e:"🐾", t:"Pet Vet Bill",           d:"Your furry friend needed an unexpected vet visit.",         ef:"expense", v:350,   lbl:"-$350 Vet Bill",    c:"var(--red)"},
+];
+
+const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DICE_FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
+const TOTAL_ROUNDS=19;
+const SAVE_KEY="nugo-finance-v1";
+
+const HTP=[
+  {icon:"🎓",title:"Round 1 — Choose Your Profile",color:"var(--accent)",body:"Pick a real-life financial scenario: Recent Graduate, Young Family, Single Professional, College Student, Pre-Retirement, Self-Employed, or First-Time Homebuyer. Each comes with real income, expenses, and debt levels."},
+  {icon:"💵",title:"Round 2 — Set Your Numbers",color:"var(--gold)",body:"Customize your monthly income, rent, groceries, transport, and utilities. You also see your starting savings and debt balance. These become the foundation of every financial decision."},
+  {icon:"📊",title:"Round 3 — Build Your Budget",color:"var(--blue)",body:"Use the 50/30/20 rule: 50% Needs, 30% Wants, 20% Savings & Debt. Allocate your monthly income across each category. The system shows whether your budget is balanced or if you're overspending."},
+  {icon:"🛡️",title:"Round 4 — Emergency Fund",color:"var(--teal)",body:"Decide how many months of expenses to keep in your emergency fund. Financial experts recommend 3-6 months. You set your target and the system calculates how long it takes to reach it."},
+  {icon:"💳",title:"Round 5 — Debt Strategy",color:"var(--red)",body:"Choose your debt payoff method: Avalanche (highest interest first — saves the most money) or Snowball (smallest balance first — builds momentum). The system calculates your payoff timeline and total interest paid."},
+  {icon:"📈",title:"Round 6 — Credit Score",color:"var(--purple)",body:"Make credit decisions: pay on time, keep utilization low, avoid new hard inquiries. Your choices affect your simulated credit score throughout the 12 months — and some life events will also move your score."},
+  {icon:"💼",title:"Round 7 — Investing",color:"var(--green)",body:"Allocate your investment dollars: 401(k) contribution %, Roth IRA, and stock index funds. The system uses compound interest to show your portfolio growth over 12 months — including market event impacts."},
+  {icon:"📅",title:"Rounds 8–19 — 12 Months of Life",color:"var(--blue)",body:"Each round = one calendar month. You review your budget, then roll 2 dice. The sum auto-draws a life event — car breakdown, bonus check, medical bill, identity theft, investment gain, and more. No choice — just like real life."},
+  {icon:"🧾",title:"Round 18 — Tax Filing",color:"var(--gold)",body:"File your simulated annual tax return. Based on your income, deductions, and filing status, the system calculates whether you owe taxes or get a refund. You'll practice W-2 and self-employment tax concepts."},
+  {icon:"🔍",title:"Round 19 — Financial Audit",color:"var(--teal)",body:"Review your Net Worth Statement, budget performance, debt payoff progress, credit score journey, and investment growth. Complete the Financial Health Checklist and receive an official Financial Health Score with your Certificate."},
+];
+
+const AUDIT_CHECKS=[
+  {id:"budget",    lbl:"Monthly budget was followed — spending within plan",          cat:"Budgeting",   risk:"high"},
+  {id:"emergency", lbl:"Emergency fund reached target (3+ months expenses)",         cat:"Savings",     risk:"high"},
+  {id:"debt",      lbl:"Debt balance decreased over the 12-month period",            cat:"Debt",        risk:"high"},
+  {id:"credit",    lbl:"Credit score maintained or improved",                        cat:"Credit",      risk:"medium"},
+  {id:"invest",    lbl:"Consistent investing contributions every month",             cat:"Investing",   risk:"medium"},
+  {id:"savings",   lbl:"Personal savings rate is positive (not spending all income)",cat:"Savings",     risk:"high"},
+  {id:"needs",     lbl:"Needs spending stayed at or below 50% of income",            cat:"Budgeting",   risk:"medium"},
+  {id:"wants",     lbl:"Wants spending stayed at or below 30% of income",            cat:"Budgeting",   risk:"low"},
+  {id:"networth",  lbl:"Net worth increased compared to starting position",          cat:"Net Worth",   risk:"high"},
+  {id:"taxes",     lbl:"Tax filing completed — income and deductions recorded",      cat:"Taxes",       risk:"medium"},
+  {id:"insure",    lbl:"Adequate insurance coverage maintained",                     cat:"Protection",  risk:"low"},
+  {id:"goals",     lbl:"At least one financial goal was set and tracked",            cat:"Planning",    risk:"low"},
+];
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let S={round:0,profile:null,months:[],auditChecks:{},strategy:{}};
+let _profileId="grad",_htpStep=0,_auditTab="networth";
+let _diceRolled=false,_chosenEvent=null,_diceInterval=null;
+
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({...S,savedAt:new Date().toLocaleString()}));const el=document.getElementById("save-flash");if(el){el.style.display="flex";setTimeout(()=>el.style.display="none",2200);}}catch(e){}}
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch{return null;}}
+function clearSave(){try{localStorage.removeItem(SAVE_KEY);}catch{}}
+function advance(){S.round++;if(S.round>0&&S.profile)saveGame();render();}
+
+// ═══════════════════════════════════
+// MATH
+// ═══════════════════════════════════
+const fmt  = n=>"$"+Math.abs(Math.round(n)).toLocaleString();
+const fmtS = n=>(n>=0?"+":"−")+fmt(n);
+const pct  = (a,b)=>b===0?"0%":Math.round((a/b)*100)+"%";
+const clamp= (v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+
+function compoundGrowth(principal,rate,months){return principal*Math.pow(1+(rate/12),months);}
+function calcNetWorth(p,months){
+  const assets = p.savings + (months.length>0?months[months.length-1].savingsEnd||0:0);
+  const invest  = p.investBalance||0;
+  const debts   = p.debtBalance||p.debt;
+  return {assets,invest,debts,net:assets+invest-debts};
+}
+function pickEvent(d1,d2,mi){
+  const sum=d1+d2+2;
+  return LIFE_EVENTS[((sum-2)*2+mi)%LIFE_EVENTS.length];
+}
+
+function calcScores(months,profile){
+  if(!months.length) return {budget:0,savings:0,debt:0,invest:0,credit:0,total:0};
+  const avgBalance=months.reduce((a,m)=>a+(m.savingsEnd||0),0)/months.length;
+  const budget   =clamp(Math.round(50+avgBalance/100),0,100);
+  const lastSav  =months[months.length-1].savingsEnd||0;
+  const savings  =clamp(Math.round(Math.min(100,(lastSav/profile.savings)*80)),0,100);
+  const lastDebt =months[months.length-1].debtBalance||profile.debt;
+  const debtRed  =profile.debt-lastDebt;
+  const debt     =clamp(Math.round(50+(debtRed/profile.debt)*80),0,100);
+  const lastInv  =profile.investBalance||0;
+  const invest   =clamp(Math.round(Math.min(100,(lastInv/5000)*80)),0,100);
+  const creditSc =profile.creditScore||650;
+  const credit   =clamp(Math.round((creditSc/850)*100),0,100);
+  const total    =Math.round((budget+savings+debt+invest+credit)/5);
+  return {budget,savings,debt,invest,credit,total};
+}
+
+// ═══════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════
+const b  =(txt,fn,v="primary",sz="md",dis=false)=>`<button class="btn ${v} ${sz}" onclick="${fn}" ${dis?"disabled":""}>${txt}</button>`;
+const bdg=(txt,color,sz="sm")=>`<span class="badge" style="background:${color}28;color:${color};border:1px solid ${color}44;padding:${sz==="lg"?"4px 14px":"2px 10px"};font-size:${sz==="lg"?13:11}px">${txt}</span>`;
+const st =(lbl,val,color,sm=false)=>`<div class="stat"><div class="val" style="color:${color};font-size:${sm?14:20}px">${val}</div><div class="lbl">${lbl}</div></div>`;
+const pb =(p,color,h=8)=>`<div class="pbar-wrap" style="height:${h}px"><div class="pbar-fill" style="width:${clamp(p,0,100)}%;background:${color}"></div></div>`;
+const inp=(lbl,id,type="text",val="",pre="",suf="",hint="")=>{
+  const pH=pre?`<span class="inp-pre">${pre}</span>`:"";
+  const sH=suf?`<span class="inp-suf">${suf}</span>`:"";
+  const hH=hint?`<div class="inp-hint">${hint}</div>`:"";
+  return `<div class="inp-wrap"><label class="inp-label">${lbl}</label>${hH}<div class="inp-row">${pH}<input type="${type}" id="${id}" value="${val}">${sH}</div></div>`;
+};
+const card=(c,cls="",style="")=>`<div class="card ${cls}" style="${style}">${c}</div>`;
+const restartLink=()=>`<div style="text-align:center;margin-top:14px"><button onclick="if(confirm('Restart?'))restartFull()" style="background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:11px;font-family:'Space Mono',monospace;text-decoration:underline">↺ Restart from beginning</button></div>`;
+
+function roundHdr(icon,rndNum,title,desc){
+  const r=S.round;
+  const isAudit=r===19; const isLife=r>=8&&r<=19; const isStrat=r>=3&&r<=7;
+  const isTax=r===18; const isMonth=r>=8&&r<=19;
+  const bgC=isAudit?"var(--ts)":isTax?"var(--gs)":isStrat?"var(--ps)":"var(--as)";
+  const brdC=isAudit?"var(--teal)":isTax?"var(--gold)":isStrat?"var(--purple)":"var(--accent)";
+  const moName=(r>=8&&r<=19)?MONTH_NAMES[r-8]:"";
+  return `<div class="round-hdr" style="background:linear-gradient(135deg,${bgC},transparent);border:1px solid ${brdC}44">
+    <div style="background:${bgC};border-radius:10px;padding:9px 11px;font-size:22px;flex-shrink:0">${icon}</div>
+    <div style="flex:1">
+      <div style="display:flex;gap:7px;margin-bottom:5px;flex-wrap:wrap">
+        ${bdg("Round "+rndNum,"var(--accent)")}
+        ${bdg("of 19","var(--dim)")}
+        ${r>=8&&r<=19?bdg(moName,"var(--blue)"):""}
+        ${isAudit?bdg("Final Round","var(--teal)"):""}
+        ${isStrat&&!isTax?bdg("Strategy Round","var(--purple)"):""}
+        ${isTax?bdg("Tax Filing","var(--gold)"):""}
+      </div>
+      <div style="font-size:16px;font-weight:900">${title}</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px">${desc}</div>
+    </div>
+    <button class="btn dark sm" onclick="openHTP()">❓</button>
+  </div>`;
+}
+
+function updateHeader(){
+  const pw=document.getElementById("prog-wrap"),ph=document.getElementById("prof-hdr");
+  if(S.round===0){pw.style.display="none";ph.style.display="none";return;}
+  pw.style.display="block";
+  const bar=document.getElementById("prog-bar");
+  bar.innerHTML=Array.from({length:TOTAL_ROUNDS},(_,i)=>{
+    const done=i<S.round;
+    const col=i===18?"var(--teal)":i>=7&&i<=17?"var(--blue)":i>=2&&i<=6?"var(--purple)":"var(--accent)";
+    return `<div class="prog-seg" style="background:${done?col:i===S.round-1?col+"88":"var(--border)"}"></div>`;
+  }).join("");
+  document.getElementById("prog-l").textContent=`Round ${S.round} of ${TOTAL_ROUNDS}`;
+  document.getElementById("prog-r").textContent=Math.round((S.round/TOTAL_ROUNDS)*100)+"%";
+  if(S.profile){
+    ph.style.display="block";
+    document.getElementById("prof-hdr-name").textContent=S.profile.name;
+    document.getElementById("prof-hdr-type").textContent=S.profile.profileLabel;
+  }
+}
+
+function render(){
+  updateHeader();window.scrollTo({top:0,behavior:"smooth"});
+  const el=document.getElementById("screen");
+  el.className="fu";void el.offsetWidth;
+  if(S.round===0)       el.innerHTML=renderIntro();
+  else if(S.round===1)  el.innerHTML=renderPickProfile();
+  else if(S.round===2)  el.innerHTML=renderSetNumbers();
+  else if(S.round===3)  el.innerHTML=renderBudget();
+  else if(S.round===4)  el.innerHTML=renderEmergencyFund();
+  else if(S.round===5)  el.innerHTML=renderDebtStrategy();
+  else if(S.round===6)  el.innerHTML=renderCreditScore();
+  else if(S.round===7)  el.innerHTML=renderInvesting();
+  else if(S.round>=8&&S.round<=19) el.innerHTML=renderMonth(S.round-8);
+  else if(S.round===20) el.innerHTML=renderAudit();
+}
+
+// ═══════════════════════════════════
+// INTRO
+// ═══════════════════════════════════
+function renderIntro(){
+  const saved=loadSave();
+  const resumeBanner=saved&&saved.round>0&&saved.profile?`
+    <div class="resume-banner">
+      <div style="font-size:26px">💾</div>
+      <div style="flex:1"><div style="color:var(--accent);font-weight:800;font-size:14px">Saved Game Found</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px"><strong style="color:var(--gold)">${saved.profile.name}</strong> · Round ${saved.round} of 19 · ${saved.savedAt||""}</div></div>
+      <div style="display:flex;gap:7px;flex-shrink:0">${b("Discard","discardSave()","dark","sm")}${b("▶ Resume","resumeGame()","primary","sm")}</div>
+    </div>`:"";
+
+  return `
+    <div style="text-align:center;padding:26px 0 18px">
+      <div style="font-size:50px;margin-bottom:10px">💰</div>
+      <h1 style="font-size:23px;font-weight:900;margin:0 0 10px;line-height:1.25">Real Money.<br><span style="color:var(--accent)">Real Decisions.</span></h1>
+      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 18px">
+        Simulate <strong style="color:var(--gold)">12 months of real financial life</strong>. Budget, invest, pay off debt, and handle life events — then face a <strong style="color:var(--teal)">Full Financial Audit</strong>.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
+        ${b("💰 Start Your Financial Journey","startGame()","gold","xl")}
+        ${b("❓ How to Play","openHTP()","ghost","lg")}
+      </div>
+    </div>
+    ${resumeBanner}
+    <div class="g3" style="margin-bottom:18px">
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">👤</div><div style="font-weight:700;font-size:11px">7 Life Profiles</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Graduate to Pre-Retirement</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🎲</div><div style="font-weight:700;font-size:11px">12 Life Events</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Auto-drawn each month</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🔍</div><div style="font-weight:700;font-size:11px">Financial Audit</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Health score + certificate</div></div>
+    </div>
+    ${card(`
+      <div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">📋 19-Round Structure</div>
+      ${[
+        ["var(--accent)","👤 Setup",    "Rounds 1–2",  "Pick your life profile, set income & expenses"],
+        ["var(--purple)","🧠 Strategy", "Rounds 3–7",  "Budget, emergency fund, debt, credit, investing"],
+        ["var(--blue)",  "📅 Life",     "Rounds 8–19", "12 months of real financial decisions + dice events"],
+        ["var(--teal)",  "🔍 Audit",    "Round 20*",   "Net worth, financial health score, certificate"],
+      ].map(([col,tag,rnd,desc])=>`
+        <div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border);align-items:center">
+          <div style="width:24px;height:24px;border-radius:50%;background:${col}28;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${tag.split(" ")[0]}</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:12px">${tag} — ${rnd}</div><div style="color:var(--muted);font-size:10px;margin-top:2px">${desc}</div></div>
+          ${bdg(rnd,col)}
+        </div>`).join("")}
+      <div style="color:var(--dim);font-size:10px;margin-top:8px">*Round 20 unlocks after all 19 rounds complete</div>
+    `,"","margin-bottom:18px")}
+    <div style="text-align:center">${b("💰 Start Your Financial Journey","startGame()","gold","xl")}</div>`;
+}
+
+function startGame(){S={round:1,profile:null,months:[],auditChecks:{},strategy:{}};_auditTab="networth";render();}
+function resumeGame(){const saved=loadSave();if(!saved)return;S=saved;_auditTab="networth";render();}
+function discardSave(){clearSave();render();}
+function restartFull(){clearSave();S={round:0,profile:null,months:[],auditChecks:{},strategy:{}};_auditTab="networth";render();}
+
+// ═══════════════════════════════════
+// ROUND 1 — PICK PROFILE
+// ═══════════════════════════════════
+function renderPickProfile(){
+  const opts=PROFILES.map(p=>`
+    <div class="profile-opt ${_profileId===p.id?"sel":""}" onclick="selProfile('${p.id}')">
+      <div style="font-size:26px;margin-bottom:6px">${p.icon}</div>
+      <div style="font-weight:800;font-size:13px;color:${_profileId===p.id?"var(--accent)":"var(--text)"}">${p.label}</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:3px">${p.desc}</div>
+      <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">
+        ${bdg(fmt(p.income)+"/mo",p.color)}
+        ${bdg("Debt: "+fmt(p.debt),p.income>5000?"var(--muted)":"var(--red)")}
+      </div>
+    </div>`).join("");
+  const sel=PROFILES.find(p=>p.id===_profileId);
+  return `
+    ${roundHdr("👤","1","Choose Your Life Profile","Pick the financial scenario that fits you")}
+    <div class="col">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${opts}</div>
+      ${inp("Your Name (or Nickname)","pname","text","","","","Used on your certificate")}
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📊 ${sel.label} — Starting Position</div>
+        <div class="g4">
+          ${st("Monthly Income",fmt(sel.income),"var(--accent)")}
+          ${st("Monthly Rent",fmt(sel.rent),"var(--red)")}
+          ${st("Starting Savings",fmt(sel.savings),"var(--gold)")}
+          ${st("Total Debt",fmt(sel.debt),"var(--red)")}
+        </div>`,"","background:#080c18")}
+      ${b("Round 2: Set Your Numbers →","submitPickProfile()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selProfile(id){_profileId=id;document.querySelectorAll(".profile-opt").forEach(el=>el.classList.remove("sel"));event.currentTarget.classList.add("sel");}
+function submitPickProfile(){
+  const name=(document.getElementById("pname")?.value||"").trim()||"My Profile";
+  const p=PROFILES.find(x=>x.id===_profileId);
+  S.profile={...p,name,profileLabel:p.label,creditScore:680,investBalance:0,debtBalance:p.debt,efTarget:p.income*3};
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 2 — SET YOUR NUMBERS
+// ═══════════════════════════════════
+function renderSetNumbers(){
+  const p=S.profile;
+  const totalExp=(p.rent||0)+(p.groceries||0)+(p.transport||0)+(p.utilities||0);
+  const disposable=p.income-totalExp;
+  return `
+    ${roundHdr("💵","2","Set Your Numbers","Customize your monthly income and fixed expenses")}
+    <div class="col">
+      <div class="g2">
+        ${inp("Monthly Take-Home Income","income","number",p.income,"$","","")}
+        ${inp("Monthly Rent / Mortgage","rent","number",p.rent,"$")}
+        ${inp("Groceries & Food","groceries","number",p.groceries,"$")}
+        ${inp("Transportation","transport","number",p.transport,"$")}
+        ${inp("Utilities & Phone","utilities","number",p.utilities,"$")}
+        ${inp("Existing Total Debt","debt","number",p.debtBalance,"$","","Student loans, car, credit cards")}
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📊 Monthly Overview</div>
+        <div class="g4">
+          ${st("Income",fmt(p.income),"var(--accent)")}
+          ${st("Fixed Costs",fmt(totalExp),"var(--red)")}
+          ${st("Disposable",fmt(disposable),disposable>0?"var(--gold)":"var(--red)")}
+          ${st("Debt Balance",fmt(p.debtBalance),"var(--red)")}
+        </div>`,"glow-gold","background:var(--gs)")}
+      ${b("Round 3: Build Your Budget →","submitSetNumbers()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitSetNumbers(){
+  const p=S.profile;
+  p.income   =+(document.getElementById("income")?.value||p.income);
+  p.rent     =+(document.getElementById("rent")?.value||p.rent);
+  p.groceries=+(document.getElementById("groceries")?.value||p.groceries);
+  p.transport=+(document.getElementById("transport")?.value||p.transport);
+  p.utilities=+(document.getElementById("utilities")?.value||p.utilities);
+  p.debtBalance=+(document.getElementById("debt")?.value||p.debtBalance);
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 3 — BUILD YOUR BUDGET (50/30/20)
+// ═══════════════════════════════════
+function renderBudget(){
+  const p=S.profile;
+  const inc=p.income;
+  const ideal={needs:inc*0.50,wants:inc*0.30,savings:inc*0.20};
+  const actualNeeds=p.rent+p.groceries+p.transport+p.utilities;
+  const actualWants=S.strategy.wants||Math.round(inc*0.25);
+  const actualSavings=S.strategy.savings||Math.round(inc*0.20);
+  const total=actualNeeds+actualWants+actualSavings;
+  const surplus=inc-total;
+
+  return `
+    ${roundHdr("📊","3","Build Your Budget","50% Needs · 30% Wants · 20% Savings & Debt")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📐 The 50/30/20 Rule</div>
+        <div class="g3">
+          ${st("50% Needs",fmt(ideal.needs),"var(--red)")}
+          ${st("30% Wants",fmt(ideal.wants),"var(--blue)")}
+          ${st("20% Save",fmt(ideal.savings),"var(--accent)")}
+        </div>`,"","background:#080c18")}
+      <div class="card">
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📋 Your Budget Breakdown</div>
+        <div class="budget-row">
+          <div class="lbl" style="color:var(--red)">🏠 Needs (Fixed)</div>
+          <div class="amt" style="color:var(--red)">${fmt(actualNeeds)}</div>
+          <div class="pct" style="color:${actualNeeds/inc>0.55?"var(--red)":"var(--muted)"}">${pct(actualNeeds,inc)}</div>
+        </div>
+        <div style="margin:5px 0">${pb((actualNeeds/inc)*100,actualNeeds/inc>0.55?"var(--red)":"var(--accent)")}</div>
+        <div style="color:var(--dim);font-size:10px;margin-bottom:12px">Rent ${fmt(p.rent)} + Groceries ${fmt(p.groceries)} + Transport ${fmt(p.transport)} + Utilities ${fmt(p.utilities)}</div>
+        <div class="budget-row">
+          <div class="lbl" style="color:var(--blue)">🎮 Wants (Lifestyle)</div>
+          <div class="amt" style="color:var(--blue)">${fmt(actualWants)}</div>
+          <div class="pct">${pct(actualWants,inc)}</div>
+        </div>
+        ${inp("","wants-amt","number",actualWants,"$","","Dining out, entertainment, subscriptions")}
+        <div style="margin:8px 0">${pb((actualWants/inc)*100,actualWants/inc>0.35?"var(--orange)":"var(--blue)")}</div>
+        <div class="budget-row" style="margin-top:8px">
+          <div class="lbl" style="color:var(--accent)">💰 Savings & Debt</div>
+          <div class="amt" style="color:var(--accent)">${fmt(actualSavings)}</div>
+          <div class="pct">${pct(actualSavings,inc)}</div>
+        </div>
+        ${inp("","save-amt","number",actualSavings,"$","","Emergency fund + investments + extra debt payments")}
+        <div style="margin:8px 0">${pb((actualSavings/inc)*100,actualSavings/inc<0.15?"var(--red)":"var(--accent)")}</div>
+      </div>
+      ${card(`
+        <div class="g4">
+          ${st("Income",fmt(inc),"var(--text)")}
+          ${st("Budgeted",fmt(total),"var(--blue)")}
+          ${st("Surplus",fmt(surplus),surplus>=0?"var(--accent)":"var(--red)")}
+          ${st("Save Rate",pct(actualSavings,inc),actualSavings/inc>=0.20?"var(--accent)":"var(--gold)")}
+        </div>
+        ${surplus<0?`<div style="margin-top:10px;padding:8px 12px;background:var(--rs);border-radius:8px;font-size:11px;color:var(--red)">⚠️ You're over budget by ${fmt(Math.abs(surplus))} — reduce wants or savings allocation.</div>`:`<div style="margin-top:10px;padding:8px 12px;background:var(--as);border-radius:8px;font-size:11px;color:var(--accent)">✓ Budget is balanced — ${fmt(surplus)} remaining.</div>`}
+      `,"glow-accent","background:var(--as)")}
+      ${b("Round 4: Emergency Fund →","submitBudget()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitBudget(){
+  S.strategy.wants  =+(document.getElementById("wants-amt")?.value||0);
+  S.strategy.savings=+(document.getElementById("save-amt")?.value||0);
+  S.profile.monthlySavings=S.strategy.savings;
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 4 — EMERGENCY FUND
+// ═══════════════════════════════════
+function renderEmergencyFund(){
+  const p=S.profile;
+  const monthlyExp=p.rent+p.groceries+p.transport+p.utilities;
+  const targets=[1,2,3,4,5,6];
+  const chosen=S.strategy.efMonths||3;
+  const targetAmt=monthlyExp*chosen;
+  const monthsToReach=p.savings>=targetAmt?0:Math.ceil((targetAmt-p.savings)/(S.strategy.savings||300));
+
+  return `
+    ${roundHdr("🛡️","4","Emergency Fund","Set your target — 3 to 6 months of expenses recommended")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:11px">💡 Why an Emergency Fund?</div>
+        <p style="color:var(--text);font-size:13px;line-height:1.7;margin:0">An emergency fund covers unexpected expenses — job loss, medical bills, car repairs — without going into debt. Experts recommend <strong style="color:var(--gold)">3–6 months</strong> of living expenses kept in a <strong style="color:var(--accent)">liquid savings account</strong>.</p>`,"","background:#080c18")}
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        ${targets.map(m=>{
+          const sel=chosen===m;
+          const amt=monthlyExp*m;
+          return `<div onclick="selEF(${m})" style="border:2px solid ${sel?"var(--teal)":"var(--border)"};background:${sel?"var(--ts)":"var(--card)"};border-radius:12px;padding:13px 10px;cursor:pointer;text-align:center;transition:all .13s">
+            <div style="font-size:22px">${m<=2?"😰":m<=4?"🙂":"💪"}</div>
+            <div style="color:${sel?"var(--teal)":"var(--text)"};font-weight:800;font-size:14px;margin:4px 0">${m} Mo</div>
+            <div style="color:var(--gold);font-family:'Space Mono',monospace;font-size:11px">${fmt(amt)}</div>
+          </div>`;
+        }).join("")}
+      </div>
+      ${card(`
+        <div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">🛡️ Emergency Fund Plan</div>
+        <div class="g4">
+          ${st("Monthly Expenses",fmt(monthlyExp),"var(--muted)")}
+          ${st("Target ("+chosen+" mo)",fmt(targetAmt),"var(--teal)")}
+          ${st("Current Savings",fmt(p.savings),"var(--accent)")}
+          ${st("Months to Reach",monthsToReach===0?"Done!":monthsToReach+"mo",monthsToReach===0?"var(--accent)":"var(--gold)")}
+        </div>
+        <div style="margin-top:12px">${pb(Math.min(100,(p.savings/targetAmt)*100),"var(--teal)",10)}</div>
+        <div style="color:var(--muted);font-size:10px;margin-top:5px;text-align:center">${pct(Math.min(p.savings,targetAmt),targetAmt)} funded</div>
+      `,"glow-teal","background:var(--ts)")}
+      ${b("Round 5: Debt Strategy →","submitEF()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selEF(m){S.strategy.efMonths=m;render();}
+function submitEF(){S.strategy.efMonths=S.strategy.efMonths||3;advance();}
+
+// ═══════════════════════════════════
+// ROUND 5 — DEBT STRATEGY
+// ═══════════════════════════════════
+function renderDebtStrategy(){
+  const p=S.profile;
+  const method=S.strategy.debtMethod||"avalanche";
+  const monthly=S.strategy.debtPayment||Math.round((S.strategy.savings||400)*0.5);
+  const totalInterestAvalanche=Math.round(p.debtBalance*p.debtRate*0.7);
+  const totalInterestSnowball =Math.round(p.debtBalance*p.debtRate*0.85);
+  const moAvalanche=Math.round(p.debtBalance/(monthly||1)*0.8);
+  const moSnowball =Math.round(p.debtBalance/(monthly||1)*0.95);
+
+  return `
+    ${roundHdr("💳","5","Debt Strategy","Choose how to pay off your debt — Avalanche or Snowball")}
+    <div class="col">
+      <div class="g2">
+        <div class="option-card ${method==="avalanche"?"sel":""}" onclick="selDebt('avalanche')">
+          <div style="font-size:28px;margin-bottom:6px">❄️</div>
+          <div style="font-weight:800;font-size:14px;color:${method==="avalanche"?"var(--accent)":"var(--text)"}">Avalanche Method</div>
+          <div style="color:var(--muted);font-size:11px;margin-top:5px;line-height:1.6">Pay highest interest rate debt first. Saves the most money in total interest.</div>
+          <div style="margin-top:10px;padding:7px 10px;background:var(--as);border-radius:8px">
+            <div style="color:var(--accent);font-size:11px;font-weight:700">Interest Paid: ${fmt(totalInterestAvalanche)}</div>
+            <div style="color:var(--muted);font-size:10px">Payoff: ~${moAvalanche} months</div>
+          </div>
+        </div>
+        <div class="option-card ${method==="snowball"?"sel":""}" onclick="selDebt('snowball')">
+          <div style="font-size:28px;margin-bottom:6px">⛄</div>
+          <div style="font-weight:800;font-size:14px;color:${method==="snowball"?"var(--accent)":"var(--text)"}">Snowball Method</div>
+          <div style="color:var(--muted);font-size:11px;margin-top:5px;line-height:1.6">Pay smallest balance first. Builds psychological momentum — more motivating.</div>
+          <div style="margin-top:10px;padding:7px 10px;background:var(--gs);border-radius:8px">
+            <div style="color:var(--gold);font-size:11px;font-weight:700">Interest Paid: ${fmt(totalInterestSnowball)}</div>
+            <div style="color:var(--muted);font-size:10px">Payoff: ~${moSnowball} months</div>
+          </div>
+        </div>
+      </div>
+      ${inp("Monthly Debt Payment","debt-pay","number",monthly,"$","","How much extra you pay toward debt each month")}
+      ${card(`
+        <div class="g3">
+          ${st("Debt Balance",fmt(p.debtBalance),"var(--red)")}
+          ${st("Monthly Payment",fmt(monthly),"var(--gold)")}
+          ${st("Interest Rate",(p.debtRate*100).toFixed(1)+"%","var(--orange)")}
+        </div>`,"","background:#080c18")}
+      ${b("Round 6: Credit Score →","submitDebt()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selDebt(m){S.strategy.debtMethod=m;render();}
+function submitDebt(){S.strategy.debtMethod=S.strategy.debtMethod||"avalanche";S.strategy.debtPayment=+(document.getElementById("debt-pay")?.value||300);advance();}
+
+// ═══════════════════════════════════
+// ROUND 6 — CREDIT SCORE
+// ═══════════════════════════════════
+function renderCreditScore(){
+  const cs=S.profile.creditScore||680;
+  const range=cs<580?"Poor":cs<670?"Fair":cs<740?"Good":cs<800?"Very Good":"Excellent";
+  const rangeColor=cs<580?"var(--red)":cs<670?"var(--orange)":cs<740?"var(--gold)":cs<800?"var(--accent)":"var(--teal)";
+  const decisions=[
+    {id:"ontime",  lbl:"Always pay bills on time",           impact:"+35 pts potential",  action:"onTime payment habits",   color:"var(--accent)"},
+    {id:"util",    lbl:"Keep credit utilization below 30%",  impact:"+30 pts potential",  action:"low utilization",         color:"var(--accent)"},
+    {id:"noinquiry",lbl:"Avoid new credit applications",     impact:"Prevent -5 pts each",action:"no new hard inquiries",   color:"var(--blue)"},
+    {id:"oldaccts",lbl:"Keep old accounts open",             impact:"+15 pts potential",  action:"account age length",      color:"var(--purple)"},
+    {id:"mixcredit",lbl:"Diversify credit types",            impact:"+10 pts potential",  action:"credit mix diversification",color:"var(--gold)"},
+  ];
+  const chosen=S.strategy.creditChoices||[];
+  return `
+    ${roundHdr("⭐","6","Credit Score Strategy","Make decisions that protect and grow your score")}
+    <div class="col">
+      ${card(`
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+          <div style="text-align:center">
+            <div style="color:${rangeColor};font-size:36px;font-weight:900;font-family:'Space Mono',monospace">${cs}</div>
+            <div style="color:${rangeColor};font-size:12px;font-weight:700">${range}</div>
+          </div>
+          <div style="flex:1">
+            ${pb((cs-300)/550*100,rangeColor,14)}
+            <div style="display:flex;justify-content:space-between;margin-top:4px">
+              <span style="color:var(--red);font-size:9px">300 Poor</span>
+              <span style="color:var(--gold);font-size:9px">670 Good</span>
+              <span style="color:var(--teal);font-size:9px">850 Excellent</span>
+            </div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-size:11px">Your starting score. Life events and monthly decisions will move this number throughout the simulation.</div>
+      `,"","background:#080c18")}
+      <div style="color:var(--text);font-size:13px;font-weight:700">Select the credit habits you'll commit to:</div>
+      ${decisions.map((d,i)=>{
+        const sel=chosen.includes(d.id);
+        return `<div onclick="toggleCreditChoice('${d.id}')" style="border:1px solid ${sel?"var(--accent)44":"var(--border)"};background:${sel?"var(--as)":"var(--card)"};border-radius:11px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .13s">
+          <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${sel?"var(--accent)":"var(--border)"};background:${sel?"var(--accent)":"transparent"};display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${sel?"✓":""}</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:13px">${d.lbl}</div><div style="color:${d.color};font-size:11px;margin-top:2px">${d.impact}</div></div>
+        </div>`;
+      }).join("")}
+      ${b("Round 7: Investing →","submitCredit()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function toggleCreditChoice(id){
+  if(!S.strategy.creditChoices) S.strategy.creditChoices=[];
+  const idx=S.strategy.creditChoices.indexOf(id);
+  if(idx>=0) S.strategy.creditChoices.splice(idx,1); else S.strategy.creditChoices.push(id);
+  render();
+}
+function submitCredit(){
+  const bonus=(S.strategy.creditChoices||[]).length*4;
+  S.profile.creditScore=Math.min(850,(S.profile.creditScore||680)+bonus);
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 7 — INVESTING
+// ═══════════════════════════════════
+function renderInvesting(){
+  const p=S.profile;
+  const monthly=S.strategy.savings||Math.round(p.income*0.20);
+  const invest401k=S.strategy.invest401k||Math.round(monthly*0.40);
+  const investRoth=S.strategy.investRoth||Math.round(monthly*0.30);
+  const investIndex=S.strategy.investIndex||Math.round(monthly*0.30);
+  const total401k=invest401k*12;
+  const totalRoth=investRoth*12;
+  const totalIndex=investIndex*12;
+  const proj12=(invest401k+investRoth+investIndex)*12*1.07;
+
+  return `
+    ${roundHdr("📈","7","Investing Strategy","Allocate your savings across investment accounts")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:11px">💡 Investment Accounts Explained</div>
+        ${[
+          ["401(k)","Employer-sponsored, pre-tax. Often includes employer match — free money!","var(--accent)"],
+          ["Roth IRA","After-tax contributions, tax-free growth. Best for long-term wealth building.","var(--purple)"],
+          ["Index Funds","Broad market exposure. Low fees, diversified, proven long-term returns.","var(--blue)"],
+        ].map(([n,d,c])=>`<div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--border)"><div style="width:6px;border-radius:99px;background:${c};flex-shrink:0"></div><div><strong style="color:${c}">${n}</strong> <span style="color:var(--muted);font-size:11px">${d}</span></div></div>`).join("")}
+      `,"","background:#080c18")}
+      <div class="col">
+        ${[
+          {id:"401k",  lbl:"401(k) Contribution",  color:"var(--accent)", val:invest401k},
+          {id:"roth",  lbl:"Roth IRA",              color:"var(--purple)", val:investRoth},
+          {id:"index", lbl:"Index Funds",           color:"var(--blue)",   val:investIndex},
+        ].map(f=>`
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="color:${f.color};font-weight:700;font-size:12px">${f.lbl}</span>
+              <span style="color:var(--gold);font-family:'Space Mono',monospace;font-size:12px">${fmt(f.val)}/mo → ${fmt(f.val*12)}/yr</span>
+            </div>
+            ${inp("","invest-"+f.id,"number",f.val,"$","/month")}
+          </div>`).join("")}
+      </div>
+      ${card(`
+        <div style="color:var(--green);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:13px">📈 Projected 12-Month Portfolio Growth (7% avg)</div>
+        <div class="g4">
+          ${st("401(k)",fmt(total401k),"var(--accent)")}
+          ${st("Roth IRA",fmt(totalRoth),"var(--purple)")}
+          ${st("Index",fmt(totalIndex),"var(--blue)")}
+          ${st("Total + Growth",fmt(proj12),"var(--green)")}
+        </div>`,"glow-green","background:var(--grs)")}
+      ${b("Start January — Month 1 →","submitInvesting()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitInvesting(){
+  S.strategy.invest401k =+(document.getElementById("invest-401k")?.value||0);
+  S.strategy.investRoth =+(document.getElementById("invest-roth")?.value||0);
+  S.strategy.investIndex=+(document.getElementById("invest-index")?.value||0);
+  const monthly=S.strategy.invest401k+S.strategy.investRoth+S.strategy.investIndex;
+  S.profile.monthlyInvest=monthly;
+  S.profile.investBalance=0;
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUNDS 8-19 — MONTHLY LIFE
+// ═══════════════════════════════════
+function renderMonth(mi){
+  _diceRolled=false;_chosenEvent=null;
+  const p=S.profile;
+  const prevSav=S.months.length>0?S.months[S.months.length-1].savingsEnd:p.savings;
+  const prevDebt=S.months.length>0?S.months[S.months.length-1].debtBalance:p.debtBalance;
+  const prevInv=S.months.length>0?S.months[S.months.length-1].investBalance:p.investBalance||0;
+  const prevCredit=S.months.length>0?S.months[S.months.length-1].creditScore:p.creditScore||680;
+
+  return `
+    ${roundHdr("📅",mi+8,MONTH_NAMES[mi]+" — Month "+(mi+1)+" of 12","Roll 2 dice for your life event this month")}
+    <div class="col">
+      <div class="life-banner">
+        <div style="font-size:26px">📅</div>
+        <div>
+          <div style="color:var(--blue);font-weight:800;font-size:15px">${MONTH_NAMES[mi]} — Month ${mi+1} of 12</div>
+          <div style="color:var(--muted);font-size:10px;margin-top:2px">Review your position, then roll 2 dice — life event auto-applied</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="color:var(--muted);font-size:9px;text-transform:uppercase">Savings</div>
+          <div style="color:var(--gold);font-weight:800;font-family:'Space Mono',monospace;font-size:15px">${fmt(prevSav)}</div>
+        </div>
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📊 ${MONTH_NAMES[mi]} Starting Position</div>
+        <div class="g4">
+          ${st("Savings",fmt(prevSav),"var(--accent)")}
+          ${st("Debt",fmt(prevDebt),"var(--red)")}
+          ${st("Portfolio",fmt(prevInv),"var(--green)")}
+          ${st("Credit Score",prevCredit,prevCredit>=740?"var(--teal)":prevCredit>=670?"var(--accent)":"var(--gold)")}
+        </div>`,"","background:#080c18")}
+
+      <div class="card glow-purple" style="background:linear-gradient(135deg,#110a28,#0a1020)">
+        <div style="color:var(--purple);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">
+          🎲 ${MONTH_NAMES[mi]} Life Event — Roll 2 Dice
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:13px">
+          <div style="display:flex;gap:18px;align-items:center">
+            <div id="d1" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="d2" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="dice-sum" style="display:none;flex-direction:column;align-items:center;gap:3px">
+              <div style="color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:1px">Sum</div>
+              <div id="sum-val" style="color:var(--gold);font-size:28px;font-weight:900;font-family:'Space Mono',monospace;text-shadow:0 0 16px #f5b73188"></div>
+            </div>
+          </div>
+          <div id="dice-ctrl">${b("🎲 Roll 2 Dice","rollDice("+mi+")","purple","lg")}</div>
+          <div id="event-reveal" style="width:100%;display:none"></div>
+        </div>
+      </div>
+
+      <div id="results-preview" style="display:none"></div>
+      ${b("Close "+MONTH_NAMES[mi]+" →","submitMonth("+mi+")","gold","lg full",true,"id='close-btn'")}
+      ${restartLink()}
+    </div>`;
+}
+
+function rollDice(mi){
+  if(_diceRolled) return;
+  let count=0;
+  const d1=document.getElementById("d1"),d2=document.getElementById("d2"),ctrl=document.getElementById("dice-ctrl");
+  ctrl.innerHTML=`<div style="color:var(--purple);font-weight:800;font-size:13px;animation:pulse 0.45s infinite">Rolling…</div>`;
+  d1.classList.add("shake");d2.classList.add("shake");
+  d1.style.border="2px solid var(--purple)";d1.style.background="var(--ps)";
+  d2.style.border="2px solid var(--purple)";d2.style.background="var(--ps)";
+  _diceInterval=setInterval(()=>{
+    const r1=Math.floor(Math.random()*6),r2=Math.floor(Math.random()*6);
+    d1.textContent=DICE_FACES[r1];d2.textContent=DICE_FACES[r2];count++;
+    if(count>=20){
+      clearInterval(_diceInterval);
+      const f1=Math.floor(Math.random()*6),f2=Math.floor(Math.random()*6);
+      d1.textContent=DICE_FACES[f1];d2.textContent=DICE_FACES[f2];
+      d1.classList.remove("shake");d2.classList.remove("shake");
+      d1.style.border="2px solid var(--gold)";d1.style.background="var(--gs)";d1.style.boxShadow="0 0 20px #f5b73166";
+      d2.style.border="2px solid var(--gold)";d2.style.background="var(--gs)";d2.style.boxShadow="0 0 20px #f5b73166";
+      const sum=f1+f2+2;
+      const sumEl=document.getElementById("dice-sum");sumEl.style.display="flex";
+      document.getElementById("sum-val").textContent=sum;
+      ctrl.innerHTML=`<div style="display:flex;gap:8px">${bdg("Die 1: "+(f1+1),"var(--gold)")} ${bdg("Die 2: "+(f2+1),"var(--gold)")}</div>`;
+      _diceRolled=true;
+      _chosenEvent=pickEvent(f1,f2,mi);
+      showEventReveal(_chosenEvent,mi);
+    }
+  },65);
+}
+
+function showEventReveal(ev,mi){
+  const revEl=document.getElementById("event-reveal");
+  revEl.style.display="block";
+  revEl.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px">🎴 Dice Roll → Life Event Drawn</div>
+    <div id="ev-face-down" style="background:linear-gradient(135deg,#1a1030,#0e1828);border:2px solid var(--purple)88;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;animation:pulse 0.6s infinite">
+      <span style="font-size:34px">🎴</span><span style="color:var(--purple);font-weight:800;font-size:13px">Revealing…</span>
+    </div>`;
+  setTimeout(()=>{
+    const fd=document.getElementById("ev-face-down");
+    if(!fd) return;
+    fd.style.animation="none";fd.className="month-ev reveal";
+    fd.style.background=ev.c+"22";fd.style.border=`2px solid ${ev.c}`;fd.style.boxShadow=`0 0 26px ${ev.c}55`;
+    fd.style.justifyContent="flex-start";
+    fd.innerHTML=`<span style="font-size:32px;flex-shrink:0">${ev.e}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="color:${ev.c};font-weight:900;font-size:14px">${ev.t}</div>${bdg(ev.lbl,ev.c)}
+        </div>
+        <div style="color:var(--muted);font-size:11px">${ev.d}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:center"><div style="color:${ev.c};font-size:11px;font-weight:800">AUTO</div><div style="color:${ev.c};font-size:9px">APPLIED</div></div>`;
+    setTimeout(()=>showMonthResults(mi),380);
+    setTimeout(()=>{const cb=document.getElementById("close-btn");if(cb)cb.disabled=false;},500);
+  },680);
+}
+
+function showMonthResults(mi){
+  const p=S.profile;
+  const ev=_chosenEvent;
+  const prevSav=S.months.length>0?S.months[S.months.length-1].savingsEnd:p.savings;
+  const prevDebt=S.months.length>0?S.months[S.months.length-1].debtBalance:p.debtBalance;
+  const prevInv=S.months.length>0?S.months[S.months.length-1].investBalance:p.investBalance||0;
+  const prevCredit=S.months.length>0?S.months[S.months.length-1].creditScore:p.creditScore||680;
+
+  const monthlyIncome=p.income;
+  const monthlyExp=p.rent+p.groceries+p.transport+p.utilities+(S.strategy.wants||0);
+  const monthlyInvest=p.monthlyInvest||0;
+  const debtPay=S.strategy.debtPayment||0;
+
+  let incomeAdj=0,expenseAdj=0,creditAdj=0,investAdj=0;
+  if(ev.ef==="income")  incomeAdj=ev.v;
+  if(ev.ef==="expense") expenseAdj=ev.v;
+  if(ev.ef==="credit")  creditAdj=ev.v;
+  if(ev.ef==="invest")  investAdj=ev.v;
+
+  const netIncome=monthlyIncome+incomeAdj;
+  const netExpenses=monthlyExp+expenseAdj;
+  const netSaved=netIncome-netExpenses-monthlyInvest-debtPay;
+  const savingsEnd=prevSav+netSaved;
+  const debtBalance=Math.max(0,prevDebt-debtPay);
+  const investGrowth=prevInv*(1+(0.07/12))*(1+investAdj);
+  const investBalance=investGrowth+monthlyInvest;
+  const creditScore=Math.min(850,Math.max(300,prevCredit+creditAdj));
+
+  const prv=document.getElementById("results-preview");
+  if(!prv) return;
+  prv.style.display="block";
+  prv.innerHTML=card(`
+    <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📊 ${MONTH_NAMES[mi]} — End of Month Results</div>
+    <div class="g4">
+      ${st("Net Income",fmt(netIncome),incomeAdj!==0?"var(--gold)":"var(--accent)")}
+      ${st("Expenses",fmt(netExpenses),expenseAdj>0?"var(--red)":"var(--muted)")}
+      ${st("Net Saved",fmt(netSaved),netSaved>=0?"var(--accent)":"var(--red)")}
+      ${st("Debt Paid",fmt(debtPay),"var(--blue)")}
+    </div>
+    <div class="g4" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      ${st("Savings",fmt(savingsEnd),savingsEnd>=prevSav?"var(--accent)":"var(--red)")}
+      ${st("Debt Balance",fmt(debtBalance),"var(--red)")}
+      ${st("Portfolio",fmt(investBalance),"var(--green)")}
+      ${st("Credit Score",creditScore,creditScore>=740?"var(--teal)":creditScore>=670?"var(--accent)":"var(--gold)")}
+    </div>
+    <div style="margin-top:11px;padding:9px 13px;background:${ev.c}18;border:1px solid ${ev.c}44;border-radius:9px;display:flex;align-items:center;gap:9px">
+      <span style="font-size:20px">${ev.e}</span>
+      <div><div style="color:${ev.c};font-weight:700;font-size:12px">${ev.t}</div><div style="color:var(--muted);font-size:11px">${ev.d} → <strong style="color:${ev.c}">${ev.lbl}</strong></div></div>
+    </div>
+  `,"glow-accent","background:#080c18;border:1px solid var(--accent)33");
+}
+
+function submitMonth(mi){
+  if(!_chosenEvent){alert("Roll the dice first!");return;}
+  const p=S.profile;
+  const ev=_chosenEvent;
+  const prevSav=S.months.length>0?S.months[S.months.length-1].savingsEnd:p.savings;
+  const prevDebt=S.months.length>0?S.months[S.months.length-1].debtBalance:p.debtBalance;
+  const prevInv=S.months.length>0?S.months[S.months.length-1].investBalance:p.investBalance||0;
+  const prevCredit=S.months.length>0?S.months[S.months.length-1].creditScore:p.creditScore||680;
+  const monthlyIncome=p.income,monthlyExp=p.rent+p.groceries+p.transport+p.utilities+(S.strategy.wants||0);
+  const monthlyInvest=p.monthlyInvest||0,debtPay=S.strategy.debtPayment||0;
+  let incomeAdj=0,expenseAdj=0,creditAdj=0,investAdj=0;
+  if(ev.ef==="income")  incomeAdj=ev.v;
+  if(ev.ef==="expense") expenseAdj=ev.v;
+  if(ev.ef==="credit")  creditAdj=ev.v;
+  if(ev.ef==="invest")  investAdj=ev.v;
+  const netIncome=monthlyIncome+incomeAdj;
+  const netExpenses=monthlyExp+expenseAdj;
+  const netSaved=netIncome-netExpenses-monthlyInvest-debtPay;
+  const savingsEnd=prevSav+netSaved;
+  const debtBalance=Math.max(0,prevDebt-debtPay);
+  const investGrowth=prevInv*(1+(0.07/12))*(1+investAdj);
+  const investBalance=investGrowth+monthlyInvest;
+  const creditScore=Math.min(850,Math.max(300,prevCredit+creditAdj));
+  S.months.push({month:mi+1,monthName:MONTH_NAMES[mi],netIncome,netExpenses,netSaved,savingsEnd,debtBalance,investBalance,creditScore,debtPay,monthlyInvest,event:ev});
+  p.investBalance=investBalance;
+  advance();
+}
+
+// ═══════════════════════════════════
+// ROUND 19 / 20 — FINANCIAL AUDIT
+// ═══════════════════════════════════
+function renderAudit(){
+  const p=S.profile;
+  const months=S.months;
+  if(!months.length) return "<p style='color:var(--muted)'>No monthly data found.</p>";
+
+  const last=months[months.length-1];
+  const first=months[0];
+  const totalIncome=months.reduce((a,m)=>a+m.netIncome,0);
+  const totalExpenses=months.reduce((a,m)=>a+m.netExpenses,0);
+  const totalSaved=months.reduce((a,m)=>a+m.netSaved,0);
+  const totalInvested=months.reduce((a,m)=>a+m.monthlyInvest,0);
+  const totalDebtPaid=months.reduce((a,m)=>a+m.debtPay,0);
+  const savingsEnd=last.savingsEnd;
+  const debtEnd=last.debtBalance;
+  const investEnd=last.investBalance;
+  const creditEnd=last.creditScore;
+  const netWorthEnd=savingsEnd+investEnd-debtEnd;
+  const netWorthStart=p.savings-p.debtBalance;
+  const nwChange=netWorthEnd-netWorthStart;
+
+  const flagCount=Object.values(S.auditChecks).filter(v=>v==="flag").length;
+  const passCount=Object.values(S.auditChecks).filter(v=>v==="pass").length;
+  const allChecked=AUDIT_CHECKS.every(c=>S.auditChecks[c.id]);
+  let opinion,opinionColor,opinionIcon;
+  if(!allChecked){opinion="Incomplete";opinionColor="var(--muted)";opinionIcon="⏳";}
+  else if(flagCount<=1&&savingsEnd>0&&nwChange>0){opinion="Excellent Financial Health";opinionColor="var(--accent)";opinionIcon="💪";}
+  else if(flagCount<=3){opinion="Good Financial Health";opinionColor="var(--gold)";opinionIcon="👍";}
+  else{opinion="Needs Improvement";opinionColor="var(--red)";opinionIcon="⚠️";}
+
+  const scores=calcScores(months,p);
+  const tabs=[
+    {id:"networth",lbl:"💰 Net Worth"},{id:"budget",lbl:"📊 Budget Review"},
+    {id:"debt",lbl:"💳 Debt Progress"},{id:"invest",lbl:"📈 Investments"},
+    {id:"checklist",lbl:"✅ Checklist"},{id:"opinion",lbl:"🏆 Opinion"},
+  ];
+
+  let tabContent="";
+
+  if(_auditTab==="networth"){
+    const nwRows=[
+      {h:"ASSETS"},{l:"Savings Account",a:savingsEnd},{l:"Investment Portfolio",a:investEnd},{l:"Total Assets",a:savingsEnd+investEnd,bold:true},
+      {h:"LIABILITIES"},{l:"Outstanding Debt",a:debtEnd},{l:"Total Liabilities",a:debtEnd,bold:true},
+      {h:"NET WORTH"},{l:"Beginning Net Worth",a:netWorthStart},{l:"Change This Year",a:nwChange,signed:true},{l:"ENDING NET WORTH",a:netWorthEnd,bold:true,teal:true},
+    ];
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:13px">💰 Personal Net Worth Statement — 12-Month Period</div>
+      ${nwRows.map(r=>{
+        if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+        const col=r.teal?"var(--teal)":r.bold?(r.a>=0?"var(--gold)":"var(--red)"):(r.a>=0?"var(--accent)":"var(--red)");
+        const valStr=r.signed?(r.a>=0?"+"+fmt(r.a):"−"+fmt(Math.abs(r.a))):(r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")");
+        return `<div class="stmt-row" style="font-weight:${r.bold?"800":"400"}"><span style="color:${r.bold?"var(--text)":"var(--muted)"}">${r.l}</span><span style="color:${col};font-family:'Space Mono',monospace;font-weight:${r.bold?"800":"500"}">${valStr}</span></div>`;
+      }).join("")}
+      <div style="margin-top:12px;padding:11px 14px;background:${nwChange>=0?"var(--as)":"var(--rs)"};border:1px solid ${nwChange>=0?"var(--accent)":"var(--red)"}44;border-radius:9px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:800;font-size:13px;color:${nwChange>=0?"var(--accent)":"var(--red)"}">${nwChange>=0?"✓ Net Worth INCREASED":"⚠ Net Worth DECREASED"}</span>
+        <span style="color:${nwChange>=0?"var(--accent)":"var(--red)"};font-family:'Space Mono',monospace;font-weight:800;font-size:14px">${fmtS(nwChange)}</span>
+      </div>`;
+  }
+  else if(_auditTab==="budget"){
+    const maxAbs=Math.max(...months.map(m=>Math.abs(m.netSaved)),1);
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:13px">📊 12-Month Budget Performance</div>
+      <div class="g4" style="margin-bottom:16px">
+        ${st("Total Income",fmt(totalIncome),"var(--accent)")}
+        ${st("Total Expenses",fmt(totalExpenses),"var(--red)")}
+        ${st("Total Saved",fmt(totalSaved),totalSaved>=0?"var(--accent)":"var(--red)")}
+        ${st("Savings Rate",pct(totalSaved,totalIncome),totalSaved/totalIncome>=0.20?"var(--accent)":"var(--gold)")}
+      </div>
+      <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">Month-by-Month Net Saved</div>
+      ${months.map((m,i)=>{
+        const w=Math.min(50,Math.abs(m.netSaved)/maxAbs*50);
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="color:var(--muted);font-size:9px;width:18px;flex-shrink:0">M${i+1}</span>
+          <span style="color:var(--dim);font-size:9px;width:55px;flex-shrink:0">${m.monthName.slice(0,3)}</span>
+          <div class="profit-bar-track" style="flex:1;background:#151f35;border-radius:3px;height:12px;position:relative;overflow:hidden">
+            <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)"></div>
+            <div style="position:absolute;top:0;bottom:0;left:${m.netSaved>=0?"50%":`${50-w}%`};width:${w}%;background:${m.netSaved>=0?"var(--accent)":"var(--red)"}"></div>
+          </div>
+          <span style="color:${m.netSaved>=0?"var(--accent)":"var(--red)"};font-size:9px;font-family:'Space Mono',monospace;width:55px;text-align:right;flex-shrink:0">${fmtS(m.netSaved)}</span>
+          <span style="font-size:12px;flex-shrink:0">${m.event?.e||""}</span>
+        </div>`;
+      }).join("")}`;
+  }
+  else if(_auditTab==="debt"){
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:13px">💳 Debt Payoff Progress</div>
+      <div class="g3" style="margin-bottom:16px">
+        ${st("Starting Debt",fmt(p.debtBalance),"var(--muted)")}
+        ${st("Paid Down",fmt(totalDebtPaid),"var(--accent)")}
+        ${st("Remaining",fmt(debtEnd),"var(--red)")}
+      </div>
+      ${pb(((p.debtBalance-debtEnd)/p.debtBalance)*100,"var(--accent)",12)}
+      <div style="color:var(--muted);font-size:10px;margin-top:5px;text-align:center;margin-bottom:16px">${pct(p.debtBalance-debtEnd,p.debtBalance)} paid off</div>
+      <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">Debt Balance Each Month</div>
+      ${months.map((m,i)=>{
+        const pctPaid=((p.debtBalance-m.debtBalance)/Math.max(p.debtBalance,1))*100;
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="color:var(--muted);font-size:9px;width:55px;flex-shrink:0">${m.monthName.slice(0,3)}</span>
+          <div style="flex:1;background:#151f35;border-radius:3px;height:10px;overflow:hidden"><div style="width:${pctPaid}%;height:100%;background:var(--accent);border-radius:3px"></div></div>
+          <span style="color:var(--red);font-size:9px;font-family:'Space Mono',monospace;width:65px;text-align:right;flex-shrink:0">${fmt(m.debtBalance)}</span>
+        </div>`;
+      }).join("")}
+      <div style="margin-top:12px;padding:9px 13px;background:var(--as);border-radius:9px;font-size:12px;color:var(--accent);font-weight:700">
+        Strategy: ${S.strategy.debtMethod==="avalanche"?"❄️ Avalanche Method":"⛄ Snowball Method"} · ${fmt(S.strategy.debtPayment||0)}/month
+      </div>`;
+  }
+  else if(_auditTab==="invest"){
+    tabContent=`<div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;margin-bottom:13px">📈 Investment Portfolio Growth</div>
+      <div class="g4" style="margin-bottom:16px">
+        ${st("Total Invested",fmt(totalInvested),"var(--blue)")}
+        ${st("Portfolio Value",fmt(investEnd),"var(--green)")}
+        ${st("Investment Gain",fmt(investEnd-totalInvested),investEnd>=totalInvested?"var(--accent)":"var(--red)")}
+        ${st("Credit Score",creditEnd,creditEnd>=740?"var(--teal)":creditEnd>=670?"var(--accent)":"var(--gold)")}
+      </div>
+      <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">Portfolio Value Over 12 Months</div>
+      ${months.map((m,i)=>{
+        const pct=Math.min(100,(m.investBalance/Math.max(investEnd,1))*100);
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="color:var(--muted);font-size:9px;width:55px;flex-shrink:0">${m.monthName.slice(0,3)}</span>
+          <div style="flex:1;background:#151f35;border-radius:3px;height:10px;overflow:hidden"><div style="width:${pct}%;height:100%;background:var(--green);border-radius:3px"></div></div>
+          <span style="color:var(--green);font-size:9px;font-family:'Space Mono',monospace;width:65px;text-align:right;flex-shrink:0">${fmt(m.investBalance)}</span>
+          ${m.event?.ef==="invest"?`<span style="font-size:12px;flex-shrink:0">${m.event.e}</span>`:"<span style='width:16px;flex-shrink:0'></span>"}
+        </div>`;
+      }).join("")}
+      <div style="margin-top:12px;padding:9px 13px;background:var(--grs);border-radius:9px">
+        <div style="display:flex;justify-content:space-between;font-size:12px">
+          <span style="color:var(--muted)">401(k)</span><span style="color:var(--accent);font-family:'Space Mono',monospace">${fmt(S.strategy.invest401k||0)}/mo</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+          <span style="color:var(--muted)">Roth IRA</span><span style="color:var(--purple);font-family:'Space Mono',monospace">${fmt(S.strategy.investRoth||0)}/mo</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px">
+          <span style="color:var(--muted)">Index Funds</span><span style="color:var(--blue);font-family:'Space Mono',monospace">${fmt(S.strategy.investIndex||0)}/mo</span>
+        </div>
+      </div>`;
+  }
+  else if(_auditTab==="checklist"){
+    tabContent=`${AUDIT_CHECKS.map(c=>{
+      const val=S.auditChecks[c.id];
+      const riskBdg=c.risk?bdg("Risk: "+c.risk,c.risk==="high"?"var(--red)":c.risk==="medium"?"var(--gold)":"var(--accent)"):"";
+      return `<div class="audit-item" style="background:${val==="pass"?"var(--as)":val==="flag"?"var(--rs)":"var(--card)"};border-color:${val==="pass"?"var(--accent)44":val==="flag"?"var(--red)44":"var(--border)"}">
+        <div style="display:flex;gap:11px;align-items:flex-start">
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:12px">${c.lbl}</div>
+            <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">${bdg(c.cat,"var(--blue)")} ${riskBdg}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn sm ${val==="pass"?"primary":"ghost"}" onclick="setCheck('${c.id}','pass')">✓ Pass</button>
+            <button class="btn sm ${val==="flag"?"red":"ghost"}" style="${val==="flag"?"":"color:var(--red);border-color:var(--red)55"}" onclick="setCheck('${c.id}','flag')">⚑ Flag</button>
+          </div>
+        </div>
+      </div>`;
+    }).join("")}
+    ${card(`<div class="g3">${st("Checked",`${passCount+flagCount}/${AUDIT_CHECKS.length}`,"var(--blue)")}${st("Passed",passCount,"var(--accent)")}${st("Flagged",flagCount,flagCount>0?"var(--red)":"var(--muted)")}</div>`,"","background:#080c18")}
+    ${allChecked?b("🏆 View Financial Health Opinion →","setAuditTab('opinion')","teal","lg full"):""}`;
+  }
+  else if(_auditTab==="opinion"){
+    if(!allChecked){
+      tabContent=card(`<div style="text-align:center;padding:22px 0">
+        <div style="font-size:34px;margin-bottom:10px">⏳</div>
+        <div style="color:var(--gold);font-weight:800;font-size:15px">Complete the Checklist First</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:6px;line-height:1.7">All 12 items must be marked before an opinion can be issued.</div>
+        <div style="margin-top:14px">${b("Go to Checklist →","setAuditTab('checklist')","gold","md")}</div>
+      </div>`,"glow-gold");
+    } else {
+      const opBody=flagCount<=1&&nwChange>0
+        ?"Your financial decisions over the 12-month period demonstrate strong financial discipline. Net worth increased, savings grew, and debt decreased. You are on track for long-term financial stability."
+        :flagCount<=3
+        ?`Your finances show positive direction with ${flagCount} area(s) needing attention. Focus on addressing the flagged items to accelerate progress toward your financial goals.`
+        :"Your financial statements reveal several areas requiring immediate attention. Review your budget, debt strategy, and savings rate to improve your financial health in the next period.";
+
+      tabContent=`
+        <div style="border-radius:14px;padding:24px 18px;text-align:center;background:${opinionColor}18;border:1px solid ${opinionColor}55;margin-bottom:13px">
+          <div style="font-size:42px;margin-bottom:8px">${opinionIcon}</div>
+          <div style="color:${opinionColor};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px">Financial Health Opinion</div>
+          <div style="color:${opinionColor};font-size:19px;font-weight:900">${opinion}</div>
+          <div style="color:var(--muted);font-size:12px;line-height:1.75;max-width:420px;margin:10px auto 0">${opBody}</div>
+        </div>
+        ${flagCount>0?card(`
+          <div style="color:var(--red);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:11px">⚑ Areas Needing Improvement</div>
+          ${AUDIT_CHECKS.filter(c=>S.auditChecks[c.id]==="flag").map((c,i)=>`
+            <div style="padding:9px 0;border-top:${i>0?"1px solid var(--border)":"none"};display:flex;gap:11px;align-items:flex-start">
+              ${bdg("Area "+(i+1),"var(--red)")}
+              <div><div style="font-weight:700;font-size:12px">${c.lbl}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">Category: ${c.cat}</div></div>
+            </div>`).join("")}
+        `):""}
+        ${card(`
+          <div style="color:var(--gold);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">📊 12-Month Financial Summary</div>
+          <div class="g3" style="margin-bottom:13px">
+            ${st("Total Income",fmt(totalIncome),"var(--accent)")}
+            ${st("Total Expenses",fmt(totalExpenses),"var(--red)")}
+            ${st("Net Saved",fmt(totalSaved),totalSaved>=0?"var(--accent)":"var(--red)")}
+            ${st("Debt Paid",fmt(totalDebtPaid),"var(--blue)")}
+            ${st("Portfolio",fmt(investEnd),"var(--green)")}
+            ${st("Net Worth",fmt(netWorthEnd),netWorthEnd>=0?"var(--gold)":"var(--red)")}
+          </div>
+        `,"glow-gold","background:var(--gs)")}
+        ${card(`
+          <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">🎯 Financial Performance Scores</div>
+          ${[{k:"budget",l:"Budget Discipline",i:"📊"},{k:"savings",l:"Savings Growth",i:"💰"},{k:"debt",l:"Debt Reduction",i:"💳"},{k:"invest",l:"Investment Growth",i:"📈"},{k:"credit",l:"Credit Management",i:"⭐"}].map(s=>`
+            <div class="score-row">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-size:12px">${s.i} ${s.l}</span>
+                <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace">${scores[s.k]}/100</span>
+              </div>
+              ${pb(scores[s.k],scores[s.k]>70?"var(--accent)":scores[s.k]>40?"var(--gold)":"var(--red)")}
+            </div>`).join("")}
+          <div style="background:var(--as);border:1px solid var(--accent)44;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-weight:800;font-size:14px">🏆 Overall Score</span>
+            <span style="color:var(--gold);font-weight:900;font-size:26px;font-family:'Space Mono',monospace">${scores.total}/100</span>
+          </div>
+        `)}
+        <div class="cert">
+          <div style="font-size:46px;margin-bottom:8px">🏆</div>
+          <div style="color:var(--gold);font-size:19px;font-weight:900">Certificate of Completion</div>
+          <div style="color:var(--text);font-size:13px;margin-top:5px">nugO Personal Finance Lab</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:12px">This certifies that</div>
+          <div style="color:var(--gold);font-size:18px;font-weight:800;margin:5px 0">${p.name}</div>
+          <div style="color:var(--muted);font-size:12px">completed all 19 rounds including a Full Financial Audit</div>
+          <div style="color:var(--teal);font-size:13px;font-weight:700;margin-top:3px">${p.profileLabel} · 12-Month Personal Finance Journey</div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+            ${bdg("Score: "+scores.total+"/100","var(--gold)","lg")}
+            ${bdg(opinionIcon+" "+opinion,opinionColor,"lg")}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;text-align:left">
+            ${["Life Profile Setup","Monthly Budgeting","Emergency Fund Planning","Debt Strategy","Credit Score Management","Investment Allocation","12-Month Life Simulation","20 Life Event Cards","Net Worth Statement","Financial Audit Checklist","Financial Health Opinion","nugO Finance Portfolio"].map(s=>`
+              <div style="display:flex;gap:6px;align-items:center"><span style="color:var(--accent);font-size:11px">✓</span><span style="color:var(--muted);font-size:10px">${s}</span></div>`).join("")}
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px">${b("↺ Start New Profile","restartFull()","ghost","md")}</div>`;
+    }
+  }
+
+  return `
+    ${roundHdr("🔍",S.round,"Full Financial Audit","Net Worth → Budget → Debt → Investments → Opinion")}
+    <div style="background:linear-gradient(135deg,#0a1228,#0d1520);border:1px solid var(--teal)44;border-radius:13px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="font-size:28px">${p.icon}</div>
+      <div style="flex:1"><div style="color:var(--teal);font-weight:900;font-size:14px">${p.name} — Annual Financial Review</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${p.profileLabel} · 12-Month Period</div></div>
+      <div style="display:flex;gap:13px;flex-wrap:wrap">
+        ${st("Net Worth",fmt(netWorthEnd),netWorthEnd>=netWorthStart?"var(--accent)":"var(--red)","sm")}
+        ${st("Net Change",fmtS(nwChange),nwChange>=0?"var(--gold)":"var(--red)","sm")}
+        ${st("Health",opinionIcon+" "+opinion.split(" ")[0],opinionColor,"sm")}
+      </div>
+    </div>
+    <div class="tabs">${tabs.map(t=>`<button class="tab ${_auditTab===t.id?"active":""}" onclick="setAuditTab('${t.id}')" style="${_auditTab===t.id?"background:var(--teal);color:#060a12":""}">${t.lbl}</button>`).join("")}</div>
+    ${card(tabContent)}
+    ${restartLink()}`;
+}
+
+function setCheck(id,val){S.auditChecks[id]=val;saveGame();render();}
+function setAuditTab(tab){_auditTab=tab;render();}
+
+// ═══════════════════════════════════
+// HOW TO PLAY
+// ═══════════════════════════════════
+function openHTP(){_htpStep=0;renderHTP();document.getElementById("htp-modal").style.display="flex";}
+function closeHTP(){document.getElementById("htp-modal").style.display="none";}
+function htpNav(dir){_htpStep=Math.max(0,Math.min(HTP.length-1,_htpStep+dir));renderHTP();}
+function renderHTP(){
+  const s=HTP[_htpStep];
+  document.getElementById("htp-step-lbl").textContent=`Step ${_htpStep+1} of ${HTP.length}`;
+  document.getElementById("htp-dots").innerHTML=HTP.map((_,i)=>`<div class="modal-prog-seg" onclick="_htpStep=${i};renderHTP()" style="background:${i<=_htpStep?s.color:"var(--border)"}"></div>`).join("");
+  document.getElementById("htp-content").innerHTML=`<div style="font-size:50px;text-align:center;margin-bottom:12px">${s.icon}</div><div style="color:${s.color};font-weight:900;font-size:16px;text-align:center;margin-bottom:10px">${s.title}</div><div style="color:var(--muted);font-size:13px;line-height:1.8;text-align:center">${s.body}</div>`;
+  document.getElementById("htp-prev").style.display=_htpStep===0?"none":"inline-block";
+  const nx=document.getElementById("htp-next");
+  if(_htpStep===HTP.length-1){nx.textContent="Got it! 💰";nx.className="btn gold md";nx.onclick=closeHTP;}
+  else{nx.textContent="Next →";nx.className="btn blue md";nx.onclick=()=>htpNav(1);}
+  const box=document.getElementById("htp-box");
+  box.style.borderColor=s.color+"55";box.style.boxShadow=`0 0 48px ${s.color}33`;
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+window.onload=function(){_auditTab="networth";render();};
+</script>
+</body>
+</html>

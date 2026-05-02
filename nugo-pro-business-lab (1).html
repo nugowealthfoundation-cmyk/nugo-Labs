@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nugO Pro Business Lab — 12-Month Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--card:#0e1320;--border:#1a2640;
+  --accent:#00c896;--as:#00c89618;
+  --gold:#f5b731;--gs:#f5b73118;
+  --red:#f04060;--rs:#f0406018;
+  --blue:#3d9eff;--bs:#3d9eff18;
+  --purple:#a875f0;--ps:#a875f018;
+  --orange:#ff7c3a;--os:#ff7c3a18;
+  --teal:#00d4d4;--ts:#00d4d418;
+  --pink:#ff6eb4;--pks:#ff6eb418;
+  --text:#ddeeff;--muted:#7a90b0;--dim:#374a66;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select,textarea{font-family:'Syne',sans-serif;}
+button{font-family:'Space Mono',monospace;cursor:pointer;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes diceShake{0%{transform:rotate(-10deg)scale(1.12)}50%{transform:rotate(10deg)scale(0.91)}100%{transform:rotate(-5deg)scale(1.05)}}
+@keyframes cardReveal{0%{opacity:0;transform:scale(0.85)translateY(12px)}100%{opacity:1;transform:scale(1)translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp 0.32s ease forwards;}
+.shake{animation:diceShake 0.07s infinite;}
+.reveal{animation:cardReveal 0.4s ease forwards;}
+#app{max-width:720px;margin:0 auto;padding:0 16px 80px;}
+#hdr{background:linear-gradient(180deg,#0d1520,transparent);padding:20px 18px 0;margin-bottom:6px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+#hdr-inner{max-width:720px;margin:0 auto;}
+.hdr-row{display:flex;align-items:center;gap:12px;}
+.logo-box{background:var(--as);border:1px solid #00c89633;border-radius:11px;padding:7px 13px;font-size:19px;flex-shrink:0;}
+.logo-title{color:var(--accent);font-weight:900;font-size:16px;letter-spacing:-0.5px;}
+.logo-sub{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.save-flash{color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.htp-btn{background:var(--ps);border:1px solid #a875f055;color:var(--purple);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;}
+.biz-name-hdr .name{color:var(--gold);font-weight:800;font-size:12px;}
+.biz-name-hdr .type{color:var(--muted);font-size:9px;}
+.prog-wrap{margin-top:14px;margin-bottom:2px;}
+.prog-bar{display:flex;gap:2px;}
+.prog-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;}
+.prog-labels{display:flex;justify-content:space-between;margin-top:4px;}
+.prog-labels span{color:var(--muted);font-size:9px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 2px 20px #00000055;}
+.glow-accent{border-color:#00c89655!important;box-shadow:0 0 28px #00c89622!important;}
+.glow-gold{border-color:#f5b73155!important;box-shadow:0 0 28px #f5b73122!important;}
+.glow-teal{border-color:#00d4d455!important;box-shadow:0 0 28px #00d4d422!important;}
+.glow-purple{border-color:#a875f055!important;box-shadow:0 0 28px #a875f022!important;}
+.glow-blue{border-color:#3d9eff55!important;box-shadow:0 0 28px #3d9eff22!important;}
+.glow-pink{border-color:#ff6eb455!important;box-shadow:0 0 28px #ff6eb422!important;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.col{display:flex;flex-direction:column;gap:15px;}
+.stat{text-align:center;}
+.stat .val{font-family:'Space Mono',monospace;font-weight:800;line-height:1;}
+.stat .lbl{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.badge{display:inline-block;border-radius:99px;font-weight:700;white-space:nowrap;}
+.pbar-wrap{background:#151f35;border-radius:99px;height:8px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,2,.6,1);}
+.inp-wrap{display:flex;flex-direction:column;gap:5px;}
+.inp-label{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.inp-hint{color:var(--dim);font-size:10px;margin-top:-3px;}
+.inp-row{display:flex;align-items:center;background:#080c18;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.inp-pre{color:var(--muted);padding:9px 11px;background:#111825;font-size:12px;border-right:1px solid var(--border);}
+.inp-suf{color:var(--muted);padding:9px 11px;font-size:11px;}
+.inp-row input,.inp-row select{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:9px 13px;font-size:14px;font-family:'Space Mono',monospace;width:100%;}
+.btn{border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.3px;transition:opacity .15s,transform .1s;border:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.primary{background:var(--accent);color:#060a12;}
+.btn.gold{background:var(--gold);color:#060a12;}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid #00c89655;}
+.btn.purple{background:var(--purple);color:#fff;}
+.btn.blue{background:var(--blue);color:#060a12;}
+.btn.teal{background:var(--teal);color:#060a12;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.dark{background:#151f35;color:var(--muted);border:1px solid var(--border);}
+.btn.pink{background:var(--pink);color:#060a12;}
+.btn.sm{padding:6px 14px;font-size:11px;}
+.btn.md{padding:9px 20px;}
+.btn.lg{padding:13px 28px;font-size:14px;}
+.btn.xl{padding:15px 38px;font-size:16px;}
+.btn.full{width:100%;}
+.toggle{width:42px;height:22px;border-radius:99px;cursor:pointer;position:relative;transition:background .2s;border:none;flex-shrink:0;}
+.toggle .knob{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{background:#0a0e1a;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;transition:all .13s;}
+.dice-face{width:72px;height:72px;border-radius:14px;font-size:42px;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s,box-shadow .3s;flex-shrink:0;}
+.ev-card{border-radius:14px;padding:14px 17px;display:flex;align-items:center;gap:13px;}
+.month-banner{background:linear-gradient(135deg,#0e1730,#131b2e);border:1px solid #3d9eff33;border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.round-hdr{border-radius:14px;padding:14px 17px;margin-bottom:15px;display:flex;gap:13px;align-items:center;}
+.biz-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.biz-opt{border-radius:12px;padding:13px 14px;cursor:pointer;transition:all .13s;border:2px solid var(--border);background:var(--card);}
+.biz-opt.sel{border-color:var(--accent);background:var(--as);}
+.biz-opt .biz-icon{font-size:28px;margin-bottom:6px;}
+.biz-opt .biz-lbl{font-weight:800;font-size:13px;}
+.biz-opt .biz-ex{color:var(--muted);font-size:10px;margin-top:3px;}
+.biz-opt .biz-stats{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;}
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mkt-opt{border-radius:13px;padding:15px;cursor:pointer;transition:all .13s;border:2px solid var(--border);position:relative;}
+.mkt-opt.sel{background:var(--as);border-color:var(--accent);}
+.modal-overlay{position:fixed;inset:0;background:#000000bb;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--card);border-radius:20px;padding:26px;max-width:480px;width:100%;animation:slideDown .25s ease;}
+.modal-progress{display:flex;gap:5px;margin-bottom:20px;}
+.modal-prog-seg{flex:1;height:3px;border-radius:99px;cursor:pointer;transition:background .3s;}
+.resume-banner{background:linear-gradient(135deg,#0e1a10,#0a1520);border:1px solid #00c89655;border-radius:14px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:16px;box-shadow:0 0 24px #00c89622;}
+.cert{background:linear-gradient(135deg,#1a1300,#0e1a0a);border:1px solid #f5b73155;border-radius:16px;padding:26px 18px;text-align:center;box-shadow:0 0 32px #f5b73122;}
+.stmt-scroll{max-height:380px;overflow-y:auto;}
+.stmt-row{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #1a264022;}
+.tb-table{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:12px;}
+.tb-table th{color:var(--dim);font-size:9px;text-transform:uppercase;padding:5px 8px;text-align:left;}
+.tb-table td{padding:7px 8px;border-top:1px solid var(--border);}
+.score-bar-row{margin-bottom:12px;}
+.tqm-opt{border-radius:11px;padding:13px 14px;border:1px solid var(--border);cursor:pointer;transition:all .13s;display:flex;gap:11px;align-items:flex-start;}
+.tqm-opt.sel{border-color:var(--teal);background:var(--ts);}
+.neg-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;background:#080c18;border:1px solid var(--border);margin-bottom:8px;}
+.neg-slider{width:100%;accent-color:var(--accent);}
+.profit-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.profit-bar-track{flex:1;background:#151f35;border-radius:3px;height:12px;position:relative;overflow:hidden;}
+.profit-bar-mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);}
+.profit-bar-fill{position:absolute;top:0;bottom:0;}
+@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}.biz-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div id="hdr-inner">
+    <div class="hdr-row">
+      <div class="logo-box">💼</div>
+      <div><div class="logo-title">nugO Pro Business Lab</div><div class="logo-sub">12-Month Simulation · Strategy · Full Audit</div></div>
+      <div class="hdr-right">
+        <div id="save-flash" class="save-flash" style="display:none">💾 Saved</div>
+        <button class="btn htp-btn sm" onclick="openHTP()">❓ How to Play</button>
+        <div id="biz-hdr" class="biz-name-hdr" style="display:none">
+          <div class="name" id="biz-hdr-name"></div>
+          <div class="type" id="biz-hdr-type"></div>
+        </div>
+      </div>
+    </div>
+    <div id="prog-wrap" class="prog-wrap" style="display:none">
+      <div class="prog-bar" id="prog-bar"></div>
+      <div class="prog-labels"><span id="prog-l">Round 1 of 16</span><span id="prog-r" style="color:var(--accent)">0%</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="htp-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeHTP()">
+  <div class="modal-box" id="htp-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div><div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px">How to Play</div><div style="color:var(--muted);font-size:11px;margin-top:2px" id="htp-step-lbl">Step 1 of 9</div></div>
+      <button class="btn dark sm" onclick="closeHTP()">✕ Close</button>
+    </div>
+    <div class="modal-progress" id="htp-dots"></div>
+    <div id="htp-content"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn ghost sm" id="htp-prev" onclick="htpNav(-1)">← Back</button>
+      <div style="flex:1"></div>
+      <button class="btn blue md" id="htp-next" onclick="htpNav(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="app"><div id="screen"></div></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// BUSINESS TYPES — powered by BUAD222 formulas
+// ═══════════════════════════════════════════════
+const BIZ_TYPES = [
+  {
+    id:"foodtruck", icon:"🍔", label:"Food Truck & Restaurant",
+    desc:"Mobile food service, catering, pop-ups & dine-in",
+    price:14, priceMin:8, priceMax:22, priceIdeal:14,
+    supplies:400, laborBase:8.50, materialBase:5.20,
+    mktWeights:{social:2,email:1,print:2,direct:2,events:3},
+    growthRate:0.082, marketSize:3200, segments:["Lunch Crowd","Catering","Events"],
+    tqmBenefit:"Reduces food waste & prep time",
+    color:"var(--orange)", accentColor:"#ff7c3a"
+  },
+  {
+    id:"tshirt", icon:"👕", label:"Tee Shirt Brand",
+    desc:"Custom prints, hoodies, hats & streetwear",
+    price:28, priceMin:18, priceMax:45, priceIdeal:28,
+    supplies:320, laborBase:7.12, materialBase:9.50,
+    mktWeights:{social:3,email:2,print:1,direct:1,events:3},
+    growthRate:0.118, marketSize:2800, segments:["Custom Orders","Wholesale","Online Store"],
+    tqmBenefit:"Faster production & lower material waste",
+    color:"var(--blue)", accentColor:"#3d9eff"
+  },
+  {
+    id:"content", icon:"📱", label:"Content Creator",
+    desc:"YouTube, TikTok, Instagram & brand deals",
+    price:50, priceMin:25, priceMax:150, priceIdeal:60,
+    supplies:180, laborBase:0, materialBase:2.50,
+    mktWeights:{social:3,email:2,print:0,direct:1,events:2},
+    growthRate:0.19, marketSize:1200, segments:["Ad Revenue","Brand Deals","Merchandise"],
+    tqmBenefit:"Better content workflow & collab systems",
+    color:"var(--purple)", accentColor:"#a875f0"
+  },
+  {
+    id:"beauty", icon:"💇", label:"Hair, Lash & Nail Stylist",
+    desc:"Appointments, extensions, sets & beauty products",
+    price:75, priceMin:40, priceMax:180, priceIdeal:80,
+    supplies:350, laborBase:12.00, materialBase:18.00,
+    mktWeights:{social:3,email:2,print:1,direct:2,events:2},
+    growthRate:0.15, marketSize:1800, segments:["Hair Services","Nail Sets","Lash Extensions"],
+    tqmBenefit:"Reduces product waste & appointment no-shows",
+    color:"var(--pink)", accentColor:"#ff6eb4"
+  },
+  {
+    id:"barber", icon:"✂️", label:"Barbershop",
+    desc:"Cuts, fades, lineups, shaves & grooming packages",
+    price:40, priceMin:25, priceMax:65, priceIdeal:40,
+    supplies:200, laborBase:14.00, materialBase:4.50,
+    mktWeights:{social:2,email:1,print:2,direct:3,events:2},
+    growthRate:0.074, marketSize:2200, segments:["Walk-ins","Appointments","Packages"],
+    tqmBenefit:"Improves booking flow & product efficiency",
+    color:"var(--accent)", accentColor:"#00c896"
+  },
+  {
+    id:"amazon", icon:"📦", label:"Amazon Store",
+    desc:"Private label, wholesale reselling & FBA",
+    price:32, priceMin:18, priceMax:55, priceIdeal:32,
+    supplies:600, laborBase:3.50, materialBase:12.00,
+    mktWeights:{social:2,email:2,print:0,direct:1,events:0},
+    growthRate:0.159, marketSize:4200, segments:["Private Label","Wholesale Flip","Bundles"],
+    tqmBenefit:"Better inventory tracking & supplier relations",
+    color:"var(--gold)", accentColor:"#f5b731"
+  },
+  {
+    id:"drop", icon:"🚚", label:"Dropshipping Store",
+    desc:"Online store, supplier margins & product testing",
+    price:38, priceMin:20, priceMax:65, priceIdeal:38,
+    supplies:120, laborBase:2.00, materialBase:16.00,
+    mktWeights:{social:3,email:3,print:0,direct:1,events:0},
+    growthRate:0.134, marketSize:3600, segments:["Trending Products","Niche Store","Branded"],
+    tqmBenefit:"Cuts supplier lead times & return rates",
+    color:"var(--teal)", accentColor:"#00d4d4"
+  }
+];
+
+// BUAD222-powered marketing effectiveness
+const MKT_CHANNELS = [
+  {id:"social",  label:"Social Media Ads",  dimRet:500000, costPerUnit:500},
+  {id:"email",   label:"Email Marketing",   dimRet:600000, costPerUnit:250},
+  {id:"print",   label:"Print / Flyers",    dimRet:700000, costPerUnit:300},
+  {id:"direct",  label:"Direct Outreach",   dimRet:800000, costPerUnit:400},
+  {id:"events",  label:"Events / Pop-ups",  dimRet:300000, costPerUnit:600},
+];
+
+// TQM Initiatives (from BUAD222 sheet)
+const TQM_OPTIONS = [
+  {id:"cpi",    label:"CPI Systems",              cost:500,  effect:"material", pct:0.08, desc:"Reduces material cost per unit by 8%",       icon:"⚙️"},
+  {id:"vendor", label:"Vendor / JIT Sourcing",    cost:500,  effect:"material", pct:0.10, desc:"Just-in-time inventory cuts supply costs 10%", icon:"📦"},
+  {id:"train",  label:"Quality Training Program", cost:500,  effect:"labor",    pct:0.08, desc:"Staff training reduces labor cost by 8%",      icon:"🎓"},
+  {id:"channel",label:"Channel Support Systems",  cost:500,  effect:"demand",   pct:0.05, desc:"Boosts monthly customer demand by 5%",         icon:"📡"},
+  {id:"concurr",label:"Concurrent Engineering",   cost:500,  effect:"cycle",    pct:0.06, desc:"Speeds R&D — improves product quality 6%",     icon:"🔬"},
+  {id:"bench",  label:"Benchmarking Initiative",  cost:500,  effect:"admin",    pct:0.07, desc:"Cuts admin/overhead costs by 7%",              icon:"📊"},
+  {id:"sixsig", label:"6 Sigma Training",         cost:500,  effect:"material", pct:0.12, desc:"Reduces material defects — saves 12% on cost", icon:"🏆"},
+  {id:"green",  label:"Green / UNEP Program",     cost:500,  effect:"material", pct:0.05, desc:"Eco-efficiency cuts supply costs 5%",          icon:"🌱"},
+];
+
+// Recession event cards (industry-aware)
+const EVENTS = [
+  {id:"supplier",e:"📦",t:"Supplier Price Spike",   d:"Your supplier raised wholesale costs.",          ef:"expenses",  v:0.12,  lbl:"+12% Expenses", c:"var(--red)"},
+  {id:"review",  e:"⭐",t:"Viral 5-Star Review",    d:"A glowing review spread across social media.",   ef:"customers", v:18,    lbl:"+18 Customers", c:"var(--accent)"},
+  {id:"noshow",  e:"😤",t:"Cancellations Spike",    d:"Customers cancelled — lost appointments.",       ef:"customers", v:-7,    lbl:"−7 Customers",  c:"var(--red)"},
+  {id:"equip",   e:"🔧",t:"Equipment Breakdown",    d:"Emergency repair needed this month.",            ef:"cash",      v:-400,  lbl:"−$400 Repair",  c:"var(--red)"},
+  {id:"grant",   e:"🏆",t:"Small Biz Grant!",       d:"You received a local small business grant.",     ef:"cash",      v:750,   lbl:"+$750 Cash",    c:"var(--gold)"},
+  {id:"late",    e:"⏳",t:"Late Client Payment",    d:"Invoice paid late — cash delayed.",              ef:"cash",      v:-250,  lbl:"−$250 Delayed", c:"var(--purple)"},
+  {id:"referral",e:"🤝",t:"Referral Wave",          d:"Word of mouth brought new customers in.",        ef:"customers", v:14,    lbl:"+14 Customers", c:"var(--accent)"},
+  {id:"tax",     e:"📋",t:"Quarterly Tax Notice",   d:"Estimated taxes are due this month.",            ef:"cash",      v:-200,  lbl:"−$175 Taxes",   c:"var(--red)"},
+  {id:"weather", e:"🌧️",t:"Slow Week",              d:"Traffic dried up — slow sales period.",          ef:"customers", v:-9,    lbl:"−9 Customers",  c:"var(--blue)"},
+  {id:"collab",  e:"🌟",t:"Brand Collaboration",    d:"Another brand featured you for free.",           ef:"customers", v:16,    lbl:"+16 Customers", c:"var(--accent)"},
+  {id:"theft",   e:"🚨",t:"Inventory Theft",        d:"Stock went missing — painful loss.",             ef:"cash",      v:-300,  lbl:"−$300 Stolen",  c:"var(--red)"},
+  {id:"pop",     e:"🎉",t:"Pop-Up Event Win",       d:"Your pop-up brought a flood of new buyers.",     ef:"customers", v:20,    lbl:"+20 Customers", c:"var(--gold)"},
+  {id:"returns", e:"↩️",t:"Return Spike",           d:"Product returns hit this month's revenue.",      ef:"cash",      v:-220,  lbl:"−$220 Refunds", c:"var(--orange)"},
+  {id:"contest", e:"🥇",t:"Won Local Contest",      d:"Cash prize from a community competition.",       ef:"cash",      v:500,   lbl:"+$500 Prize",   c:"var(--gold)"},
+  {id:"rate",    e:"📈",t:"Interest Rate Hike",     d:"Loan payment went up slightly.",                 ef:"cash",      v:-120,  lbl:"−$120 Rate",    c:"var(--red)"},
+  {id:"partner", e:"🤜",t:"Partnership Deal",       d:"A partner paid for a cross-promo feature.",      ef:"cash",      v:350,   lbl:"+$350 Deal",    c:"var(--accent)"},
+  {id:"shipping",e:"🚚",t:"Shipping Delay",         d:"Late inventory — missed sales opportunities.",   ef:"customers", v:-11,   lbl:"−11 Customers", c:"var(--orange)"},
+  {id:"recess",  e:"📉",t:"Recession Slowdown",     d:"Customers cut spending — recession effect.",     ef:"customers", v:-8,    lbl:"−8 Customers",  c:"var(--red)"},
+  {id:"loyalty", e:"💳",t:"Loyalty Program Pays",  d:"Repeat buyers spent more than expected.",        ef:"cash",      v:300,   lbl:"+$300 Loyalty", c:"var(--gold)"},
+  {id:"viral",   e:"🔥",t:"Went Viral!",            d:"A post exploded — major exposure.",              ef:"customers", v:25,    lbl:"+25 Customers", c:"var(--accent)"},
+];
+
+const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DICE_FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
+const TOTAL_ROUNDS = 19;
+const SAVE_KEY = "nugo-pro-v1";
+
+const HTP = [
+  {icon:"🚀",title:"Round 1 — Pick Your Business",color:"var(--accent)",body:"Choose from 7 real business types: Food Truck, Tee Shirt Brand, Content Creator, Hair/Lash/Nail Stylist, Barbershop, Amazon Store, or Dropshipping. Each has unique pricing, costs, and marketing strengths built in."},
+  {icon:"💰",title:"Round 2 — Set Your Price",color:"var(--gold)",body:"Every business has a realistic price range pulled from market data. Set your price strategically — too high loses customers, too low kills your margin. You'll see your contribution margin update live."},
+  {icon:"📣",title:"Round 3 — Marketing Strategy",color:"var(--blue)",body:"Allocate your monthly marketing budget across channels: Social Media, Email, Print, Direct Outreach, and Events. Each channel has different effectiveness for your business type. This is powered by real BUAD222 marketing weights."},
+  {icon:"🔬",title:"Round 4 — TQM Investment",color:"var(--teal)",body:"Invest in Total Quality Management initiatives like 6 Sigma Training, Vendor/JIT Sourcing, or Channel Support Systems. These reduce your labor and material costs permanently for the rest of the 12 months."},
+  {icon:"🤝",title:"Round 5 — Labor Negotiation",color:"var(--purple)",body:"Negotiate wages, benefits, and profit sharing with your team. Your starting position, best contract, and ceiling are all calculated using the BUAD222 labor model. Your choices affect monthly payroll for all 12 months."},
+  {icon:"💵",title:"Round 6 — Cash Strategy",color:"var(--gold)",body:"Decide what to do with excess cash: reinvest in operations, pay off debt, hold cash as a buffer, or pay yourself a dividend. This decision affects your financial resilience during the recession months ahead."},
+  {icon:"📅",title:"Rounds 7–15 — Monthly Operations",color:"var(--blue)",body:"Each round = one calendar month (January–December... minus setup). Set your expenses, then roll 2 dice. The sum auto-draws a business event card that applies instantly — supplier spike, viral post, equipment breakdown, grant. No choice. Just like real life."},
+  {icon:"📒",title:"Round 16 — Journal Entries",color:"var(--gold)",body:"Now the Accounting Lab begins. The system shows every real transaction your business generated across 9 months. Your job: record each one as a proper journal entry — Debit on the left, Credit on the right. The system checks your work in real time and flags errors."},
+  {icon:"⚖️",title:"Round 17 — Trial Balance",color:"var(--gold)",body:"All journal entries are now posted to accounts. You verify that total Debits equal total Credits across every account. If they don't match, find the error — just like a real bookkeeper. The Trial Balance feeds directly into your financial statements."},
+  {icon:"📊",title:"Round 18 — Financial Statements",color:"var(--gold)",body:"Build all 3 statements from your Trial Balance. Income Statement first — assign revenue and expense accounts. Then Balance Sheet — place assets, liabilities, equity. Finally Cash Flow. The system scores your placements and shows completed statements."},
+  {icon:"🔍",title:"Round 19 — Full Audit",color:"var(--teal)",body:"Review all 4 financial statements. Complete the 12-item Auditor's Checklist — marking each item Pass ✓ or Flag ⚑. The system issues an official Audit Opinion: Clean, Qualified, or Adverse."},
+  {icon:"🏆",title:"Score & Certificate",color:"var(--gold)",body:"You're scored on Profit, Cash Flow, Debt, Growth, and Strategic Decisions — plus your Accounting Lab accuracy. Complete the audit to earn your Certificate of Completion for your nugO Pro portfolio."},
+];
+
+const AUDIT_CHECKS = [
+  {id:"revenue",   lbl:"Revenue is properly recognized",                    accts:["Sales Revenue"],            risk:"low"},
+  {id:"expenses",  lbl:"All expenses are recorded and classified",          accts:["Rent","Supplies","Wages"],   risk:"low"},
+  {id:"cash",      lbl:"Ending cash matches bank reconciliation",           accts:["Cash"],                     risk:"medium"},
+  {id:"inventory", lbl:"Inventory valued at cost (not market)",             accts:["Inventory"],                risk:"medium"},
+  {id:"debt",      lbl:"Loan payable is accurate and disclosed",            accts:["Loan Payable"],             risk:null},
+  {id:"equity",    lbl:"Owner's equity reflects net profit/loss correctly", accts:["Owner's Equity"],           risk:"low"},
+  {id:"matching",  lbl:"Expenses matched to revenue in correct period",     accts:["All Expense Accounts"],     risk:"medium"},
+  {id:"cutoff",    lbl:"All transactions in the correct month",             accts:["Revenue & Expenses"],       risk:"low"},
+  {id:"internal",  lbl:"No single person controls both cash and records",   accts:["Internal Controls"],        risk:null},
+  {id:"going",     lbl:"Business can continue operating (going concern)",   accts:["Cash Flow"],                risk:null},
+  {id:"reconcile", lbl:"Monthly bank statements have been reconciled",      accts:["Cash","Bank"],              risk:"medium"},
+  {id:"tqm",       lbl:"TQM investments are properly capitalized/expensed", accts:["TQM Costs","Operations"],   risk:"low"},
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let S = {round:0,biz:null,ops:[],auditChecks:{},strategy:{}};
+let _bizType="foodtruck",_loanOn=false,_soloOn=true,_mktBudget=250;
+let _tqmSelected=[],_cashChoice="reinvest";
+let _diceInterval=null,_diceRolled=false,_chosenEvent=null;
+let _auditTab="trial",_htpStep=0;
+let _laborNeg={wage:0,benefits:0,profit:0,raise:0};
+
+function saveGame(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({...S,savedAt:new Date().toLocaleString()}));const el=document.getElementById("save-flash");if(el){el.style.display="flex";setTimeout(()=>el.style.display="none",2200);}}catch(e){}
+}
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch{return null;}}
+function clearSave(){try{localStorage.removeItem(SAVE_KEY);}catch{}}
+function advance(){S.round++;if(S.round>0&&S.biz)saveGame();render();}
+
+// ═══════════════════════════════════════════════
+// MATH HELPERS (BUAD222-powered)
+// ═══════════════════════════════════════════════
+const fmt  = n=>"$"+Math.abs(Math.round(n)).toLocaleString();
+const fmtS = n=>(n>=0?"+":"−")+fmt(n);
+const pct  = (a,b)=>b===0?"0%":Math.round((a/b)*100)+"%";
+const clamp= (v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+
+function calcContribMargin(biz,price,laborMod=1,matMod=1){
+  const labor = biz.laborBase * laborMod;
+  const mat   = biz.materialBase * matMod;
+  const total = labor + mat;
+  const cm    = price - total;
+  const pctM  = price > 0 ? cm/price : 0;
+  return {labor,mat,total,cm,pctM};
+}
+
+function calcMktCustomers(biz,budget,mktAlloc){
+  // BUAD222: weight-based allocation + diminishing returns
+  let totalWeight = 0, weightedBudget = 0;
+  MKT_CHANNELS.forEach(ch=>{
+    const w = biz.mktWeights[ch.id]||0;
+    const alloc = mktAlloc ? (mktAlloc[ch.id]||0) : w/10;
+    totalWeight += w;
+    const spend = budget * alloc;
+    const boost = Math.min(1, spend / ch.dimRet);
+    weightedBudget += boost * w;
+  });
+  const baseCustomers = Math.round(8 + (budget/500)*totalWeight*1.8);
+  return Math.max(5, baseCustomers);
+}
+
+function calcTQMSavings(tqmList){
+  let laborMod=1, matMod=1, demandBoost=0, adminSave=0;
+  tqmList.forEach(id=>{
+    const t = TQM_OPTIONS.find(x=>x.id===id);
+    if(!t) return;
+    if(t.effect==="labor")    laborMod    *= (1-t.pct);
+    if(t.effect==="material") matMod      *= (1-t.pct);
+    if(t.effect==="demand")   demandBoost += t.pct;
+    if(t.effect==="admin")    adminSave   += t.pct;
+  });
+  return {laborMod,matMod,demandBoost,adminSave};
+}
+
+function pickEvent(d1,d2,mi){
+  const sum=d1+d2+2;
+  const idx=((sum-2)*2+mi)%EVENTS.length;
+  return EVENTS[idx];
+}
+
+function calcScores(ops){
+  if(!ops.length) return {profit:0,cash:0,debt:0,growth:0,decisions:0,total:0};
+  const avg=ops.reduce((a,r)=>a+(r.profit||0),0)/ops.length;
+  const profit=clamp(Math.round(50+avg/15),0,100);
+  const lastCash=ops[ops.length-1].cashEnd||0;
+  const cash=clamp(Math.round(Math.min(100,lastCash/25)),0,100);
+  const lastDebt=ops[ops.length-1].debt||0;
+  const debt=clamp(Math.round(100-lastDebt/40),0,100);
+  const cg=ops.length>1?(ops[ops.length-1].customers||0)-(ops[0].customers||0):0;
+  const growth=clamp(Math.round(50+cg*1.5),0,100);
+  const decisions=clamp(Math.round(ops.reduce((a,r)=>a+(r.mktBudget>0?15:3)+(r.profit>0?20:0),0)/ops.length),0,100);
+  const total=Math.round((profit+cash+debt+growth+decisions)/5);
+  return {profit,cash,debt,growth,decisions,total};
+}
+
+// ═══════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════
+const b=(txt,fn,v="primary",sz="md",dis=false)=>
+  `<button class="btn ${v} ${sz}" onclick="${fn}" ${dis?"disabled":""}>${txt}</button>`;
+const bdg=(txt,color,sz="sm")=>{
+  const p=sz==="lg"?"4px 14px":"2px 10px"; const fs=sz==="lg"?13:11;
+  return `<span class="badge" style="background:${color}28;color:${color};border:1px solid ${color}44;padding:${p};font-size:${fs}px">${txt}</span>`;
+};
+const st=(lbl,val,color,sm=false)=>
+  `<div class="stat"><div class="val" style="color:${color};font-size:${sm?14:20}px">${val}</div><div class="lbl">${lbl}</div></div>`;
+const pb=(p,color)=>
+  `<div class="pbar-wrap"><div class="pbar-fill" style="width:${clamp(p,0,100)}%;background:${color}"></div></div>`;
+const inp=(lbl,id,type="text",val="",pre="",suf="",hint="")=>{
+  const preH=pre?`<span class="inp-pre">${pre}</span>`:"";
+  const sufH=suf?`<span class="inp-suf">${suf}</span>`:"";
+  const hintH=hint?`<div class="inp-hint">${hint}</div>`:"";
+  return `<div class="inp-wrap"><label class="inp-label">${lbl}</label>${hintH}<div class="inp-row">${preH}<input type="${type}" id="${id}" value="${val}">${sufH}</div></div>`;
+};
+const card=(c,cls="",style="")=>`<div class="card ${cls}" style="${style}">${c}</div>`;
+const restartLink=()=>`<div style="text-align:center;margin-top:14px"><button onclick="if(confirm('Restart and lose all progress?'))restartFull()" style="background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:11px;font-family:'Space Mono',monospace;text-decoration:underline">↺ Restart from beginning</button></div>`;
+
+function roundHdr(icon,colorVar,rndNum,title,desc){
+  const r=S.round; const isAudit=r===19; const isMon=r>=7&&r<=15; const isAcct=r>=16&&r<=18;
+  const bgC=isAudit?"var(--ts)":isAcct?"var(--gs)":isMon?"var(--bs)":r>=4&&r<=6?"var(--ps)":"var(--as)";
+  const brdC=isAudit?"var(--teal)":isAcct?"var(--gold)":isMon?"var(--blue)":r>=4&&r<=6?"var(--purple)":"var(--accent)";
+  const moName=isMon?MONTH_NAMES[r-7]:"";
+  return `<div class="round-hdr" style="background:linear-gradient(135deg,${bgC},transparent);border:1px solid ${brdC}44">
+    <div style="background:${bgC};border-radius:10px;padding:9px 11px;font-size:22px;flex-shrink:0">${icon}</div>
+    <div style="flex:1">
+      <div style="display:flex;gap:7px;margin-bottom:5px;flex-wrap:wrap">
+        ${bdg("Round "+rndNum,"var(--accent)")}
+        ${bdg("of 19","var(--dim)")}
+        ${isMon?bdg(moName+" 2025","var(--blue)"):""}
+        ${isAudit?bdg("Final Round","var(--teal)"):""}
+        ${isAcct?bdg("Accounting Lab","var(--gold)"):""}
+        ${r>=4&&r<=6?bdg("Strategy Round","var(--purple)"):""}
+      </div>
+      <div style="font-size:16px;font-weight:900">${title}</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px">${desc}</div>
+    </div>
+    <button class="btn dark sm" onclick="openHTP()">❓</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// HEADER / PROGRESS UPDATE
+// ═══════════════════════════════════════════════
+function updateHeader(){
+  const pw=document.getElementById("prog-wrap");
+  const bh=document.getElementById("biz-hdr");
+  if(S.round===0){pw.style.display="none";bh.style.display="none";return;}
+  pw.style.display="block";
+  const bar=document.getElementById("prog-bar");
+  bar.innerHTML=Array.from({length:TOTAL_ROUNDS},(_,i)=>{
+    const done=i<S.round; const isAudit=i===18; const isAcct=i>=15&&i<=17; const isMon=i>=6&&i<=14; const isStrat=i>=3&&i<=5;
+    const col=isAudit?"var(--teal)":isAcct?"var(--gold)":isMon?"var(--blue)":isStrat?"var(--purple)":"var(--accent)";
+    return `<div class="prog-seg" style="background:${done?col:i===S.round-1?col+"88":"var(--border)"}"></div>`;
+  }).join("");
+  document.getElementById("prog-l").textContent=`Round ${S.round} of ${TOTAL_ROUNDS}`;
+  document.getElementById("prog-r").textContent=Math.round((S.round/TOTAL_ROUNDS)*100)+"%";
+  if(S.biz){
+    bh.style.display="block";
+    document.getElementById("biz-hdr-name").textContent=S.biz.name;
+    document.getElementById("biz-hdr-type").textContent=S.biz.bizLabel;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════════════
+function render(){
+  updateHeader();
+  window.scrollTo({top:0,behavior:"smooth"});
+  const el=document.getElementById("screen");
+  el.className="fu"; void el.offsetWidth;
+  if(S.round===0)      el.innerHTML=renderIntro();
+  else if(S.round===1) el.innerHTML=renderPickBiz();
+  else if(S.round===2) el.innerHTML=renderPricing();
+  else if(S.round===3) el.innerHTML=renderMarketing();
+  else if(S.round===4) el.innerHTML=renderTQM();
+  else if(S.round===5) el.innerHTML=renderLabor();
+  else if(S.round===6) el.innerHTML=renderCash();
+  else if(S.round>=7&&S.round<=15) el.innerHTML=renderMonth(S.round-7);
+  else if(S.round===16) el.innerHTML=renderJournalEntries();
+  else if(S.round===17) el.innerHTML=renderTrialBalance();
+  else if(S.round===18) el.innerHTML=renderStatementBuilder();
+  else if(S.round===19) el.innerHTML=renderAudit();
+}
+
+// ═══════════════════════════════════════════════
+// INTRO
+// ═══════════════════════════════════════════════
+function renderIntro(){
+  const saved=loadSave();
+  const resumeBanner=saved&&saved.round>0&&saved.biz?`
+    <div class="resume-banner">
+      <div style="font-size:26px">💾</div>
+      <div style="flex:1"><div style="color:var(--accent);font-weight:800;font-size:14px">Saved Game Found</div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px"><strong style="color:var(--gold)">${saved.biz.name}</strong> · Round ${saved.round} of 16 · ${saved.savedAt||""}</div></div>
+      <div style="display:flex;gap:7px;flex-shrink:0">
+        ${b("Discard","discardSave()","dark","sm")}
+        ${b("▶ Resume","resumeGame()","primary","sm")}
+      </div>
+    </div>`:"";
+
+  return `
+    <div style="text-align:center;padding:26px 0 18px">
+      <div style="font-size:50px;margin-bottom:10px">💼</div>
+      <h1 style="font-size:23px;font-weight:900;margin:0 0 10px;line-height:1.25">From Startup to<br><span style="color:var(--accent)">Full Audit</span></h1>
+      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 18px">
+        Launch <strong style="color:var(--gold)">your business</strong>. Make real strategy decisions. Survive <strong style="color:var(--red)">recession events</strong>. Generate financial statements. Face a <strong style="color:var(--teal)">Full Audit</strong>.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
+        ${b("🚀 Start Your Journey","startGame()","gold","xl")}
+        ${b("❓ How to Play","openHTP()","ghost","lg")}
+      </div>
+    </div>
+    ${resumeBanner}
+    <div class="g3" style="margin-bottom:18px">
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">💼</div><div style="font-weight:700;font-size:11px">7 Real Businesses</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Food to Dropshipping</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">📒</div><div style="font-weight:700;font-size:11px">Accounting Lab</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Journal entries → Statements</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🔍</div><div style="font-weight:700;font-size:11px">Full Audit Round</div><div style="color:var(--muted);font-size:10px;margin-top:3px">12-item checklist + opinion</div></div>
+    </div>
+    ${card(`
+      <div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">📋 16-Round Structure</div>
+      ${[
+        ["var(--accent)","⚙️ Setup",    "Rounds 1–3",  "Pick your business, set price, plan marketing"],
+        ["var(--purple)","🧠 Strategy",  "Rounds 4–6",  "TQM investments, labor negotiation, cash decision"],
+        ["var(--blue)",  "📅 Operate",  "Rounds 7–15", "9 months of operations with dice events"],
+        ["var(--gold)",  "📒 Accounting","Rounds 16–18","Journal entries → Trial Balance → Statements"],
+        ["var(--teal)",  "🔍 Audit",    "Round 19",    "Full audit — Trial Balance → Opinion"],
+      ].map(([col,tag,rnd,desc])=>`
+        <div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border);align-items:center">
+          <div style="width:24px;height:24px;border-radius:50%;background:${col}28;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px">${tag.split(" ")[0]}</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:12px">${tag} — ${rnd}</div><div style="color:var(--muted);font-size:10px;margin-top:2px">${desc}</div></div>
+          ${bdg(rnd,col)}
+        </div>`).join("")}
+    `,"","margin-bottom:18px")}
+    <div style="text-align:center">${b("🚀 Start Your 12-Month Journey","startGame()","gold","xl")}</div>`;
+}
+
+function startGame(){S={round:1,biz:null,ops:[],auditChecks:{},strategy:{}};_auditTab="trial";_tqmSelected=[];render();}
+function resumeGame(){const saved=loadSave();if(!saved)return;S=saved;_auditTab="trial";render();}
+function discardSave(){clearSave();render();}
+function restartFull(){clearSave();S={round:0,biz:null,ops:[],auditChecks:{},strategy:{}};_auditTab="trial";_tqmSelected=[];render();}
+
+// ═══════════════════════════════════════════════
+// ROUND 1 — PICK BUSINESS
+// ═══════════════════════════════════════════════
+function renderPickBiz(){
+  const opts=BIZ_TYPES.map(bz=>`
+    <div class="biz-opt ${_bizType===bz.id?"sel":""}" onclick="selBiz('${bz.id}')">
+      <div class="biz-icon">${bz.icon}</div>
+      <div class="biz-lbl">${bz.label}</div>
+      <div class="biz-ex">${bz.desc}</div>
+      <div class="biz-stats">
+        ${bdg("Price: "+fmt(bz.price),bz.color)}
+        ${bdg(bz.growthRate*100+"% growth",bz.color)}
+      </div>
+    </div>`).join("");
+
+  const selBiz=BIZ_TYPES.find(b=>b.id===_bizType);
+  const cm=calcContribMargin(selBiz,selBiz.price);
+
+  return `
+    ${roundHdr("💼","var(--accent)","1","Pick Your Business","Choose the business you want to run for 12 months")}
+    <div class="col">
+      <div class="biz-grid">${opts}</div>
+      ${inp("Business Name","biz-name","text","","","","Give your business a unique name")}
+      <div class="g2">
+        ${inp("Starting Cash","biz-cash","number",1500,"$","","Your personal investment")}
+        <div class="inp-wrap">
+          <label class="inp-label">Team</label>
+          <div style="display:flex;gap:8px;margin-top:5px">
+            ${["Solo Owner","+ Employee +$400/mo"].map((l,i)=>`
+              <div onclick="selStaff(${i===0})" style="flex:1;text-align:center;padding:9px 6px;border-radius:9px;cursor:pointer;border:2px solid ${(_soloOn&&i===0)||(!_soloOn&&i===1)?"var(--accent)":"var(--border)"};background:${(_soloOn&&i===0)||(!_soloOn&&i===1)?"var(--as)":"var(--card)"}">
+                <div style="font-weight:700;font-size:11px">${l.split("+")[0]}</div>
+                ${i===1?`<div style="color:var(--red);font-size:9px">+$400/mo</div>`:""}
+              </div>`).join("")}
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="toggle" id="loan-toggle" onclick="toggleLoan()" style="background:${_loanOn?"var(--accent)":"var(--border)"}">
+          <div class="knob" style="left:${_loanOn?"22px":"3px"}"></div>
+        </button>
+        <span style="font-weight:700;font-size:13px">Take a Startup Loan</span>
+        ${_loanOn?bdg("10%/mo Interest","var(--red)"):""}
+      </div>
+      <div id="loan-section" style="display:${_loanOn?"block":"none"}">${inp("Loan Amount","loan-amt","number",1000,"$")}</div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📊 ${selBiz.label} — Baseline Metrics</div>
+        <div class="g4">
+          ${st("Price/Unit",fmt(selBiz.price),selBiz.color)}
+          ${st("Labor/Unit",fmt(cm.labor),"var(--red)")}
+          ${st("Material/Unit",fmt(cm.mat),"var(--red)")}
+          ${st("Contribution Margin",fmt(cm.cm),cm.cm>0?"var(--accent)":"var(--red)")}
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="color:var(--muted);font-size:12px">Contribution Margin %</span>
+            <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace">${pct(cm.cm,selBiz.price)}</span>
+          </div>
+          ${pb(cm.pctM*100,"var(--accent)")}
+        </div>
+      `,"","background:#080c18")}
+      ${b("Round 2: Set Your Price →","submitPickBiz()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selBiz(id){_bizType=id;document.querySelectorAll(".biz-opt").forEach(el=>{el.classList.toggle("sel",el.querySelector(".biz-icon").textContent===BIZ_TYPES.find(b=>b.id===id).icon)});}
+function selStaff(s){_soloOn=s;render();}
+function toggleLoan(){_loanOn=!_loanOn;render();}
+
+function submitPickBiz(){
+  const name=(document.getElementById("biz-name")?.value||"").trim();
+  if(!name){alert("Give your business a name!");return;}
+  const bt=BIZ_TYPES.find(b=>b.id===_bizType);
+  const cash=+(document.getElementById("biz-cash")?.value||1500);
+  const loanAmt=_loanOn?+(document.getElementById("loan-amt")?.value||0):0;
+  S.biz={bizType:_bizType,bizLabel:bt.label,bizIcon:bt.icon,name,startCash:cash,loan:_loanOn,loanAmt,
+    solo:_soloOn,totalCash:cash+loanAmt,
+    price:bt.price,defaultPrice:bt.price,priceMin:bt.priceMin,priceMax:bt.priceMax,
+    supplies:bt.supplies,defaultSupplies:bt.supplies,
+    laborBase:bt.laborBase,matBase:bt.materialBase,
+    mktWeights:bt.mktWeights,growthRate:bt.growthRate,
+    mktBudget:_mktBudget,baseCustomers:16,
+    tqmList:[],laborMod:1,matMod:1,demandBoost:0,
+    cashChoice:"reinvest",laborNeg:{wage:bt.laborBase,benefits:200,profit:0.02,raise:0.03}
+  };
+  advance();
+}
+
+// ═══════════════════════════════════════════════
+// ROUND 2 — PRICING (BUAD222 price range model)
+// ═══════════════════════════════════════════════
+function renderPricing(){
+  const bz=BIZ_TYPES.find(b=>b.id===S.biz.bizType);
+  const price=S.biz.price;
+  const cm=calcContribMargin(S.biz,price,S.biz.laborMod,S.biz.matMod);
+  const premium=(price-bz.priceIdeal)/bz.priceIdeal;
+
+  return `
+    ${roundHdr("💰","var(--gold)","2","Pricing Strategy","Set your price within the market range — powered by BUAD222 pricing model")}
+    <div class="col">
+      ${card(`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="color:var(--muted);font-size:11px">Market Price Range for <strong style="color:var(--gold)">${S.biz.bizLabel}</strong></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <span style="color:var(--muted);font-size:11px;width:50px">${fmt(bz.priceMin)}<br><span style="font-size:9px">Budget</span></span>
+          <div style="flex:1;background:#151f35;height:6px;border-radius:99px;position:relative">
+            <div style="position:absolute;left:0;top:0;bottom:0;width:${((price-bz.priceMin)/(bz.priceMax-bz.priceMin))*100}%;background:var(--gold);border-radius:99px;transition:width .3s"></div>
+          </div>
+          <span style="color:var(--muted);font-size:11px;width:55px;text-align:right">${fmt(bz.priceMax)}<br><span style="font-size:9px">Premium</span></span>
+        </div>
+        <div style="text-align:center">
+          <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px">Market Midpoint (Ideal)</div>
+          <div style="color:var(--teal);font-size:13px;font-weight:700;font-family:'Space Mono',monospace">${fmt(bz.priceIdeal)}</div>
+        </div>
+      `,"","background:#080c18")}
+      <div class="g2">
+        ${inp("Your Price per Sale","price","number",price,"$","",`Range: ${fmt(bz.priceMin)} – ${fmt(bz.priceMax)}`)}
+        ${inp("Monthly Customer Goal","cust-goal","number",S.biz.custGoal||20,"","customers")}
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">📊 BUAD222 Contribution Margin Analysis</div>
+        <div class="g4">
+          ${st("Price/Unit",fmt(price),"var(--gold)")}
+          ${st("Labor/Unit",fmt(cm.labor),"var(--red)")}
+          ${st("Material/Unit",fmt(cm.mat),"var(--red)")}
+          ${st("CM/Unit",fmt(cm.cm),cm.cm>0?"var(--accent)":"var(--red)")}
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span style="color:var(--muted);font-size:12px">Margin %</span>
+          <span style="color:${cm.pctM>0.3?"var(--accent)":cm.pctM>0.15?"var(--gold)":"var(--red)"};font-weight:800;font-family:'Space Mono',monospace">${pct(cm.cm,price)}</span>
+        </div>
+        ${pb(cm.pctM*100,cm.pctM>0.3?"var(--accent)":cm.pctM>0.15?"var(--gold)":"var(--red)")}
+        ${premium>0.1?`<div style="margin-top:8px;padding:7px 12px;background:var(--gs);border-radius:7px;font-size:11px;color:var(--gold)">💡 Premium pricing — higher margin, fewer customers</div>`:""}
+        ${premium<-0.1?`<div style="margin-top:8px;padding:7px 12px;background:var(--bs);border-radius:7px;font-size:11px;color:var(--blue)">💡 Budget pricing — more customers, thinner margin</div>`:""}
+      `,"glow-gold","background:var(--gs)")}
+      ${b("Round 3: Plan Marketing →","submitPricing()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitPricing(){
+  S.biz.price=+(document.getElementById("price")?.value||S.biz.defaultPrice);
+  S.biz.custGoal=+(document.getElementById("cust-goal")?.value||20);
+  advance();
+}
+
+// ═══════════════════════════════════════════════
+// ROUND 3 — MARKETING (BUAD222 weight model)
+// ═══════════════════════════════════════════════
+function renderMarketing(){
+  const bz=BIZ_TYPES.find(b=>b.id===S.biz.bizType);
+  const budgets=[0,100,250,500,750];
+
+  const channelTable=`
+    <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">📡 Channel Effectiveness for ${bz.label}</div>
+    ${MKT_CHANNELS.map(ch=>{
+      const w=bz.mktWeights[ch.id]||0;
+      const stars="★".repeat(w)+"☆".repeat(3-Math.min(3,w));
+      const col=w>=3?"var(--accent)":w>=2?"var(--gold)":w>=1?"var(--blue)":"var(--muted)";
+      return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--border)">
+        <span style="flex:1;font-size:12px">${ch.label}</span>
+        <span style="color:${col};font-size:13px;letter-spacing:2px">${stars}</span>
+        ${bdg(w+"x Weight",col)}
+      </div>`;
+    }).join("")}`;
+
+  const mktOpts=budgets.map(bg=>{
+    const customers=calcMktCustomers(bz,bg,null);
+    const sel=_mktBudget===bg;
+    return `<div class="mkt-opt ${sel?"sel":""}" onclick="selMkt(${bg})" id="mkt-${bg}">
+      ${sel?`<span style="position:absolute;top:9px;right:12px;color:var(--accent)">✓</span>`:""}
+      <div style="font-size:17px;font-weight:900;font-family:'Space Mono',monospace;color:${sel?"var(--accent)":"var(--text)"}">${bg===0?"Free":fmt(bg)}</div>
+      <div style="color:var(--gold);font-size:19px;font-weight:900;margin:5px 0">${customers}</div>
+      <div style="color:var(--muted);font-size:10px">customers/month</div>
+    </div>`;
+  }).join("");
+
+  return `
+    ${roundHdr("📣","var(--blue)","3","Marketing Strategy","Allocate your budget — weighted by BUAD222 channel effectiveness")}
+    <div class="col">
+      ${card(channelTable,"","background:#080c18")}
+      <div class="mkt-grid">${mktOpts}</div>
+      ${card(`<div class="g3">
+        ${st("Monthly Spend",fmt(_mktBudget),"var(--gold)")}
+        ${st("Customers/Mo",calcMktCustomers(bz,_mktBudget,null),"var(--accent)")}
+        ${st("12-Month Ad Cost",fmt(_mktBudget*12),"var(--red)")}
+      </div>`,"glow-gold","background:var(--gs)")}
+      ${b("Round 4: TQM Investment →","submitMarketing()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selMkt(b){_mktBudget=b;document.querySelectorAll(".mkt-opt").forEach(el=>{el.classList.remove("sel");el.style.borderColor="var(--border)";el.style.background="var(--card)";});const el=document.getElementById("mkt-"+b);if(el){el.classList.add("sel");el.style.borderColor="var(--accent)";el.style.background="var(--as)";}}
+function submitMarketing(){S.biz.mktBudget=_mktBudget;S.biz.baseCustomers=calcMktCustomers(BIZ_TYPES.find(b=>b.id===S.biz.bizType),_mktBudget,null);advance();}
+
+// ═══════════════════════════════════════════════
+// ROUND 4 — TQM INVESTMENT
+// ═══════════════════════════════════════════════
+function renderTQM(){
+  const savings=calcTQMSavings(_tqmSelected);
+  const cm=calcContribMargin(S.biz,S.biz.price,savings.laborMod,savings.matMod);
+  const totalCost=_tqmSelected.length*500;
+
+  return `
+    ${roundHdr("🔬","var(--teal)","4","TQM Investment","Invest in quality initiatives that reduce costs permanently for all 12 months")}
+    <div class="col">
+      ${card(`<p style="color:var(--text);font-size:13px;line-height:1.7;margin:0">
+        Total Quality Management initiatives permanently reduce your operating costs. Each costs <strong style="color:var(--gold)">$500/round</strong> but pays back through lower labor, material, or admin costs every single month.
+      </p>`,"","background:#080c18")}
+      <div class="col">
+        ${TQM_OPTIONS.map(t=>{
+          const sel=_tqmSelected.includes(t.id);
+          return `<div class="tqm-opt ${sel?"sel":""}" onclick="toggleTQM('${t.id}')">
+            <span style="font-size:22px;flex-shrink:0">${t.icon}</span>
+            <div style="flex:1">
+              <div style="font-weight:800;font-size:13px;color:${sel?"var(--teal)":"var(--text)"}">${t.label}</div>
+              <div style="color:var(--muted);font-size:11px;margin-top:3px">${t.desc}</div>
+            </div>
+            <div style="flex-shrink:0;text-align:right">
+              ${bdg(fmt(500),"var(--gold)")}
+              ${sel?`<div style="color:var(--teal);font-size:10px;font-weight:700;margin-top:3px">✓ Selected</div>`:""}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">📊 TQM Impact on Contribution Margin</div>
+        <div class="g4">
+          ${st("TQM Cost",fmt(totalCost),"var(--red)")}
+          ${st("New CM/Unit",fmt(cm.cm),cm.cm>0?"var(--accent)":"var(--red)")}
+          ${st("New Margin %",pct(cm.cm,S.biz.price),cm.pctM>0.3?"var(--accent)":cm.pctM>0.15?"var(--gold)":"var(--red)")}
+          ${st("Demand Boost",savings.demandBoost>0?"+"+Math.round(savings.demandBoost*100)+"%":"None","var(--blue)")}
+        </div>
+        ${_tqmSelected.length>0?`<div style="margin-top:10px;padding:8px 12px;background:var(--ts);border-radius:8px;font-size:11px;color:var(--teal)">${_tqmSelected.length} initiative${_tqmSelected.length>1?"s":""} selected — cost savings apply every month for 12 months</div>`:""}
+      `,"glow-teal","background:var(--ts)")}
+      ${b("Round 5: Labor Negotiation →","submitTQM()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function toggleTQM(id){if(_tqmSelected.includes(id)){_tqmSelected=_tqmSelected.filter(x=>x!==id);}else{_tqmSelected.push(id);}render();}
+function submitTQM(){const s=calcTQMSavings(_tqmSelected);S.biz.tqmList=_tqmSelected;S.biz.laborMod=s.laborMod;S.biz.matMod=s.matMod;S.biz.demandBoost=s.demandBoost;S.strategy.tqmCost=_tqmSelected.length*500;advance();}
+
+// ═══════════════════════════════════════════════
+// ROUND 5 — LABOR NEGOTIATION (BUAD222 model)
+// ═══════════════════════════════════════════════
+function renderLabor(){
+  const bz=BIZ_TYPES.find(b=>b.id===S.biz.bizType);
+  const base=bz.laborBase;
+  const demands={wage:base*1.30, benefits:250, profit:0.024, raise:0.059};
+  const best={wage:base*1.10*0.9, benefits:220, profit:0.020, raise:0.050};
+  const ceiling={wage:base*1.32, benefits:262, profit:0.026, raise:0.062};
+
+  if(!_laborNeg.wage) _laborNeg={wage:base*1.10,benefits:235,profit:0.022,raise:0.055};
+
+  const annualCost=!S.biz.solo?Math.round((_laborNeg.wage*2000)+_laborNeg.benefits+(_laborNeg.profit*30000)):0;
+
+  return `
+    ${roundHdr("🤝","var(--purple)","5","Labor Negotiation","Negotiate wages & benefits — affects monthly payroll for all 12 months")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">📋 Negotiation Positions (BUAD222 Model)</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:'Space Mono',monospace">
+            <tr style="color:var(--dim);font-size:9px;text-transform:uppercase">
+              <td style="padding:5px 8px">Component</td>
+              <td style="padding:5px 8px;color:var(--red)">Union Demands</td>
+              <td style="padding:5px 8px;color:var(--accent)">Best Contract</td>
+              <td style="padding:5px 8px;color:var(--gold)">Your Ceiling</td>
+            </tr>
+            ${[
+              ["Hourly Wage",fmt(demands.wage),fmt(best.wage),fmt(ceiling.wage)],
+              ["Monthly Benefits",fmt(demands.benefits),fmt(best.benefits),fmt(ceiling.benefits)],
+              ["Profit Sharing",(demands.profit*100).toFixed(1)+"%",(best.profit*100).toFixed(1)+"%",(ceiling.profit*100).toFixed(1)+"%"],
+              ["Annual Raise",(demands.raise*100).toFixed(1)+"%",(best.raise*100).toFixed(1)+"%",(ceiling.raise*100).toFixed(1)+"%"],
+            ].map(r=>`<tr style="border-top:1px solid var(--border)">
+              <td style="padding:7px 8px;color:var(--text)">${r[0]}</td>
+              <td style="padding:7px 8px;color:var(--red)">${r[1]}</td>
+              <td style="padding:7px 8px;color:var(--accent)">${r[2]}</td>
+              <td style="padding:7px 8px;color:var(--gold)">${r[3]}</td>
+            </tr>`).join("")}
+          </table>
+        </div>
+      `,"","background:#080c18")}
+      ${S.biz.solo?card(`<p style="color:var(--muted);font-size:13px;text-align:center;margin:0">You're running solo — no labor negotiation needed.<br><span style="color:var(--accent)">This round is skipped for solo owners.</span></p>`):`
+        <div class="col">
+          ${[
+            {id:"wage",lbl:"Agreed Hourly Wage",min:best.wage,max:ceiling.wage,step:0.25,pre:"$",val:_laborNeg.wage},
+            {id:"benefits",lbl:"Monthly Benefits",min:best.benefits,max:ceiling.benefits,step:5,pre:"$",val:_laborNeg.benefits},
+          ].map(f=>`
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <label style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase">${f.lbl}</label>
+                <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace;font-size:12px" id="${f.id}-disp">${f.pre}${f.val.toFixed(2)}</span>
+              </div>
+              <input type="range" class="neg-slider" id="${f.id}-range" min="${f.min.toFixed(2)}" max="${f.max.toFixed(2)}" step="${f.step}" value="${f.val}" oninput="updateLabor('${f.id}',this.value,'${f.pre}')">
+              <div style="display:flex;justify-content:space-between;margin-top:3px">
+                <span style="color:var(--accent);font-size:9px">Best: ${f.pre}${f.min.toFixed(2)}</span>
+                <span style="color:var(--red);font-size:9px">Ceiling: ${f.pre}${f.max.toFixed(2)}</span>
+              </div>
+            </div>`).join("")}
+        </div>`}
+      ${card(`<div class="g3">
+        ${st("Annual Labor Cost",S.biz.solo?"Solo":""+fmt(annualCost),"var(--red)")}
+        ${st("Monthly Cost",S.biz.solo?"$0":fmt(annualCost/12),"var(--orange)")}
+        ${st("Status",S.biz.solo?"No Staff":"Negotiated","var(--accent)")}
+      </div>`,"","background:#080c18")}
+      ${b("Round 6: Cash Strategy →","submitLabor()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function updateLabor(field,val,pre){
+  _laborNeg[field]=+val;
+  const disp=document.getElementById(field+"-disp");
+  if(disp) disp.textContent=pre+parseFloat(val).toFixed(2);
+}
+function submitLabor(){S.biz.laborNeg={..._laborNeg};S.strategy.laborNeg={..._laborNeg};advance();}
+
+// ═══════════════════════════════════════════════
+// ROUND 6 — CASH STRATEGY
+// ═══════════════════════════════════════════════
+function renderCash(){
+  const cash=S.biz.totalCash;
+  const excess=Math.max(0,cash-1500);
+  const opts=[
+    {id:"reinvest",icon:"🔄",title:"Reinvest in Operations",desc:"Buy more inventory, upgrade equipment, expand capacity.",impact:"Reduces supply costs 8% next quarter",color:"var(--accent)"},
+    {id:"debt",    icon:"🏦",title:"Pay Off Debt Early",    desc:"Retire part of your loan early to save on interest.",impact:"Saves interest each month remaining",color:"var(--blue)"},
+    {id:"hold",    icon:"🛡️",title:"Hold as Cash Reserve",  desc:"Keep cash as a recession buffer. Safety first.",impact:"No immediate return — maximum protection",color:"var(--gold)"},
+    {id:"dividend",icon:"💸",title:"Pay Yourself Dividend", desc:"Take a distribution from profits now.",impact:"Reduces operating capital by dividend amount",color:"var(--purple)"},
+  ];
+
+  return `
+    ${roundHdr("💵","var(--gold)","6","Cash Strategy","Decide what to do with your excess capital before operations begin")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">💼 Working Capital Analysis</div>
+        <div class="g3">
+          ${st("Total Capital",fmt(cash),"var(--gold)")}
+          ${st("Min Reserve",fmt(1500),"var(--muted)")}
+          ${st("Excess Cash",fmt(excess),excess>0?"var(--accent)":"var(--red)")}
+        </div>
+      `,"","background:#080c18")}
+      <div class="col">
+        ${opts.map(o=>`
+          <div onclick="selCash('${o.id}')" style="border-radius:13px;padding:15px;cursor:pointer;transition:all .13s;border:2px solid ${_cashChoice===o.id?o.color:"var(--border)"};background:${_cashChoice===o.id?o.color+"18":"var(--card)"};display:flex;gap:13px;align-items:center">
+            <span style="font-size:28px">${o.icon}</span>
+            <div style="flex:1">
+              <div style="font-weight:800;font-size:13px;color:${_cashChoice===o.id?o.color:"var(--text)"}">${o.title}</div>
+              <div style="color:var(--muted);font-size:11px;margin-top:3px">${o.desc}</div>
+              <div style="color:${o.color};font-size:10px;font-weight:700;margin-top:5px">${o.impact}</div>
+            </div>
+            ${_cashChoice===o.id?bdg("✓ Selected",o.color):""}
+          </div>`).join("")}
+      </div>
+      ${b("Start January — Month 1 →","submitCash()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function selCash(id){_cashChoice=id;render();}
+function submitCash(){S.biz.cashChoice=_cashChoice;S.strategy.cashChoice=_cashChoice;advance();}
+
+// ═══════════════════════════════════════════════
+// ROUNDS 7-15 — MONTHLY OPERATIONS
+// ═══════════════════════════════════════════════
+function renderMonth(mi){
+  _diceRolled=false;_chosenEvent=null;
+  const prevCash=S.ops.length>0?S.ops[S.ops.length-1].cashEnd:S.biz.totalCash;
+  const empCost=S.biz.solo?0:400;
+  const loanPmt=S.biz.loan?Math.round(S.biz.loanAmt*0.10):0;
+  const supplies=Math.round(S.biz.supplies*(1+S.biz.growthRate*(mi/12)));
+
+  return `
+    ${roundHdr("📅","var(--blue)",mi+7,MONTH_NAMES[mi]+" — Month "+(mi+1)+" of 9","Set expenses and roll 2 dice for your business event")}
+    <div class="col">
+      <div class="month-banner">
+        <div style="font-size:26px">📅</div>
+        <div>
+          <div style="color:var(--blue);font-weight:800;font-size:15px">${MONTH_NAMES[mi]} — Month ${mi+1} of 9</div>
+          <div style="color:var(--muted);font-size:10px;margin-top:2px">Set expenses → roll 2 dice → event auto-applied</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="color:var(--muted);font-size:9px;text-transform:uppercase">Cash In</div>
+          <div style="color:var(--gold);font-weight:800;font-family:'Space Mono',monospace;font-size:15px">${fmt(prevCash)}</div>
+        </div>
+      </div>
+      <div class="g2">
+        ${inp("Supplies / Inventory","supplies","number",supplies,"$")}
+        ${inp("Rent / Workspace","rent","number",mi<3?0:300,"$","")}
+        ${inp("Misc Expenses","misc","number",80,"$")}
+        <div class="inp-wrap">
+          <label class="inp-label">Fixed Auto-Costs</label>
+          <div style="background:#080c18;border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-size:11px;display:flex;flex-direction:column;gap:4px">
+            ${!S.biz.solo?`<div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Employee</span><span style="color:var(--red)">+$400</span></div>`:""}
+            ${S.biz.loan?`<div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Loan (10%)</span><span style="color:var(--red)">+${fmt(loanPmt)}</span></div>`:""}
+            <div style="display:flex;justify-content:space-between;color:var(--muted)"><span>Marketing</span><span style="color:var(--gold)">+${fmt(S.biz.mktBudget)}</span></div>
+            ${S.biz.tqmList.length>0?`<div style="display:flex;justify-content:space-between;color:var(--muted)"><span>TQM (${S.biz.tqmList.length})</span><span style="color:var(--teal)">Active</span></div>`:""}
+          </div>
+        </div>
+      </div>
+      <div class="card glow-purple" style="background:linear-gradient(135deg,#110a28,#0a1020)">
+        <div style="color:var(--purple);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">🎲 ${MONTH_NAMES[mi]} Business Event — Roll 2 Dice</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:13px">
+          <div style="display:flex;gap:18px;align-items:center">
+            <div id="d1" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="d2" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="dice-sum" style="display:none;flex-direction:column;align-items:center;gap:3px">
+              <div style="color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:1px">Sum</div>
+              <div id="sum-val" style="color:var(--gold);font-size:28px;font-weight:900;font-family:'Space Mono',monospace;text-shadow:0 0 16px #f5b73188"></div>
+            </div>
+          </div>
+          <div id="dice-ctrl">${b("🎲 Roll 2 Dice","rollDice("+mi+")","purple","lg")}</div>
+          <div id="event-reveal" style="width:100%;display:none"></div>
+        </div>
+      </div>
+      <div id="results-preview" style="display:none"></div>
+      ${b("Close "+MONTH_NAMES[mi]+" Books →","submitMonth("+mi+")","gold","lg full",true,"id='close-btn'")}
+      ${restartLink()}
+    </div>`;
+}
+
+function rollDice(mi){
+  if(_diceRolled) return;
+  let count=0;
+  const d1=document.getElementById("d1"),d2=document.getElementById("d2"),ctrl=document.getElementById("dice-ctrl");
+  ctrl.innerHTML=`<div style="color:var(--purple);font-weight:800;font-size:13px;animation:pulse 0.45s infinite">Rolling…</div>`;
+  d1.classList.add("shake");d2.classList.add("shake");
+  d1.style.border="2px solid var(--purple)";d1.style.background="var(--ps)";
+  d2.style.border="2px solid var(--purple)";d2.style.background="var(--ps)";
+  _diceInterval=setInterval(()=>{
+    const r1=Math.floor(Math.random()*6),r2=Math.floor(Math.random()*6);
+    d1.textContent=DICE_FACES[r1];d2.textContent=DICE_FACES[r2];
+    count++;
+    if(count>=20){
+      clearInterval(_diceInterval);
+      const f1=Math.floor(Math.random()*6),f2=Math.floor(Math.random()*6);
+      d1.textContent=DICE_FACES[f1];d2.textContent=DICE_FACES[f2];
+      d1.classList.remove("shake");d2.classList.remove("shake");
+      d1.style.border="2px solid var(--gold)";d1.style.background="var(--gs)";d1.style.boxShadow="0 0 20px #f5b73166";
+      d2.style.border="2px solid var(--gold)";d2.style.background="var(--gs)";d2.style.boxShadow="0 0 20px #f5b73166";
+      const sum=f1+f2+2;
+      const sumEl=document.getElementById("dice-sum");sumEl.style.display="flex";
+      document.getElementById("sum-val").textContent=sum;
+      ctrl.innerHTML=`<div style="display:flex;gap:8px">${bdg("Die 1: "+(f1+1),"var(--gold)")} ${bdg("Die 2: "+(f2+1),"var(--gold)")}</div>`;
+      _diceRolled=true;
+      const ev=pickEvent(f1,f2,mi);
+      _chosenEvent=ev;
+      showEventReveal(ev,mi);
+    }
+  },65);
+}
+
+function showEventReveal(ev,mi){
+  const revEl=document.getElementById("event-reveal");
+  revEl.style.display="block";
+  revEl.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px">🎴 Dice Roll → Event Card Drawn</div>
+    <div style="background:linear-gradient(135deg,#1a1030,#0e1828);border:2px solid var(--purple)88;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;animation:pulse 0.6s infinite" id="ev-face-down">
+      <span style="font-size:34px">🎴</span><span style="color:var(--purple);font-weight:800;font-size:13px">Revealing…</span>
+    </div>`;
+  setTimeout(()=>{
+    const fd=document.getElementById("ev-face-down");
+    if(!fd) return;
+    fd.style.animation="none";fd.className="ev-card reveal";
+    fd.style.background=ev.c+"22";fd.style.border=`2px solid ${ev.c}`;fd.style.boxShadow=`0 0 26px ${ev.c}55`;
+    fd.style.justifyContent="flex-start";
+    fd.innerHTML=`<span style="font-size:32px;flex-shrink:0">${ev.e}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="color:${ev.c};font-weight:900;font-size:14px">${ev.t}</div>${bdg(ev.lbl,ev.c)}
+        </div>
+        <div style="color:var(--muted);font-size:11px">${ev.d}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:center"><div style="color:${ev.c};font-size:11px;font-weight:800">AUTO</div><div style="color:${ev.c};font-size:9px">APPLIED</div></div>`;
+    setTimeout(()=>showResultsPreview(mi),380);
+    setTimeout(()=>{const cb=document.getElementById("close-btn");if(cb)cb.disabled=false;},500);
+  },680);
+}
+
+function showResultsPreview(mi){
+  const supplies=+(document.getElementById("supplies")?.value||S.biz.supplies);
+  const rent=+(document.getElementById("rent")?.value||0);
+  const misc=+(document.getElementById("misc")?.value||80);
+  const empCost=S.biz.solo?0:400;
+  const loanPmt=S.biz.loan?Math.round(S.biz.loanAmt*0.10):0;
+  const tqmCost=S.strategy.tqmCost||0;
+  const baseExp=supplies+rent+misc+empCost+S.biz.mktBudget+loanPmt;
+  const ev=_chosenEvent;
+  let customers=Math.round(S.biz.baseCustomers*(1+S.biz.demandBoost)),cashAdj=0,expMult=1;
+  if(ev.ef==="customers") customers=Math.max(0,customers+ev.v);
+  if(ev.ef==="cash")      cashAdj=ev.v;
+  if(ev.ef==="expenses")  expMult=1+ev.v;
+  const adjExp=Math.round(baseExp*expMult);
+  const revenue=Math.round(customers*S.biz.price);
+  const profit=revenue-adjExp;
+  const prevCash=S.ops.length>0?S.ops[S.ops.length-1].cashEnd:S.biz.totalCash;
+  const cashEnd=prevCash+revenue-adjExp+cashAdj;
+  const prv=document.getElementById("results-preview");
+  if(!prv) return;
+  prv.style.display="block";
+  prv.innerHTML=card(`
+    <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📊 ${MONTH_NAMES[mi]} — Final Results</div>
+    <div class="g4">
+      ${st("Customers",customers,"var(--accent)")}
+      ${st("Revenue",fmt(revenue),"var(--blue)")}
+      ${st("Expenses",fmt(adjExp),"var(--red)")}
+      ${st("Profit",fmt(profit),profit>=0?"var(--accent)":"var(--red)")}
+    </div>
+    <div class="g2" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      ${st("Cash Start",fmt(prevCash),"var(--muted)")}
+      ${st("Cash End",fmt(cashEnd),cashEnd>=0?"var(--gold)":"var(--red)")}
+    </div>
+    <div style="margin-top:11px;padding:9px 13px;background:${ev.c}18;border:1px solid ${ev.c}44;border-radius:9px;display:flex;align-items:center;gap:9px">
+      <span style="font-size:20px">${ev.e}</span>
+      <div><div style="color:${ev.c};font-weight:700;font-size:12px">${ev.t}</div><div style="color:var(--muted);font-size:11px">${ev.d} → <strong style="color:${ev.c}">${ev.lbl}</strong></div></div>
+    </div>
+  `,"glow-accent","background:#080c18;border:1px solid var(--accent)33");
+}
+
+function submitMonth(mi){
+  if(!_chosenEvent){alert("Roll the dice first!");return;}
+  const supplies=+(document.getElementById("supplies")?.value||S.biz.supplies);
+  const rent=+(document.getElementById("rent")?.value||0);
+  const misc=+(document.getElementById("misc")?.value||80);
+  const empCost=S.biz.solo?0:400;
+  const loanPmt=S.biz.loan?Math.round(S.biz.loanAmt*0.10):0;
+  const baseExp=supplies+rent+misc+empCost+S.biz.mktBudget+loanPmt;
+  const ev=_chosenEvent;
+  let customers=Math.round(S.biz.baseCustomers*(1+S.biz.demandBoost)),cashAdj=0,expMult=1;
+  if(ev.ef==="customers") customers=Math.max(0,customers+ev.v);
+  if(ev.ef==="cash")      cashAdj=ev.v;
+  if(ev.ef==="expenses")  expMult=1+ev.v;
+  const adjExp=Math.round(baseExp*expMult);
+  const revenue=Math.round(customers*S.biz.price);
+  const profit=revenue-adjExp;
+  const prevCash=S.ops.length>0?S.ops[S.ops.length-1].cashEnd:S.biz.totalCash;
+  const cashEnd=prevCash+revenue-adjExp+cashAdj;
+  const debt=S.biz.loan?Math.max(0,S.biz.loanAmt-loanPmt*(mi+1)):0;
+  S.ops.push({month:mi+1,monthName:MONTH_NAMES[mi],supplies,rent,misc,empCost,loanPmt,baseExp,adjExp,cashAdj,customers,revenue,profit,cashStart:prevCash,cashEnd,debt,event:ev,mktBudget:S.biz.mktBudget});
+  advance();
+}
+
+// ═══════════════════════════════════════════════
+// ROUND 16 — JOURNAL ENTRY MODULE
+// ═══════════════════════════════════════════════
+function buildTransactions(){
+  const ops=S.ops; if(!ops.length) return [];
+  const txns=[];
+  // Opening entry
+  txns.push({id:"open1",date:"Setup",desc:"Owner invests starting capital",dr:"Cash",cr:"Owner's Equity",amt:S.biz.startCash,category:"setup"});
+  if(S.biz.loan) txns.push({id:"open2",date:"Setup",desc:"Startup loan received",dr:"Cash",cr:"Loan Payable",amt:S.biz.loanAmt,category:"setup"});
+  // Monthly transactions
+  ops.forEach(m=>{
+    txns.push({id:m.monthName+"-rev",  date:m.monthName, desc:"Sales revenue earned",         dr:"Cash",             cr:"Sales Revenue",   amt:m.revenue,   category:"revenue"});
+    if(m.supplies>0) txns.push({id:m.monthName+"-sup", date:m.monthName, desc:"Supplies purchased",         dr:"Supplies Expense", cr:"Cash",            amt:m.supplies, category:"expense"});
+    if(m.rent>0)     txns.push({id:m.monthName+"-rent",date:m.monthName, desc:"Rent paid",                  dr:"Rent Expense",     cr:"Cash",            amt:m.rent,     category:"expense"});
+    if(m.misc>0)     txns.push({id:m.monthName+"-misc",date:m.monthName, desc:"Misc business expenses",     dr:"Misc Expense",     cr:"Cash",            amt:m.misc,     category:"expense"});
+    if(m.empCost>0)  txns.push({id:m.monthName+"-wage",date:m.monthName, desc:"Employee wages paid",        dr:"Wages Expense",    cr:"Cash",            amt:m.empCost,  category:"expense"});
+    if(m.mktBudget>0)txns.push({id:m.monthName+"-mkt", date:m.monthName, desc:"Marketing spend",           dr:"Marketing Expense",cr:"Cash",            amt:m.mktBudget,category:"expense"});
+    if(m.loanPmt>0)  txns.push({id:m.monthName+"-loan",date:m.monthName, desc:"Loan interest payment",     dr:"Loan Interest",    cr:"Cash",            amt:m.loanPmt,  category:"expense"});
+    if(m.cashAdj!==0) txns.push({id:m.monthName+"-evt",date:m.monthName, desc:"Event: "+m.event.t, dr:m.cashAdj>0?"Cash":"Event Expense", cr:m.cashAdj>0?"Event Income":"Cash", amt:Math.abs(m.cashAdj), category:"event"});
+  });
+  return txns;
+}
+
+function renderJournalEntries(){
+  const txns=buildTransactions();
+  if(!S.journalEntries) S.journalEntries={};
+  const entries=S.journalEntries;
+  let correct=0,wrong=0,missing=0;
+  txns.forEach(t=>{ if(entries[t.id]){if(entries[t.id].correct) correct++; else wrong++;} else missing++;});
+  const all=txns.length; const done=correct+wrong;
+  const pctDone=Math.round((done/all)*100);
+
+  const catColors={setup:"var(--accent)",revenue:"var(--blue)",expense:"var(--red)",event:"var(--purple)"};
+  const rows=txns.map(t=>{
+    const e=entries[t.id]; const col=catColors[t.category]||"var(--muted)";
+    const status=e?e.correct?`<span style="color:var(--accent);font-weight:700;font-size:11px">✓ Correct</span>`:`<span style="color:var(--red);font-weight:700;font-size:11px">✗ Check entry</span>`:`<span style="color:var(--dim);font-size:11px">Not entered</span>`;
+    return `<div style="border:1px solid ${e?e.correct?"var(--accent)44":"var(--red)44":"var(--border)"};border-radius:11px;padding:12px 14px;margin-bottom:8px;background:${e?e.correct?"var(--as)":"var(--rs)":"var(--card)"}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-weight:800;font-size:13px">${t.desc}</div>
+          <div style="display:flex;gap:6px;margin-top:4px">${bdg(t.date,col)} ${bdg(fmt(t.amt),"var(--gold)")}</div>
+        </div>
+        ${status}
+      </div>
+      <div class="g2">
+        <div>
+          <label style="color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">Debit Account</label>
+          <div class="inp-row"><input type="text" id="dr-${t.id}" placeholder="e.g. ${t.dr}" value="${e?.dr||""}" oninput="checkJE('${t.id}','${t.dr}','${t.cr}',${t.amt})"></div>
+        </div>
+        <div>
+          <label style="color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px">Credit Account</label>
+          <div class="inp-row"><input type="text" id="cr-${t.id}" placeholder="e.g. ${t.cr}" value="${e?.cr||""}" oninput="checkJE('${t.id}','${t.dr}','${t.cr}',${t.amt})"></div>
+        </div>
+      </div>
+      ${e&&!e.correct?`<div style="margin-top:8px;padding:7px 11px;background:var(--rs);border-radius:7px;font-size:11px;color:var(--red)">💡 Hint: Debit = <strong>${t.dr}</strong> · Credit = <strong>${t.cr}</strong></div>`:""}
+    </div>`;
+  }).join("");
+
+  return `
+    ${roundHdr("📒","var(--gold)","16","Journal Entry Module","Record every business transaction — Debit left, Credit right")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">📚 How Journal Entries Work</div>
+        <p style="color:var(--text);font-size:13px;line-height:1.7;margin:0">Every business transaction affects two accounts. The <strong style="color:var(--accent)">Debit</strong> account (left) increases assets or expenses. The <strong style="color:var(--gold)">Credit</strong> account (right) increases liabilities, equity, or revenue. <strong>Debits must always equal Credits.</strong></p>
+        <div style="margin-top:12px;padding:10px 13px;background:#080c18;border-radius:9px;font-family:'Space Mono',monospace;font-size:12px">
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
+            <div><div style="color:var(--accent);font-weight:700">DEBIT</div><div style="color:var(--muted);font-size:10px">Assets ↑ · Expenses ↑</div></div>
+            <div style="color:var(--dim);font-size:18px">=</div>
+            <div style="text-align:right"><div style="color:var(--gold);font-weight:700">CREDIT</div><div style="color:var(--muted);font-size:10px">Liabilities ↑ · Equity ↑ · Revenue ↑</div></div>
+          </div>
+        </div>
+      `,"","background:#080c18")}
+      <div class="card glow-gold" style="background:var(--gs)">
+        <div class="g4">
+          ${st("Total Entries",all,"var(--text)")}
+          ${st("Completed",done,"var(--blue)")}
+          ${st("Correct",correct,"var(--accent)")}
+          ${st("Errors",wrong,wrong>0?"var(--red)":"var(--muted)")}
+        </div>
+        <div style="margin-top:12px">${pb(pctDone,"var(--gold)")}</div>
+        <div style="color:var(--muted);font-size:10px;margin-top:5px;text-align:center">${pctDone}% complete</div>
+      </div>
+      <div id="je-list">${rows}</div>
+      ${b("Post Entries → Build Trial Balance","submitJournalEntries()","gold","lg full",correct<Math.ceil(all*0.5),"id='je-submit-btn'")}
+      ${correct<Math.ceil(all*0.5)?`<div style="text-align:center;color:var(--muted);font-size:11px">Complete at least 50% correctly to advance</div>`:""}
+      ${restartLink()}
+    </div>`;
+}
+
+function checkJE(id,correctDr,correctCr,amt){
+  const drEl=document.getElementById("dr-"+id);
+  const crEl=document.getElementById("cr-"+id);
+  if(!drEl||!crEl) return;
+  const dr=drEl.value.trim().toLowerCase();
+  const cr=crEl.value.trim().toLowerCase();
+  if(dr&&cr){
+    const correct=dr===correctDr.toLowerCase()&&cr===correctCr.toLowerCase();
+    if(!S.journalEntries) S.journalEntries={};
+    S.journalEntries[id]={dr:drEl.value,cr:crEl.value,correct};
+  }
+}
+
+function submitJournalEntries(){
+  // Count correct before saving
+  const txns=buildTransactions();
+  let correct=0;
+  txns.forEach(t=>{const e=S.journalEntries?.[t.id];if(e?.correct) correct++;});
+  S.strategy.jeScore=Math.round((correct/txns.length)*100);
+  saveGame(); advance();
+}
+
+// ═══════════════════════════════════════════════
+// ROUND 17 — TRIAL BALANCE BUILDER
+// ═══════════════════════════════════════════════
+function buildAccountBalances(){
+  const ops=S.ops; if(!ops.length) return {};
+  const accts={
+    "Cash":             {type:"asset",    balance:0},
+    "Inventory":        {type:"asset",    balance:S.biz.defaultSupplies||S.biz.supplies},
+    "Loan Payable":     {type:"liability",balance:ops[ops.length-1]?.debt||0},
+    "Owner's Equity":   {type:"equity",   balance:S.biz.startCash},
+    "Sales Revenue":    {type:"revenue",  balance:0},
+    "Supplies Expense": {type:"expense",  balance:0},
+    "Rent Expense":     {type:"expense",  balance:0},
+    "Wages Expense":    {type:"expense",  balance:0},
+    "Marketing Expense":{type:"expense",  balance:0},
+    "Misc Expense":     {type:"expense",  balance:0},
+    "Loan Interest":    {type:"expense",  balance:0},
+    "Event Income":     {type:"revenue",  balance:0},
+    "Event Expense":    {type:"expense",  balance:0},
+  };
+  // Starting cash
+  accts["Cash"].balance=S.biz.totalCash;
+  ops.forEach(m=>{
+    accts["Cash"].balance         += m.revenue - m.adjExp + m.cashAdj;
+    accts["Sales Revenue"].balance+= m.revenue;
+    accts["Supplies Expense"].balance+=m.supplies;
+    accts["Rent Expense"].balance +=m.rent;
+    accts["Wages Expense"].balance+=m.empCost;
+    accts["Marketing Expense"].balance+=m.mktBudget;
+    accts["Misc Expense"].balance +=m.misc;
+    accts["Loan Interest"].balance+=m.loanPmt;
+    if(m.cashAdj>0) accts["Event Income"].balance+=m.cashAdj;
+    if(m.cashAdj<0) accts["Event Expense"].balance+=Math.abs(m.cashAdj);
+  });
+  return accts;
+}
+
+function renderTrialBalance(){
+  const accts=buildAccountBalances();
+  if(!S.tbChecked) S.tbChecked={};
+  const typeOrder=["asset","liability","equity","revenue","expense"];
+  const typeLabels={asset:"Assets",liability:"Liabilities",equity:"Equity",revenue:"Revenue",expense:"Expenses"};
+  const typeColors={asset:"var(--accent)",liability:"var(--red)",equity:"var(--blue)",revenue:"var(--gold)",expense:"var(--orange)"};
+
+  let drTotal=0,crTotal=0;
+  Object.entries(accts).forEach(([name,a])=>{
+    if(["asset","expense"].includes(a.type)) drTotal+=a.balance;
+    else crTotal+=a.balance;
+  });
+  const balanced=Math.abs(drTotal-crTotal)<5;
+
+  const grouped={};
+  typeOrder.forEach(t=>grouped[t]=[]);
+  Object.entries(accts).forEach(([name,a])=>{ if(a.balance>0) grouped[a.type].push({name,a}); });
+
+  const rows=typeOrder.map(type=>{
+    if(!grouped[type].length) return "";
+    const isDr=["asset","expense"].includes(type);
+    return `<tr><td colspan="3" style="padding:10px 8px 3px;color:${typeColors[type]};font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">${typeLabels[type]}</td></tr>`+
+      grouped[type].map(({name,a})=>`
+        <tr style="border-top:1px solid var(--border)22">
+          <td style="padding:7px 8px;font-size:12px">${name}</td>
+          <td style="padding:7px 8px;color:var(--accent);font-family:'Space Mono',monospace;font-size:12px;font-weight:700">${isDr?fmt(a.balance):"—"}</td>
+          <td style="padding:7px 8px;color:var(--gold);font-family:'Space Mono',monospace;font-size:12px;font-weight:700">${!isDr?fmt(a.balance):"—"}</td>
+        </tr>`).join("");
+  }).join("");
+
+  return `
+    ${roundHdr("⚖️","var(--gold)","17","Trial Balance","Verify all account balances — Debits must equal Credits")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:11px">📚 What is a Trial Balance?</div>
+        <p style="color:var(--text);font-size:13px;line-height:1.7;margin:0">A trial balance lists every account and its balance. <strong style="color:var(--accent)">Debit balances</strong> (assets & expenses) go left. <strong style="color:var(--gold)">Credit balances</strong> (liabilities, equity, revenue) go right. If the totals match — the books are balanced.</p>
+      `,"","background:#080c18")}
+      ${card(`
+        <div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">📋 ${S.biz.bizIcon} ${S.biz.name} — Trial Balance</div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:13px">Posted from Journal Entries · 9-Month Period</div>
+        <div style="overflow-x:auto">
+          <table class="tb-table" style="width:100%">
+            <thead><tr><th>Account</th><th style="color:var(--accent)">Debit</th><th style="color:var(--gold)">Credit</th></tr></thead>
+            <tbody>${rows}
+              <tr style="border-top:2px solid var(--border)">
+                <td style="padding:10px 8px;font-weight:800;font-size:13px">TOTALS</td>
+                <td style="padding:10px 8px;color:var(--accent);font-weight:900;font-family:'Space Mono',monospace;font-size:13px">${fmt(drTotal)}</td>
+                <td style="padding:10px 8px;color:var(--gold);font-weight:900;font-family:'Space Mono',monospace;font-size:13px">${fmt(crTotal)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;padding:11px 14px;background:${balanced?"var(--as)":"var(--rs)"};border:1px solid ${balanced?"var(--accent)":"var(--red)"}44;border-radius:9px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">${balanced?"✅":"⚠️"}</span>
+          <div>
+            <div style="color:${balanced?"var(--accent)":"var(--red)"};font-weight:800;font-size:13px">${balanced?"Trial Balance is BALANCED":"Trial Balance is OUT OF BALANCE"}</div>
+            <div style="color:var(--muted);font-size:11px;margin-top:2px">${balanced?"Total Debits = Total Credits — ready for financial statements":"Difference: "+fmt(Math.abs(drTotal-crTotal))+" — check your journal entries"}</div>
+          </div>
+        </div>
+      `,"glow-gold")}
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:12px">✅ Verify Each Section</div>
+        ${["Assets & Expenses (Debit side)","Liabilities, Equity & Revenue (Credit side)","All accounts have correct normal balances","No accounts are missing from the trial balance"].map((item,i)=>{
+          const checked=S.tbChecked[i];
+          return `<div onclick="tbCheck(${i})" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:${i>0?"1px solid var(--border)":"none"};cursor:pointer">
+            <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${checked?"var(--accent)":"var(--border)"};background:${checked?"var(--accent)":"transparent"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px">${checked?"✓":""}</div>
+            <span style="color:${checked?"var(--text)":"var(--muted)"};font-size:13px">${item}</span>
+          </div>`;
+        }).join("")}
+      `)}
+      ${b("Build Financial Statements →","submitTrialBalance()","gold","lg full",Object.keys(S.tbChecked).length<2,"id='tb-submit-btn'")}
+      ${Object.keys(S.tbChecked).length<2?`<div style="text-align:center;color:var(--muted);font-size:11px">Verify at least 2 sections to advance</div>`:""}
+      ${restartLink()}
+    </div>`;
+}
+
+function tbCheck(i){if(!S.tbChecked) S.tbChecked={};S.tbChecked[i]=!S.tbChecked[i];saveGame();render();}
+function submitTrialBalance(){S.strategy.tbBalanced=true;saveGame();advance();}
+
+// ═══════════════════════════════════════════════
+// ROUND 18 — FINANCIAL STATEMENT BUILDER
+// ═══════════════════════════════════════════════
+function renderStatementBuilder(){
+  const accts=buildAccountBalances();
+  if(!S.stmtAssignments) S.stmtAssignments={};
+  const assignments=S.stmtAssignments;
+
+  // correct answer map: account → statement
+  const correctMap={
+    "Sales Revenue":"income","Event Income":"income",
+    "Supplies Expense":"income","Rent Expense":"income","Wages Expense":"income",
+    "Marketing Expense":"income","Misc Expense":"income","Loan Interest":"income","Event Expense":"income",
+    "Cash":"balance","Inventory":"balance","Loan Payable":"balance","Owner's Equity":"balance",
+  };
+
+  const stmts=["income","balance","cashflow"];
+  const stmtInfo={
+    income: {label:"📈 Income Statement",    color:"var(--accent)",  desc:"Revenue & Expenses → Net Profit"},
+    balance:{label:"⚖️ Balance Sheet",       color:"var(--blue)",    desc:"Assets, Liabilities & Owner's Equity"},
+    cashflow:{label:"💵 Cash Flow Statement",color:"var(--purple)",  desc:"Cash In, Cash Out, Net Change"},
+  };
+
+  const accountList=Object.entries(accts).filter(([n,a])=>a.balance>0&&correctMap[n]).map(([name,a])=>{
+    const assigned=assignments[name]; const correct=assigned&&assigned===correctMap[name];
+    const wrong=assigned&&assigned!==correctMap[name];
+    return `<div style="border:1px solid ${correct?"var(--accent)44":wrong?"var(--red)44":"var(--border)"};border-radius:10px;padding:11px 13px;background:${correct?"var(--as)":wrong?"var(--rs)":"var(--card)"}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="flex:1"><div style="font-weight:700;font-size:13px">${name}</div><div style="color:var(--gold);font-size:12px;font-family:'Space Mono',monospace">${fmt(a.balance)}</div></div>
+        ${correct?`<span style="color:var(--accent);font-weight:800;font-size:11px">✓</span>`:wrong?`<span style="color:var(--red);font-weight:800;font-size:11px">✗</span>`:""}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${stmts.map(s=>`<button onclick="assignAccount('${name}','${s}')" class="btn sm ${assigned===s?(correct?"primary":wrong?"red":"dark"):"dark"}" style="${assigned===s&&correct?"background:var(--accent);color:#060a12":assigned===s&&wrong?"background:var(--red);color:#fff":""}">${stmtInfo[s].label.split(" ").slice(0,2).join(" ")}</button>`).join("")}
+        ${assigned?`<button onclick="assignAccount('${name}','')" class="btn sm dark">Clear</button>`:""}
+      </div>
+      ${wrong?`<div style="margin-top:7px;font-size:11px;color:var(--red)">💡 Hint: ${name} belongs in the ${stmtInfo[correctMap[name]].label}</div>`:""}
+    </div>`;
+  }).join("");
+
+  const correctCount=Object.entries(assignments).filter(([n,s])=>s&&correctMap[n]===s).length;
+  const total=Object.keys(correctMap).length;
+  const score=Math.round((correctCount/total)*100);
+
+  return `
+    ${roundHdr("📊","var(--gold)","18","Financial Statement Builder","Assign each account to the correct financial statement")}
+    <div class="col">
+      ${card(`
+        <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:11px">📚 The Three Core Statements</div>
+        ${stmts.map(s=>`<div style="display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--border)">
+          <div style="width:28px;height:28px;border-radius:8px;background:${stmtInfo[s].color}22;border:1px solid ${stmtInfo[s].color}44;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${stmtInfo[s].label.split(" ")[0]}</div>
+          <div><div style="font-weight:700;font-size:13px;color:${stmtInfo[s].color}">${stmtInfo[s].label}</div><div style="color:var(--muted);font-size:11px">${stmtInfo[s].desc}</div></div>
+        </div>`).join("")}
+      `,"","background:#080c18")}
+      <div class="card glow-gold" style="background:var(--gs)">
+        <div class="g3">
+          ${st("Total Accounts",total,"var(--text)")}
+          ${st("Correctly Placed",correctCount,"var(--accent)")}
+          ${st("Score",score+"%",score>=70?"var(--accent)":score>=40?"var(--gold)":"var(--red)")}
+        </div>
+        <div style="margin-top:11px">${pb(score,score>=70?"var(--accent)":score>=40?"var(--gold)":"var(--red)")}</div>
+      </div>
+      <div style="color:var(--text);font-size:13px;font-weight:700">Assign Each Account:</div>
+      <div class="col">${accountList}</div>
+      ${b("Complete Accounting Lab → Full Audit","submitStatements()","gold","lg full",correctCount<Math.ceil(total*0.5),"id='stmt-submit-btn'")}
+      ${correctCount<Math.ceil(total*0.5)?`<div style="text-align:center;color:var(--muted);font-size:11px">Place at least 50% correctly to advance</div>`:""}
+      ${restartLink()}
+    </div>`;
+}
+
+function assignAccount(name,stmt){
+  if(!S.stmtAssignments) S.stmtAssignments={};
+  if(stmt==="") delete S.stmtAssignments[name];
+  else S.stmtAssignments[name]=stmt;
+  saveGame(); render();
+}
+function submitStatements(){
+  const accts=buildAccountBalances();
+  const correctMap={"Sales Revenue":"income","Event Income":"income","Supplies Expense":"income","Rent Expense":"income","Wages Expense":"income","Marketing Expense":"income","Misc Expense":"income","Loan Interest":"income","Event Expense":"income","Cash":"balance","Inventory":"balance","Loan Payable":"balance","Owner's Equity":"balance"};
+  const assignments=S.stmtAssignments||{};
+  const correct=Object.entries(assignments).filter(([n,s])=>s&&correctMap[n]===s).length;
+  S.strategy.stmtScore=Math.round((correct/Object.keys(correctMap).length)*100);
+  saveGame(); advance();
+}
+
+// ═══════════════════════════════════════════════
+// ROUND 19 — FULL AUDIT
+// ═══════════════════════════════════════════════
+function renderAudit(){
+  const ops=S.ops;
+  const totalRevenue=ops.reduce((a,r)=>a+(r.revenue||0),0);
+  const totalExpenses=ops.reduce((a,r)=>a+(r.adjExp||0),0);
+  const totalProfit=totalRevenue-totalExpenses;
+  const cashEnd=ops[ops.length-1]?.cashEnd||0;
+  const cashStart=S.biz.totalCash;
+  const debt=ops[ops.length-1]?.debt||0;
+  const inventory=S.biz.defaultSupplies||S.biz.supplies;
+  const totalCashAdj=ops.reduce((a,r)=>a+(r.cashAdj||0),0);
+  const equity=cashEnd+inventory-debt;
+  const totalLoanPmts=ops.reduce((a,r)=>a+(r.loanPmt||0),0);
+  const totalEmpCost=ops.reduce((a,r)=>a+(r.empCost||0),0);
+  const totalMkt=ops.reduce((a,r)=>a+(r.mktBudget||0),0);
+  const totalRent=ops.reduce((a,r)=>a+(r.rent||0),0);
+  const totalSupplies=ops.reduce((a,r)=>a+(r.supplies||0),0);
+  const totalMisc=ops.reduce((a,r)=>a+(r.misc||0),0);
+  const tqmCost=(S.strategy.tqmCost||0)*9;
+
+  const flagCount=Object.values(S.auditChecks).filter(v=>v==="flag").length;
+  const passCount=Object.values(S.auditChecks).filter(v=>v==="pass").length;
+  const allChecked=AUDIT_CHECKS.every(c=>S.auditChecks[c.id]);
+  let opinion,opinionColor,opinionIcon;
+  if(!allChecked){opinion="Incomplete";opinionColor="var(--muted)";opinionIcon="⏳";}
+  else if(flagCount===0&&cashEnd>0){opinion="Unqualified (Clean)";opinionColor="var(--accent)";opinionIcon="✅";}
+  else if(flagCount<=2){opinion="Qualified Opinion";opinionColor="var(--gold)";opinionIcon="⚠️";}
+  else{opinion="Adverse / Disclaimer";opinionColor="var(--red)";opinionIcon="🚨";}
+
+  const scores=calcScores(ops);
+  const cm=calcContribMargin(S.biz,S.biz.price,S.biz.laborMod,S.biz.matMod);
+
+  const tabs=[
+    {id:"trial",lbl:"📋 Trial Balance"},{id:"income",lbl:"📈 Income Statement"},
+    {id:"balance",lbl:"⚖️ Balance Sheet"},{id:"cashflow",lbl:"💵 Cash Flow"},
+    {id:"checklist",lbl:"🔍 Checklist"},{id:"opinion",lbl:"🏛️ Opinion"},
+  ];
+
+  let tabContent="";
+  if(_auditTab==="trial"){
+    const drTotal=cashEnd+inventory+totalExpenses+tqmCost;
+    const crTotal=debt+equity+totalRevenue;
+    const balanced=Math.abs(drTotal-crTotal)<10;
+    const rows=[
+      {l:"Cash",dr:cashEnd,cr:0},{l:"Inventory/Supplies",dr:inventory,cr:0},{l:"TQM Investments",dr:tqmCost,cr:0},
+      {l:"Loan Payable",dr:0,cr:debt},{l:"Owner's Equity",dr:0,cr:equity},
+      {l:"Sales Revenue",dr:0,cr:totalRevenue},{l:"Rent Expense",dr:totalRent,cr:0},
+      {l:"Supplies Expense",dr:totalSupplies,cr:0},{l:"Marketing Expense",dr:totalMkt,cr:0},
+      {l:"Wages Expense",dr:totalEmpCost,cr:0},{l:"Misc Expense",dr:totalMisc,cr:0},
+      {l:"Loan Interest",dr:totalLoanPmts,cr:0},
+    ];
+    tabContent=`<div class="stmt-scroll"><table class="tb-table">
+      <thead><tr><th>Account</th><th style="color:var(--accent)">Debit</th><th style="color:var(--gold)">Credit</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td>${r.l}</td><td style="color:${r.dr>0?"var(--accent)":"var(--dim)"};;font-weight:${r.dr>0?700:400}">${r.dr>0?fmt(r.dr):"—"}</td><td style="color:${r.cr>0?"var(--gold)":"var(--dim)"};font-weight:${r.cr>0?700:400}">${r.cr>0?fmt(r.cr):"—"}</td></tr>`).join("")}
+      <tr style="border-top:2px solid var(--border)"><td style="font-weight:800">TOTALS</td><td style="color:var(--accent);font-weight:800">${fmt(drTotal)}</td><td style="color:var(--gold);font-weight:800">${fmt(crTotal)}</td></tr>
+      </tbody></table></div>
+      <div style="margin-top:10px;padding:9px 13px;background:${balanced?"var(--as)":"var(--rs)"};border:1px solid ${balanced?"var(--accent)":"var(--red)"}44;border-radius:9px;font-size:12px;color:${balanced?"var(--accent)":"var(--red)"};font-weight:700">
+        ${balanced?"✓ Trial Balance is BALANCED":"⚠ Trial Balance OUT OF BALANCE — Review entries"}
+      </div>`;
+  }
+  else if(_auditTab==="income"){
+    const rows=[
+      {l:"Sales Revenue",a:totalRevenue,type:"rev"},
+      {l:"  Rent Expense",a:-totalRent,type:"exp"},{l:"  Supplies Expense",a:-totalSupplies,type:"exp"},
+      {l:"  Marketing Expense",a:-totalMkt,type:"exp"},{l:"  Wages Expense",a:-totalEmpCost,type:"exp"},
+      {l:"  Misc Expense",a:-totalMisc,type:"exp"},{l:"  Loan Interest",a:-totalLoanPmts,type:"exp"},
+      {l:"  TQM Investments",a:-tqmCost,type:"exp"},
+      {l:"Total Expenses",a:-totalExpenses,type:"sub"},{l:"NET INCOME / (LOSS)",a:totalProfit,type:"total"},
+    ];
+    tabContent=`<div class="stmt-scroll">
+      <div style="color:var(--teal);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:8px">${S.biz.bizIcon} ${S.biz.name} · Income Statement · Jan–${MONTH_NAMES[ops.length-1]}</div>
+      ${rows.map(r=>{
+        const isT=r.type==="total",isS=r.type==="sub";
+        return `<div class="stmt-row" style="border-top:${isT||isS?"2px":"1px"} solid var(--border);font-weight:${isT||isS?"800":"400"}">
+          <span style="color:${isT||isS?"var(--text)":"var(--muted)"};padding-left:${r.l.startsWith("  ")?14:0}px;font-size:12px">${r.l.trim()}</span>
+          <span style="color:${isT?(r.a>=0?"var(--accent)":"var(--red)"):isS?"var(--red)":(r.a>=0?"var(--accent)":"var(--red)")};font-family:'Space Mono',monospace;font-size:12px;font-weight:${isT||isS?"800":"500"}">
+            ${r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")"}</span>
+        </div>`;
+      }).join("")}
+      <div style="margin-top:10px;padding:9px 13px;background:${totalProfit>=0?"var(--as)":"var(--rs)"};border-radius:9px;display:flex;justify-content:space-between">
+        <span style="color:${totalProfit>=0?"var(--accent)":"var(--red)"};font-weight:800;font-size:12px">Contribution Margin % (BUAD222)</span>
+        <span style="color:${totalProfit>=0?"var(--accent)":"var(--red)"};font-family:'Space Mono',monospace;font-weight:800">${pct(cm.cm,S.biz.price)}</span>
+      </div>
+    </div>`;
+  }
+  else if(_auditTab==="balance"){
+    const rows=[
+      {h:"ASSETS"},{l:"  Cash",a:cashEnd},{l:"  Inventory",a:inventory},{l:"  TQM Assets",a:tqmCost},{l:"  Total Assets",a:cashEnd+inventory+tqmCost,bold:true},
+      {h:"LIABILITIES"},{l:"  Loan Payable",a:debt},{l:"  Total Liabilities",a:debt,bold:true},
+      {h:"OWNER'S EQUITY"},{l:"  Beginning Capital",a:cashStart},{l:"  Net Income/(Loss)",a:totalProfit},{l:"  Total Equity",a:equity,bold:true},
+      {l:"TOTAL LIAB + EQUITY",a:debt+equity,bold:true,teal:true},
+    ];
+    tabContent=`<div class="stmt-scroll">${rows.map(r=>{
+      if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+      const col=r.teal?"var(--teal)":r.bold?(r.a>=0?"var(--gold)":"var(--red)"):(r.a>=0?"var(--accent)":"var(--red)");
+      return `<div class="stmt-row" style="font-weight:${r.bold?"800":"400"}">
+        <span style="color:${r.bold?"var(--text)":"var(--muted)"};padding-left:${r.l?.startsWith("  ")?14:0}px;font-size:12px">${r.l?.trim()}</span>
+        <span style="color:${col};font-family:'Space Mono',monospace;font-size:12px;font-weight:${r.bold?"800":"500"}">${r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")"}</span>
+      </div>`;
+    }).join("")}</div>`;
+  }
+  else if(_auditTab==="cashflow"){
+    const netOp=totalRevenue-totalExpenses+totalCashAdj;
+    const netFin=(S.biz.loan?S.biz.loanAmt:0)-totalLoanPmts;
+    const rows=[
+      {h:"OPERATING ACTIVITIES"},{l:"  Cash from Sales",a:totalRevenue},{l:"  Cash for Expenses",a:-totalExpenses},
+      {l:"  Event Adjustments",a:totalCashAdj},{l:"  Net Operating Cash",a:netOp,bold:true},
+      {h:"INVESTING ACTIVITIES"},{l:"  TQM Investments",a:-tqmCost},{l:"  Net Investing Cash",a:-tqmCost,bold:true},
+      {h:"FINANCING ACTIVITIES"},{l:"  Loan Proceeds",a:S.biz.loan?S.biz.loanAmt:0},{l:"  Loan Repayments",a:-totalLoanPmts},{l:"  Net Financing Cash",a:netFin,bold:true},
+      {l:"NET CHANGE IN CASH",a:cashEnd-cashStart,bold:true,teal:true},
+      {l:"Beginning Cash Balance",a:cashStart},{l:"ENDING CASH BALANCE",a:cashEnd,bold:true},
+    ];
+    tabContent=`<div class="stmt-scroll">${rows.map(r=>{
+      if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+      const col=r.teal?"var(--teal)":r.bold?(r.a>=0?"var(--gold)":"var(--red)"):(r.a>=0?"var(--accent)":"var(--red)");
+      return `<div class="stmt-row" style="font-weight:${r.bold?"800":"400"}">
+        <span style="color:${r.bold?"var(--text)":"var(--muted)"};padding-left:${r.l?.startsWith("  ")?14:0}px;font-size:12px">${r.l?.trim()}</span>
+        <span style="color:${col};font-family:'Space Mono',monospace;font-size:12px;font-weight:${r.bold?"800":"500"}">${r.a>=0?fmt(r.a):"("+fmt(Math.abs(r.a))+")"}</span>
+      </div>`;
+    }).join("")}</div>`;
+  }
+  else if(_auditTab==="checklist"){
+    tabContent=`${AUDIT_CHECKS.map(c=>{
+      const val=S.auditChecks[c.id];
+      const riskBdg=c.risk?bdg("Risk: "+c.risk,c.risk==="low"?"var(--accent)":"var(--gold)"):"";
+      return `<div style="border-radius:11px;padding:12px 14px;border:1px solid ${val==="pass"?"var(--accent)":val==="flag"?"var(--red)":"var(--border)"};background:${val==="pass"?"var(--as)":val==="flag"?"var(--rs)":"var(--card)"};display:flex;gap:11px;align-items:flex-start;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:12px">${c.lbl}</div>
+          <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">${c.accts.map(a=>bdg(a,"var(--blue)")).join("")} ${riskBdg}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn sm ${val==="pass"?"primary":"ghost"}" onclick="setCheck('${c.id}','pass')">✓ Pass</button>
+          <button class="btn sm ${val==="flag"?"red":"ghost"}" style="${val==="flag"?"":"color:var(--red);border-color:var(--red)55"}" onclick="setCheck('${c.id}','flag')">⚑ Flag</button>
+        </div>
+      </div>`;
+    }).join("")}
+    ${card(`<div class="g3">${st("Checked",`${passCount+flagCount}/${AUDIT_CHECKS.length}`,"var(--blue)")}${st("Passed",passCount,"var(--accent)")}${st("Flagged",flagCount,flagCount>0?"var(--red)":"var(--muted)")}</div>`,"","background:#080c18")}
+    ${allChecked?b("🏛️ View Audit Opinion →","setAuditTab('opinion')","teal","lg full"):""}`;
+  }
+  else if(_auditTab==="opinion"){
+    if(!allChecked){
+      tabContent=card(`<div style="text-align:center;padding:22px 0">
+        <div style="font-size:34px;margin-bottom:10px">⏳</div>
+        <div style="color:var(--gold);font-weight:800;font-size:15px">Complete the Checklist First</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:6px;line-height:1.7">All 12 items must be marked Pass or Flag before an opinion can be issued.</div>
+        <div style="margin-top:14px">${b("Go to Checklist →","setAuditTab('checklist')","gold","md")}</div>
+      </div>`,"glow-gold");
+    } else {
+      const opBody=flagCount===0&&cashEnd>0
+        ?"In our opinion, the financial statements present fairly, in all material respects, the financial position of the company. No material misstatements were identified. The business demonstrated sound financial management throughout the 9-month operating period."
+        :flagCount<=2
+        ?`Except for the ${flagCount} matter(s) flagged, the statements present fairly in all material respects. Management should address the flagged items in the next reporting period.`
+        :"The financial statements contain multiple material exceptions. The auditor is unable to confirm the statements present fairly. Significant corrective action is required before the next period.";
+
+      const maxAbs=Math.max(...ops.map(o=>Math.abs(o.profit||0)),1);
+      const profitChart=ops.map((m,i)=>{
+        const w=Math.min(50,Math.abs(m.profit)/maxAbs*50);
+        return `<div class="profit-bar-wrap">
+          <span style="color:var(--muted);font-size:9px;width:18px;flex-shrink:0">M${i+1}</span>
+          <span style="color:var(--dim);font-size:9px;width:55px;flex-shrink:0">${m.monthName.slice(0,3)}</span>
+          <div class="profit-bar-track" style="flex:1">
+            <div class="profit-bar-mid"></div>
+            <div class="profit-bar-fill" style="left:${m.profit>=0?"50%":`${50-w}%`};width:${w}%;background:${m.profit>=0?"var(--accent)":"var(--red)"}"></div>
+          </div>
+          <span style="color:${m.profit>=0?"var(--accent)":"var(--red)"};font-size:9px;font-family:'Space Mono',monospace;width:55px;text-align:right;flex-shrink:0">${fmtS(m.profit)}</span>
+          <span style="font-size:12px;flex-shrink:0">${m.event?.e||""}</span>
+        </div>`;
+      }).join("");
+
+      tabContent=`
+        <div style="border-radius:14px;padding:24px 18px;text-align:center;background:${opinionColor}18;border:1px solid ${opinionColor}55;margin-bottom:13px">
+          <div style="font-size:42px;margin-bottom:8px">${opinionIcon}</div>
+          <div style="color:${opinionColor};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px">Auditor's Opinion</div>
+          <div style="color:${opinionColor};font-size:19px;font-weight:900">${opinion}</div>
+          <div style="color:var(--muted);font-size:12px;line-height:1.75;max-width:420px;margin:10px auto 0">${opBody}</div>
+        </div>
+        ${flagCount>0?card(`
+          <div style="color:var(--red);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:11px">⚑ Audit Findings</div>
+          ${AUDIT_CHECKS.filter(c=>S.auditChecks[c.id]==="flag").map((c,i)=>`
+            <div style="padding:9px 0;border-top:${i>0?"1px solid var(--border)":"none"};display:flex;gap:11px;align-items:flex-start">
+              ${bdg("Finding "+(i+1),"var(--red)")}
+              <div><div style="font-weight:700;font-size:12px">${c.lbl}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">Accounts: ${c.accts.join(", ")}</div></div>
+            </div>`).join("")}
+        `):""}
+        ${card(`
+          <div style="color:var(--gold);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">📊 9-Month Financial Summary</div>
+          <div class="g3" style="margin-bottom:13px">
+            ${st("Total Revenue",fmt(totalRevenue),"var(--accent)")}
+            ${st("Total Expenses",fmt(totalExpenses),"var(--red)")}
+            ${st("Net Profit",fmt(totalProfit),totalProfit>=0?"var(--accent)":"var(--red)")}
+            ${st("Ending Cash",fmt(cashEnd),"var(--gold)")}
+            ${st("Loan Balance",debt>0?fmt(debt):"None",debt>0?"var(--red)":"var(--accent)")}
+            ${st("Owner Equity",fmt(equity),equity>=0?"var(--blue)":"var(--red)")}
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:13px">
+            <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:9px">Month-by-Month Profit</div>
+            ${profitChart}
+          </div>
+        `,"glow-gold","background:var(--gs)")}
+        ${card(`
+          <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:13px">🎯 Final Performance Scores</div>
+          ${[{k:"profit",l:"Profit Management",i:"📈"},{k:"cash",l:"Cash Flow Control",i:"💵"},{k:"debt",l:"Debt Management",i:"🏦"},{k:"growth",l:"Growth Strategy",i:"🚀"},{k:"decisions",l:"Financial Decisions",i:"🎯"}].map(s=>`
+            <div class="score-bar-row">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-size:12px">${s.i} ${s.l}</span>
+                <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace">${scores[s.k]}/100</span>
+              </div>
+              ${pb(scores[s.k],scores[s.k]>70?"var(--accent)":scores[s.k]>40?"var(--gold)":"var(--red)")}
+            </div>`).join("")}
+          <div style="background:var(--as);border:1px solid var(--accent)44;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-weight:800;font-size:14px">🏆 Overall Score</span>
+            <span style="color:var(--gold);font-weight:900;font-size:26px;font-family:'Space Mono',monospace">${scores.total}/100</span>
+          </div>
+        `)}
+        <div class="cert">
+          <div style="font-size:46px;margin-bottom:8px">🏆</div>
+          <div style="color:var(--gold);font-size:19px;font-weight:900">Certificate of Completion</div>
+          <div style="color:var(--text);font-size:13px;margin-top:5px">nugO Pro Business Lab</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:12px">This certifies that</div>
+          <div style="color:var(--gold);font-size:18px;font-weight:800;margin:5px 0">${S.biz.bizIcon} ${S.biz.name}</div>
+          <div style="color:var(--muted);font-size:12px">completed all 19 rounds including the Accounting Lab & Full Audit</div>
+          <div style="color:var(--teal);font-size:13px;font-weight:700;margin-top:3px">${S.biz.bizLabel} · 9-Month Business Journey</div>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
+            ${bdg("Score: "+scores.total+"/100","var(--gold)","lg")}
+            ${bdg(opinionIcon+" "+opinion,opinionColor,"lg")}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;text-align:left">
+            ${["Business Selection","Pricing Strategy (BUAD222)","Marketing Allocation","TQM Investments","Labor Negotiation","Cash Strategy","9-Month Operations","Dice Event Management","Journal Entry Recording","Trial Balance Verification","Financial Statement Builder","4 Financial Statements","12-Item Audit Checklist","Audit Opinion","nugO Pro Portfolio"].map(s=>`
+              <div style="display:flex;gap:6px;align-items:center"><span style="color:var(--accent);font-size:11px">✓</span><span style="color:var(--muted);font-size:10px">${s}</span></div>`).join("")}
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px">${b("↺ Start New Business","restartFull()","ghost","md")}</div>`;
+    }
+  }
+
+  return `
+    ${roundHdr("🔍","var(--teal)","19","Full Audit Simulation","Trial Balance → Statements → Audit Opinion")}
+    <div style="background:linear-gradient(135deg,#0a1228,#0d1520);border:1px solid var(--teal)44;border-radius:13px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="font-size:28px">${S.biz.bizIcon}</div>
+      <div style="flex:1"><div style="color:var(--teal);font-weight:900;font-size:14px">${S.biz.name} — Full Corporate Audit</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${S.biz.bizLabel} · 9-Month Operating Period</div></div>
+      <div style="display:flex;gap:13px;flex-wrap:wrap">
+        ${st("Net Profit",fmt(totalProfit),totalProfit>=0?"var(--accent)":"var(--red)","sm")}
+        ${st("Cash End",fmt(cashEnd),"var(--gold)","sm")}
+        ${st("Opinion",opinionIcon+" "+opinion,opinionColor,"sm")}
+      </div>
+    </div>
+    <div class="tabs">${tabs.map(t=>`<button class="tab ${_auditTab===t.id?"active":""}" onclick="setAuditTab('${t.id}')" style="${_auditTab===t.id?"background:var(--teal);color:#060a12":""}">${t.lbl}</button>`).join("")}</div>
+    ${card(tabContent)}
+    ${restartLink()}`;
+}
+
+function setCheck(id,val){S.auditChecks[id]=val;saveGame();render();}
+function setAuditTab(tab){_auditTab=tab;render();}
+
+// ═══════════════════════════════════════════════
+// HOW TO PLAY MODAL
+// ═══════════════════════════════════════════════
+function openHTP(){_htpStep=0;renderHTP();document.getElementById("htp-modal").style.display="flex";}
+function closeHTP(){document.getElementById("htp-modal").style.display="none";}
+function htpNav(dir){_htpStep=Math.max(0,Math.min(HTP.length-1,_htpStep+dir));renderHTP();}
+function renderHTP(){
+  const s=HTP[_htpStep];
+  document.getElementById("htp-step-lbl").textContent=`Step ${_htpStep+1} of ${HTP.length}`;
+  document.getElementById("htp-dots").innerHTML=HTP.map((_,i)=>`<div class="modal-prog-seg" onclick="_htpStep=${i};renderHTP()" style="background:${i<=_htpStep?s.color:"var(--border)"}"></div>`).join("");
+  document.getElementById("htp-content").innerHTML=`<div style="font-size:50px;text-align:center;margin-bottom:12px">${s.icon}</div><div style="color:${s.color};font-weight:900;font-size:16px;text-align:center;margin-bottom:10px">${s.title}</div><div style="color:var(--muted);font-size:13px;line-height:1.8;text-align:center">${s.body}</div>`;
+  document.getElementById("htp-prev").style.display=_htpStep===0?"none":"inline-block";
+  const nx=document.getElementById("htp-next");
+  if(_htpStep===HTP.length-1){nx.textContent="Got it! 🚀";nx.className="btn gold md";nx.onclick=closeHTP;}
+  else{nx.textContent="Next →";nx.className="btn blue md";nx.onclick=()=>htpNav(1);}
+  const box=document.getElementById("htp-box");
+  box.style.borderColor=s.color+"55";box.style.boxShadow=`0 0 48px ${s.color}33`;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+window.onload=function(){
+  const saved=loadSave();
+  if(saved&&saved.biz){_bizType=saved.biz.bizType||"foodtruck";_loanOn=saved.biz.loan||false;_soloOn=saved.biz.solo!==false;_mktBudget=saved.biz.mktBudget||250;_tqmSelected=saved.biz.tqmList||[];}
+  _auditTab="trial";
+  render();
+};
+</script>
+</body>
+</html>
