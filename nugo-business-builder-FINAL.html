@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nugO Business Builder — 12-Month Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f; --card:#0e1320; --border:#1a2640;
+  --accent:#00c896; --as:#00c89618;
+  --gold:#f5b731;   --gs:#f5b73118;
+  --red:#f04060;    --rs:#f0406018;
+  --blue:#3d9eff;   --bs:#3d9eff18;
+  --purple:#a875f0; --ps:#a875f018;
+  --orange:#ff7c3a; --os:#ff7c3a18;
+  --teal:#00d4d4;   --ts:#00d4d418;
+  --text:#ddeeff;   --muted:#7a90b0; --dim:#374a66;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select,textarea{font-family:'Syne',sans-serif;}
+button{font-family:'Space Mono',monospace;cursor:pointer;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes diceShake{0%{transform:rotate(-10deg) scale(1.12)}50%{transform:rotate(10deg) scale(0.91)}100%{transform:rotate(-5deg) scale(1.05)}}
+@keyframes cardReveal{0%{opacity:0;transform:scale(0.85) translateY(12px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px var(--gold)44}50%{box-shadow:0 0 36px var(--gold)88}}
+
+.fu{animation:fadeUp 0.32s ease forwards;}
+.shake{animation:diceShake 0.07s infinite;}
+.reveal{animation:cardReveal 0.4s ease forwards;}
+
+/* Layout */
+#app{max-width:720px;margin:0 auto;padding:0 16px 80px;}
+
+/* Header */
+#hdr{background:linear-gradient(180deg,#0d1520,transparent);padding:20px 18px 0;margin-bottom:6px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+#hdr-inner{max-width:720px;margin:0 auto;}
+.hdr-row{display:flex;align-items:center;gap:12px;}
+.logo-box{background:var(--as);border:1px solid #00c89633;border-radius:11px;padding:7px 13px;font-size:19px;flex-shrink:0;}
+.logo-title{color:var(--accent);font-weight:900;font-size:16px;letter-spacing:-0.5px;}
+.logo-sub{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.save-flash{color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.htp-btn{background:var(--ps);border:1px solid #a875f055;color:var(--purple);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;transition:opacity .15s;}
+.htp-btn:hover{opacity:.8;}
+.biz-name-hdr{text-align:right;}
+.biz-name-hdr .name{color:var(--gold);font-weight:800;font-size:13px;}
+.biz-name-hdr .type{color:var(--muted);font-size:9px;}
+
+/* Progress bar */
+.prog-wrap{margin-top:16px;margin-bottom:2px;}
+.prog-bar{display:flex;gap:2px;}
+.prog-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;}
+.prog-labels{display:flex;justify-content:space-between;margin-top:5px;}
+.prog-labels span{color:var(--muted);font-size:9px;}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 2px 20px #00000055;}
+.card.glow-accent{border-color:#00c89655;box-shadow:0 0 32px #00c89622;}
+.card.glow-gold{border-color:#f5b73155;box-shadow:0 0 32px #f5b73122;}
+.card.glow-teal{border-color:#00d4d455;box-shadow:0 0 32px #00d4d422;}
+.card.glow-purple{border-color:#a875f055;box-shadow:0 0 32px #a875f022;}
+.card.glow-blue{border-color:#3d9eff55;box-shadow:0 0 32px #3d9eff22;}
+
+/* Grid helpers */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;}
+.col{display:flex;flex-direction:column;gap:16px;}
+.row{display:flex;gap:10px;align-items:center;}
+
+/* Stat */
+.stat{text-align:center;}
+.stat .val{font-family:'Space Mono',monospace;font-weight:800;line-height:1;}
+.stat .lbl{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.stat.sm .val{font-size:15px;}
+.stat.lg .val{font-size:22px;}
+.stat.xl .val{font-size:28px;}
+
+/* Badge */
+.badge{display:inline-block;border-radius:99px;font-weight:700;white-space:nowrap;font-size:11px;padding:2px 10px;}
+.badge.lg{font-size:13px;padding:4px 14px;}
+
+/* Inputs */
+.inp-wrap{display:flex;flex-direction:column;gap:5px;}
+.inp-label{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.inp-hint{color:var(--dim);font-size:10px;margin-top:-3px;}
+.inp-row{display:flex;align-items:center;background:#080c18;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.inp-pre{color:var(--muted);padding:9px 11px;background:#111825;font-size:12px;border-right:1px solid var(--border);}
+.inp-suf{color:var(--muted);padding:9px 11px;font-size:11px;}
+.inp-row input,.inp-row select{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:9px 13px;font-size:14px;font-family:'Space Mono',monospace;width:100%;}
+
+/* Buttons */
+.btn{border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.3px;transition:opacity .15s,transform .1s;border:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.primary{background:var(--accent);color:#060a12;}
+.btn.gold{background:var(--gold);color:#060a12;}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid #00c89655;}
+.btn.purple{background:var(--purple);color:#fff;}
+.btn.blue{background:var(--blue);color:#060a12;}
+.btn.teal{background:var(--teal);color:#060a12;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.dark{background:#151f35;color:var(--muted);border:1px solid var(--border);}
+.btn.sm{padding:6px 14px;font-size:11px;}
+.btn.md{padding:9px 20px;}
+.btn.lg{padding:13px 30px;font-size:14px;}
+.btn.xl{padding:16px 40px;font-size:16px;}
+.btn.full{width:100%;}
+
+/* Toggle */
+.toggle{width:42px;height:22px;border-radius:99px;cursor:pointer;position:relative;transition:background .2s;border:none;}
+.toggle .knob{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{background:#0a0e1a;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;transition:all .13s;}
+.tab.active{color:#060a12;}
+
+/* Progress bar for scores */
+.pbar-wrap{background:#151f35;border-radius:99px;height:8px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,2,.6,1);}
+
+/* Dice */
+.dice-face{width:74px;height:74px;border-radius:14px;font-size:44px;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s,box-shadow .3s;flex-shrink:0;}
+.dice-sum{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.dice-sum .sum-lbl{color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:1px;}
+.dice-sum .sum-val{color:var(--gold);font-size:30px;font-weight:900;font-family:'Space Mono',monospace;text-shadow:0 0 16px #f5b73188;}
+
+/* Event card */
+.ev-card{border-radius:14px;padding:15px 17px;display:flex;align-items:center;gap:14px;transition:all .15s;}
+.ev-card .ev-emoji{font-size:32px;flex-shrink:0;}
+.ev-card .ev-body{flex:1;}
+.ev-card .ev-title{font-weight:800;font-size:14px;}
+.ev-card .ev-desc{color:var(--muted);font-size:11px;margin-top:3px;}
+.ev-card .ev-tag{flex-shrink:0;text-align:right;}
+.ev-auto{font-size:10px;font-weight:800;margin-top:3px;}
+
+/* Month banner */
+.month-banner{background:linear-gradient(135deg,#0e1730,#131b2e);border:1px solid #3d9eff33;border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.month-banner .mo-icon{font-size:26px;}
+.month-banner .mo-title{color:var(--blue);font-weight:800;font-size:15px;}
+.month-banner .mo-sub{color:var(--muted);font-size:10px;margin-top:2px;}
+.month-banner .mo-cash{margin-left:auto;text-align:right;}
+.month-banner .mo-cash-lbl{color:var(--muted);font-size:9px;text-transform:uppercase;}
+.month-banner .mo-cash-val{color:var(--gold);font-weight:800;font-family:'Space Mono',monospace;font-size:15px;}
+
+/* Round header */
+.round-hdr{border-radius:14px;padding:15px 18px;margin-bottom:16px;display:flex;gap:14px;align-items:center;}
+.round-hdr .rh-icon{border-radius:10px;padding:9px 11px;font-size:24px;flex-shrink:0;}
+.round-hdr .rh-badges{display:flex;gap:7px;margin-bottom:6px;flex-wrap:wrap;}
+.round-hdr .rh-title{font-size:17px;font-weight:900;}
+.round-hdr .rh-desc{color:var(--muted);font-size:11px;margin-top:2px;}
+
+/* Biz type selector */
+.biz-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.biz-opt{border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .13s;border:2px solid var(--border);}
+.biz-opt.sel{background:var(--as);border-color:var(--accent);}
+.biz-opt .biz-lbl{font-size:15px;font-weight:700;}
+.biz-opt .biz-ex{color:var(--muted);font-size:10px;margin-top:3px;}
+
+/* Staff toggle */
+.staff-opt{flex:1;text-align:center;padding:9px 6px;border-radius:9px;cursor:pointer;border:2px solid var(--border);font-size:11px;transition:all .13px;}
+.staff-opt.sel{background:var(--as);border-color:var(--accent);}
+
+/* Marketing options */
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mkt-opt{border-radius:13px;padding:16px;cursor:pointer;transition:all .13s;border:2px solid var(--border);position:relative;}
+.mkt-opt.sel{background:var(--as);border-color:var(--accent);}
+.mkt-opt .mkt-price{font-size:19px;font-weight:900;font-family:'Space Mono',monospace;}
+.mkt-opt .mkt-boost{color:var(--gold);font-size:21px;font-weight:900;margin:6px 0;}
+.mkt-opt .mkt-lbl{color:var(--muted);font-size:10px;}
+.mkt-opt .mkt-desc{color:var(--dim);font-size:9px;margin-top:6px;}
+.mkt-opt .mkt-check{position:absolute;top:9px;right:12px;color:var(--accent);font-size:15px;}
+
+/* Audit checklist */
+.chk-item{border-radius:12px;padding:13px 15px;display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border);margin-bottom:8px;transition:all .15s;}
+.chk-item .chk-text{flex:1;}
+.chk-item .chk-title{font-weight:700;font-size:12px;}
+.chk-item .chk-accts{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;}
+.chk-item .chk-btns{display:flex;gap:6px;flex-shrink:0;}
+
+/* Trial balance table */
+.tb-table{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:12px;}
+.tb-table th{color:var(--dim);font-size:9px;text-transform:uppercase;padding:5px 8px;text-align:left;}
+.tb-table td{padding:7px 8px;border-top:1px solid var(--border);}
+.tb-table .dr{color:var(--accent);font-weight:700;}
+.tb-table .cr{color:var(--gold);font-weight:700;}
+.tb-table .dash{color:var(--dim);}
+.tb-table .total-row td{border-top:2px solid var(--border);font-weight:800;}
+
+/* Income / balance rows */
+.stmt-row{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #1a264022;}
+.stmt-row.bold td,.stmt-row.bold{font-weight:800;}
+.stmt-row.header{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border);}
+.stmt-row .lbl{font-size:12px;}
+.stmt-row .amt{font-size:12px;font-family:'Space Mono',monospace;font-weight:700;}
+
+/* Month history table */
+.hist-table{width:100%;border-collapse:collapse;font-family:'Space Mono',monospace;font-size:10px;}
+.hist-table th{color:var(--dim);font-size:8px;text-transform:uppercase;padding:4px 6px;text-align:left;}
+.hist-table td{padding:6px 6px;border-top:1px solid var(--border);}
+
+/* Profit bar chart */
+.profit-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.profit-bar-track{flex:1;background:#151f35;border-radius:3px;height:12px;position:relative;overflow:hidden;}
+.profit-bar-mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);}
+.profit-bar-fill{position:absolute;top:0;bottom:0;}
+
+/* HTP Modal */
+.modal-overlay{position:fixed;inset:0;background:#000000bb;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--card);border-radius:20px;padding:28px;max-width:480px;width:100%;animation:slideDown .25s ease;}
+.modal-progress{display:flex;gap:5px;margin-bottom:20px;}
+.modal-prog-seg{flex:1;height:3px;border-radius:99px;cursor:pointer;transition:background .3s;}
+.htp-icon{font-size:52px;text-align:center;margin-bottom:14px;}
+.htp-title{font-weight:900;font-size:17px;text-align:center;margin-bottom:10px;}
+.htp-body{color:var(--muted);font-size:13px;line-height:1.8;text-align:center;}
+.modal-nav{display:flex;gap:10px;margin-top:22px;}
+
+/* Resume banner */
+.resume-banner{background:linear-gradient(135deg,#0e1a10,#0a1520);border:1px solid #00c89655;border-radius:14px;padding:15px 18px;display:flex;align-items:center;gap:14px;margin-bottom:18px;box-shadow:0 0 24px #00c89622;}
+.resume-banner .rb-icon{font-size:26px;}
+.resume-banner .rb-body{flex:1;}
+.resume-banner .rb-title{color:var(--accent);font-weight:800;font-size:14px;}
+.resume-banner .rb-sub{color:var(--muted);font-size:11px;margin-top:2px;}
+.resume-banner .rb-btns{display:flex;gap:7px;flex-shrink:0;}
+
+/* Certificate */
+.cert{background:linear-gradient(135deg,#1a1300,#0e1a0a);border:1px solid #f5b73155;border-radius:16px;padding:28px 20px;text-align:center;box-shadow:0 0 32px #f5b73122;}
+.cert .cert-icon{font-size:48px;margin-bottom:10px;}
+.cert .cert-title{color:var(--gold);font-size:20px;font-weight:900;}
+.cert .cert-sub{color:var(--text);font-size:14px;margin-top:6px;}
+.cert .cert-biz{color:var(--gold);font-size:19px;font-weight:800;margin:8px 0;}
+.cert-skills{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;text-align:left;}
+.cert-skill{display:flex;gap:7px;align-items:center;}
+.cert-skill .ck{color:var(--accent);font-size:12px;}
+.cert-skill .sk{color:var(--muted);font-size:10px;}
+
+/* Opinion box */
+.opinion-box{border-radius:14px;padding:26px 20px;text-align:center;}
+.opinion-box .op-icon{font-size:44px;margin-bottom:10px;}
+.opinion-box .op-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.opinion-box .op-verdict{font-size:20px;font-weight:900;}
+.opinion-box .op-body{font-size:12px;line-height:1.8;max-width:420px;margin:10px auto 0;}
+
+/* Scrollable statement */
+.stmt-scroll{max-height:380px;overflow-y:auto;}
+
+/* Intro feature cards */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:20px;}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:15px 10px;text-align:center;}
+.feat-card .fi{font-size:22px;margin-bottom:5px;}
+.feat-card .ft{font-weight:700;font-size:11px;}
+.feat-card .fd{color:var(--muted);font-size:9px;margin-top:3px;}
+
+/* Round list */
+.round-list{display:flex;flex-direction:column;gap:5px;margin-bottom:20px;}
+.round-item{display:flex;gap:10px;align-items:center;padding:9px 12px;background:var(--card);border-radius:10px;border:1px solid var(--border);}
+.round-item .ri-icon{border-radius:7px;padding:4px 8px;font-size:14px;flex-shrink:0;}
+.round-item .ri-body{flex:1;}
+.round-item .ri-title{font-weight:700;font-size:12px;}
+.round-item .ri-desc{color:var(--muted);font-size:10px;}
+
+/* Quick start */
+.qs-item{display:flex;gap:14px;padding:12px 0;border-top:1px solid var(--border);}
+.qs-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;font-size:13px;font-family:'Space Mono',monospace;}
+.qs-body .qs-title{font-weight:700;font-size:13px;}
+.qs-body .qs-desc{color:var(--muted);font-size:11px;margin-top:3px;line-height:1.6;}
+
+/* Fixed costs box */
+.fixed-costs{background:#080c18;border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-size:11px;display:flex;flex-direction:column;gap:4px;}
+.fc-row{display:flex;justify-content:space-between;color:var(--muted);}
+.fc-row.total{border-top:1px solid var(--border);padding-top:5px;color:var(--text);font-weight:700;}
+
+/* Results preview */
+.results-ev{padding:10px 14px;border-radius:9px;display:flex;align-items:center;gap:10px;margin-top:12px;}
+.results-ev .re-emoji{font-size:22px;}
+.results-ev .re-title{font-weight:700;font-size:12px;}
+.results-ev .re-desc{color:var(--muted);font-size:11px;}
+
+/* Score summary bar */
+.score-summary{background:var(--as);border:1px solid #00c89644;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:14px;}
+
+/* Responsive */
+@media(max-width:500px){
+  .g4{grid-template-columns:1fr 1fr;}
+  .feat-grid{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .cert-skills{grid-template-columns:1fr;}
+}
+
+/* Print cert */
+@media print{
+  body{background:#fff;color:#000;}
+  #hdr,#restart-link,.btn:not(.print-btn){display:none!important;}
+  .cert{border:2px solid #000;background:#fff;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div id="hdr-inner">
+    <div class="hdr-row">
+      <div class="logo-box">💼</div>
+      <div>
+        <div class="logo-title">nugO Business Builder</div>
+        <div class="logo-sub">12-Month Simulation · Workbook · Full Audit</div>
+      </div>
+      <div class="hdr-right">
+        <div id="save-flash" class="save-flash" style="display:none">💾 Saved</div>
+        <button class="btn htp-btn sm" onclick="openHTP()">❓ How to Play</button>
+        <div id="biz-hdr" class="biz-name-hdr" style="display:none">
+          <div class="name" id="biz-hdr-name"></div>
+          <div class="type" id="biz-hdr-type"></div>
+        </div>
+      </div>
+    </div>
+    <div id="prog-wrap" class="prog-wrap" style="display:none">
+      <div class="prog-bar" id="prog-bar"></div>
+      <div class="prog-labels">
+        <span id="prog-lbl-l">Round 1 of 15</span>
+        <span id="prog-lbl-r">0% complete</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW TO PLAY MODAL -->
+<div id="htp-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeHTP()">
+  <div class="modal-box" id="htp-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div>
+        <div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px">How to Play</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:2px" id="htp-step-lbl">Step 1 of 8</div>
+      </div>
+      <button class="btn dark sm" onclick="closeHTP()">✕ Close</button>
+    </div>
+    <div class="modal-progress" id="htp-dots"></div>
+    <div id="htp-content"></div>
+    <div class="modal-nav">
+      <button class="btn ghost sm" id="htp-prev" onclick="htpNav(-1)">← Back</button>
+      <div style="flex:1"></div>
+      <button class="btn blue md" id="htp-next" onclick="htpNav(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div id="screen"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════════════
+const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MKT_BOOSTS={0:8,100:16,250:28,500:44};
+const BIZ_TYPES=[
+  {id:"food",    label:"🍔 Food Business",   examples:"Burgers, snacks, meal prep, catering", price:12,supplies:300},
+  {id:"clothing",label:"👕 Clothing Brand",  examples:"T-shirts, hats, custom prints",        price:25,supplies:500},
+  {id:"lawn",    label:"🌿 Lawn Care",       examples:"Mowing, trimming, landscaping",         price:40,supplies:150},
+  {id:"digital", label:"💻 Digital Service", examples:"Design, tutoring, social media mgmt",   price:50,supplies:50},
+];
+const EVENTS=[
+  {id:"supplier", e:"📦",t:"Supplier Price Surge",    d:"Wholesale costs jumped unexpectedly.",         ef:"expenses",  v:0.12,  lbl:"+12% Expenses",   c:"var(--red)"},
+  {id:"complaint",e:"😤",t:"Customer Complaint",      d:"A public bad review scared buyers away.",      ef:"customers", v:-6,    lbl:"−6 Customers",    c:"var(--red)"},
+  {id:"viral",    e:"🔥",t:"Went Viral!",             d:"A social post exploded overnight.",             ef:"customers", v:22,    lbl:"+22 Customers",   c:"var(--accent)"},
+  {id:"equipment",e:"🔧",t:"Equipment Breakdown",     d:"Emergency repair bill hit hard.",               ef:"cash",      v:-350,  lbl:"−$350 Repair",    c:"var(--red)"},
+  {id:"grant",    e:"🏆",t:"Grant Awarded!",          d:"Local small-business grant came through.",      ef:"cash",      v:600,   lbl:"+$600 Cash",      c:"var(--gold)"},
+  {id:"latepay",  e:"⏳",t:"Late Client Payment",     d:"Client paid late — cash was delayed.",          ef:"cash",      v:-200,  lbl:"−$200 Delayed",   c:"var(--purple)"},
+  {id:"referral", e:"🤝",t:"Referral Wave",           d:"Happy customers brought their networks in.",    ef:"customers", v:13,    lbl:"+13 Customers",   c:"var(--accent)"},
+  {id:"tax",      e:"📋",t:"Quarterly Tax Notice",    d:"Estimated taxes are due this month.",           ef:"cash",      v:-175,  lbl:"−$175 Taxes",     c:"var(--red)"},
+  {id:"weather",  e:"🌧️",t:"Bad Weather Week",        d:"Foot traffic dried up for a whole week.",       ef:"customers", v:-8,    lbl:"−8 Customers",    c:"var(--blue)"},
+  {id:"collab",   e:"🌟",t:"Free Brand Collab",       d:"A local brand shared your promo at no cost.",   ef:"customers", v:15,    lbl:"+15 Customers",   c:"var(--accent)"},
+  {id:"theft",    e:"🚨",t:"Inventory Theft",         d:"Stock went missing — painful cash loss.",        ef:"cash",      v:-250,  lbl:"−$250 Stolen",    c:"var(--red)"},
+  {id:"festival", e:"🎉",t:"Local Festival Boost",    d:"A nearby event flooded you with walk-ins.",     ef:"customers", v:18,    lbl:"+18 Customers",   c:"var(--gold)"},
+  {id:"returns",  e:"↩️",t:"Product Returns Spike",   d:"Refunds cut into this month's cash.",           ef:"cash",      v:-180,  lbl:"−$180 Refunds",   c:"var(--orange)"},
+  {id:"review",   e:"⭐",t:"5-Star Press Feature",    d:"A local blog named you a top pick.",            ef:"customers", v:14,    lbl:"+14 Customers",   c:"var(--accent)"},
+  {id:"rate",     e:"📈",t:"Interest Rate Hike",      d:"Your loan payment went up this month.",         ef:"cash",      v:-100,  lbl:"−$100 Rate Hike", c:"var(--red)"},
+  {id:"contest",  e:"🥇",t:"Business Contest Win",    d:"Cash prize from a local competition.",          ef:"cash",      v:400,   lbl:"+$400 Prize",     c:"var(--gold)"},
+  {id:"partner",  e:"🤜",t:"Partnership Revenue",     d:"Partner paid a flat fee for cross-promo.",      ef:"cash",      v:300,   lbl:"+$300 Deal",      c:"var(--accent)"},
+  {id:"shipping", e:"🚚",t:"Shipping Delay",          d:"Late inventory — sales opportunities missed.",  ef:"customers", v:-10,   lbl:"−10 Customers",   c:"var(--orange)"},
+  {id:"recession",e:"📉",t:"Local Economic Slowdown", d:"Customers pulled back spending this month.",    ef:"customers", v:-7,    lbl:"−7 Customers",    c:"var(--red)"},
+  {id:"loyalty",  e:"💳",t:"Loyalty Program Win",     d:"Repeat buyers ordered more than expected.",     ef:"cash",      v:250,   lbl:"+$250 Loyalty",   c:"var(--gold)"},
+];
+
+// 15 rounds: 1-3 setup, 4-15 months, 16 audit (index 0-15, round 1-16 displayed)
+// We'll do rounds 1-15 = setup+ops, round 16 = audit
+const TOTAL_ROUNDS = 16;
+
+const AUDIT_CHECKS=[
+  {id:"revenue",   lbl:"Revenue is properly recognized",                   accts:["Sales Revenue"],            risk:"low"},
+  {id:"expenses",  lbl:"All expenses are recorded and classified",         accts:["Rent","Supplies","Wages"],   risk:"low"},
+  {id:"cash",      lbl:"Ending cash matches bank reconciliation",          accts:["Cash"],                     risk:"medium"},
+  {id:"inventory", lbl:"Inventory is valued at cost (not market)",         accts:["Inventory"],                risk:"medium"},
+  {id:"debt",      lbl:"Loan payable balance is accurate and disclosed",   accts:["Loan Payable"],             risk:null},
+  {id:"equity",    lbl:"Owner's equity reflects net profit/loss correctly",accts:["Owner's Equity"],          risk:"low"},
+  {id:"matching",  lbl:"Expenses matched to revenue in correct period",    accts:["All Expense Accounts"],     risk:"medium"},
+  {id:"cutoff",    lbl:"All transactions in the correct month",            accts:["Revenue & Expenses"],       risk:"low"},
+  {id:"internal",  lbl:"No single person controls both cash and records",  accts:["Internal Controls"],        risk:null},
+  {id:"going",     lbl:"Business can continue operating (going concern)",  accts:["Cash Flow"],                risk:null},
+  {id:"segregation",lbl:"Duties properly separated between staff",         accts:["Operations"],               risk:null},
+  {id:"reconcile", lbl:"Monthly bank statements have been reconciled",     accts:["Cash","Bank"],              risk:"medium"},
+];
+
+const HTP_STEPS=[
+  {icon:"🚀",title:"Round 1 — Business Setup",     color:"var(--accent)",
+   body:"Pick your business type (Food, Clothing, Lawn Care, or Digital). Name it, set your starting cash, choose solo or hire an employee, and decide whether to take a startup loan."},
+  {icon:"💰",title:"Round 2 — Pricing Strategy",   color:"var(--gold)",
+   body:"Set your price per sale and monthly customer goal. Higher price = more revenue per transaction but fewer customers. Lower price = more volume, thinner margin."},
+  {icon:"📣",title:"Round 3 — Marketing Plan",     color:"var(--blue)",
+   body:"Choose your monthly ad budget: $0 (word of mouth), $100 (flyers), $250 (paid ads), or $500 (full campaign). This affects how many customers find you every single month."},
+  {icon:"📅",title:"Rounds 4–15 — Monthly Ops",    color:"var(--purple)",
+   body:"Each round = one calendar month (January through December). Set your expenses — supplies, rent, misc. Then roll 2 dice to draw your event card automatically."},
+  {icon:"🎲",title:"The 2-Dice System",            color:"var(--purple)",
+   body:"Roll 2 dice each month. The sum (2–12) instantly selects one of 20 random business events — viral post, equipment breakdown, grant, tax notice, theft, festival boost, and more. No choice. Just like real life."},
+  {icon:"📊",title:"Financial Statements",         color:"var(--teal)",
+   body:"After all 12 months, the app generates your Income Statement, Balance Sheet, Statement of Cash Flows, and Trial Balance — built directly from every decision you made throughout the year."},
+  {icon:"🔍",title:"Round 16 — Full Audit",        color:"var(--teal)",
+   body:"Review all 4 financial statements. Complete the 12-item Auditor's Checklist — marking each item Pass ✓ or Flag ⚑. The system issues an official Audit Opinion: Clean, Qualified, or Adverse."},
+  {icon:"🏆",title:"Score & Certificate",          color:"var(--gold)",
+   body:"You're scored on Profit Management, Cash Flow, Debt, Growth, and Financial Decisions. Complete the audit to earn your Certificate of Completion for your nugO portfolio."},
+];
+
+const DICE_FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+let S = {
+  round: 0,  // 0=intro, 1-3=setup, 4-15=months, 16=audit
+  biz: null, // business config
+  ops: [],   // 12 monthly records
+  auditChecks: {},
+  auditNotes: "",
+};
+const SAVE_KEY = "nugo-biz-12mo-v1";
+
+function saveGame(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({...S, savedAt: new Date().toLocaleString()}));
+    const el = document.getElementById("save-flash");
+    if(el){ el.style.display="flex"; setTimeout(()=>el.style.display="none",2000); }
+  }catch(e){}
+}
+function loadSave(){ try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); }catch{return null;} }
+function clearSave(){ try{localStorage.removeItem(SAVE_KEY);}catch{} }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════════════════
+const fmt  = n => "$" + Math.abs(Math.round(n)).toLocaleString();
+const fmtS = n => (n>=0?"+":"−") + fmt(n);
+const pct  = (a,b) => b===0 ? "0%" : Math.round((a/b)*100)+"%";
+const clamp = (v,lo,hi) => Math.min(hi,Math.max(lo,v));
+
+function pickEvent(d1,d2,monthIdx){
+  const sum = d1+d2+2; // 2-12
+  const idx = ((sum-2)*2 + monthIdx) % EVENTS.length;
+  return EVENTS[idx];
+}
+
+function calcScores(ops){
+  if(!ops.length) return {profit:0,cash:0,debt:0,growth:0,decisions:0,total:0};
+  const avg = ops.reduce((a,r)=>a+(r.profit||0),0)/ops.length;
+  const profit    = clamp(Math.round(50+avg/20),0,100);
+  const lastCash  = ops[ops.length-1].cashEnd||0;
+  const cash      = clamp(Math.round(Math.min(100,lastCash/30)),0,100);
+  const lastDebt  = ops[ops.length-1].debt||0;
+  const debt      = clamp(Math.round(100-lastDebt/50),0,100);
+  const cg        = ops.length>1?(ops[ops.length-1].customers||0)-(ops[0].customers||0):0;
+  const growth    = clamp(Math.round(50+cg*1.2),0,100);
+  const decisions = clamp(Math.round(ops.reduce((a,r)=>a+(r.mktBudget>0?18:4)+(r.profit>0?20:0),0)/ops.length),0,100);
+  const total     = Math.round((profit+cash+debt+growth+decisions)/5);
+  return {profit,cash,debt,growth,decisions,total};
+}
+
+function badge(text,color,size="sm"){
+  const p = size==="lg"?"4px 14px":"2px 10px";
+  const fs = size==="lg"?13:11;
+  return `<span class="badge ${size}" style="background:${color}28;color:${color};border:1px solid ${color}44;padding:${p};font-size:${fs}px">${text}</span>`;
+}
+function stat(label,value,color,cls=""){
+  return `<div class="stat ${cls}"><div class="val" style="color:${color};font-size:${cls==='sm'?15:cls==='lg'?22:20}px">${value}</div><div class="lbl">${label}</div></div>`;
+}
+function pbar(pct,color){
+  return `<div class="pbar-wrap"><div class="pbar-fill" style="width:${Math.min(100,Math.max(0,pct))}%;background:${color}"></div></div>`;
+}
+function inp(label,id,type="text",value="",pre="",suf="",hint=""){
+  const preH = pre?`<span class="inp-pre">${pre}</span>`:"";
+  const sufH = suf?`<span class="inp-suf">${suf}</span>`:"";
+  const hintH = hint?`<div class="inp-hint">${hint}</div>`:"";
+  return `<div class="inp-wrap"><label class="inp-label">${label}</label>${hintH}<div class="inp-row">${preH}<input type="${type}" id="${id}" value="${value}">${sufH}</div></div>`;
+}
+function sel(label,id,opts,val=""){
+  const optsH = opts.map(o=>`<option value="${o.v}" ${o.v==val?"selected":""}>${o.l}</option>`).join("");
+  return `<div class="inp-wrap"><label class="inp-label">${label}</label><div class="inp-row"><select id="${id}">${optsH}</select></div></div>`;
+}
+function btn(text,onclick,v="primary",sz="md",disabled=false,extra=""){
+  return `<button class="btn ${v} ${sz}" onclick="${onclick}" ${disabled?"disabled":""}  ${extra}>${text}</button>`;
+}
+function card(content,classes="",style=""){
+  return `<div class="card ${classes}" style="${style}">${content}</div>`;
+}
+function section(title,color,content){
+  return `<div style="color:${color};font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px">${title}</div>${content}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HEADER / PROGRESS
+// ═══════════════════════════════════════════════════════════════════════════════
+function updateHeader(){
+  const pw = document.getElementById("prog-wrap");
+  const bh = document.getElementById("biz-hdr");
+  if(S.round===0){ pw.style.display="none"; bh.style.display="none"; return; }
+  pw.style.display="block";
+  // Build segments
+  const bar = document.getElementById("prog-bar");
+  bar.innerHTML = Array.from({length:TOTAL_ROUNDS},(_,i)=>{
+    const done = i < S.round;
+    const active = i === S.round-1;
+    const isAudit = i===15;
+    const isMon   = i>=3 && i<=14;
+    const col     = isAudit?"var(--teal)":isMon?"var(--blue)":"var(--accent)";
+    const bg      = done?col:active?col+"88":"var(--border)";
+    return `<div class="prog-seg" style="background:${bg}"></div>`;
+  }).join("");
+  document.getElementById("prog-lbl-l").textContent = `Round ${S.round} of ${TOTAL_ROUNDS}`;
+  document.getElementById("prog-lbl-r").textContent = Math.round((S.round/TOTAL_ROUNDS)*100)+"% complete";
+  if(S.biz){
+    bh.style.display="block";
+    document.getElementById("biz-hdr-name").textContent = S.biz.name;
+    document.getElementById("biz-hdr-type").textContent = S.biz.bizLabel;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════════════════════════════════════════════
+function render(){
+  updateHeader();
+  window.scrollTo({top:0,behavior:"smooth"});
+  const el = document.getElementById("screen");
+  el.className = "fu";
+  // force reflow for animation restart
+  void el.offsetWidth;
+  if(S.round===0) el.innerHTML = renderIntro();
+  else if(S.round===1) el.innerHTML = renderSetup();
+  else if(S.round===2) el.innerHTML = renderPricing();
+  else if(S.round===3) el.innerHTML = renderMarketing();
+  else if(S.round>=4&&S.round<=15) el.innerHTML = renderMonth(S.round-4);
+  else if(S.round===16) el.innerHTML = renderAudit();
+}
+
+function advance(){
+  S.round++;
+  if(S.round>0 && S.biz) saveGame();
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INTRO
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderIntro(){
+  const saved = loadSave();
+  const resumeBanner = saved && saved.round>0 && saved.biz ? `
+    <div class="resume-banner">
+      <div class="rb-icon">💾</div>
+      <div class="rb-body">
+        <div class="rb-title">Saved Game Found</div>
+        <div class="rb-sub"><strong style="color:var(--gold)">${saved.biz.name}</strong> · Round ${saved.round} of ${TOTAL_ROUNDS} · Saved ${saved.savedAt||""}</div>
+      </div>
+      <div class="rb-btns">
+        ${btn("Discard","discardSave()","dark","sm")}
+        ${btn("▶ Resume","resumeGame()","primary","sm")}
+      </div>
+    </div>` : "";
+
+  const roundItems = [
+    {icon:"🚀",color:"var(--accent)",tag:"⚙️ Setup",  title:"Round 1: Business Setup",   desc:"Name your business, pick funding & team"},
+    {icon:"💰",color:"var(--accent)",tag:"⚙️ Setup",  title:"Round 2: Pricing Strategy",  desc:"Set your price and monthly revenue goal"},
+    {icon:"📣",color:"var(--accent)",tag:"⚙️ Setup",  title:"Round 3: Marketing Plan",    desc:"Choose your advertising budget"},
+    ...MONTH_NAMES.map((m,i)=>({icon:"📅",color:"var(--blue)",tag:"📅 Month",title:`Round ${i+4}: ${m}`,desc:`Month ${i+1} of 12 — roll dice for your event`})),
+    {icon:"🔍",color:"var(--teal)", tag:"🔍 Audit",  title:"Round 16: Full Audit",       desc:"Trial Balance → Statements → Audit Opinion"},
+  ];
+
+  return `
+    <div style="text-align:center;padding:28px 0 20px">
+      <div style="font-size:52px;margin-bottom:12px">🏢</div>
+      <h1 style="font-size:24px;font-weight:900;margin:0 0 10px;line-height:1.25">
+        From Startup to<br><span style="color:var(--accent)">Full Audit</span>
+      </h1>
+      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 20px">
+        Run your business for <strong style="color:var(--gold)">12 months</strong>. Roll 2 dice every month for random events. Generate real financial statements. Then face a <strong style="color:var(--teal)">Full Audit Simulation</strong>.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:26px">
+        ${btn("🚀 Start Your 12-Month Journey","startGame()","gold","xl")}
+        ${btn("❓ How to Play","openHTP()","ghost","lg")}
+      </div>
+    </div>
+
+    ${resumeBanner}
+
+    <div class="feat-grid">
+      <div class="feat-card"><div class="fi">📅</div><div class="ft">12 Business Months</div><div class="fd">January through December</div></div>
+      <div class="feat-card"><div class="fi">🎲</div><div class="ft">2 Dice Each Month</div><div class="fd">Event auto-drawn from roll</div></div>
+      <div class="feat-card"><div class="fi">🔍</div><div class="ft">Full Audit Round</div><div class="fd">12-item checklist + opinion</div></div>
+    </div>
+
+    ${card(`
+      <div style="color:var(--teal);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px">⚡ Quick Start — 3 Steps</div>
+      <div class="qs-item">
+        <div class="qs-num" style="background:var(--as);border:1px solid var(--accent)55;color:var(--accent)">1</div>
+        <div class="qs-body"><div class="qs-title">Setup (Rounds 1–3)</div><div class="qs-desc">Name your business, set your price, choose your marketing. ~3 minutes.</div></div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-num" style="background:var(--bs);border:1px solid var(--blue)55;color:var(--blue)">2</div>
+        <div class="qs-body"><div class="qs-title">Operate (Rounds 4–15)</div><div class="qs-desc">Run each month: set expenses → roll 2 dice → watch your random event apply automatically.</div></div>
+      </div>
+      <div class="qs-item">
+        <div class="qs-num" style="background:var(--ts);border:1px solid var(--teal)55;color:var(--teal)">3</div>
+        <div class="qs-body"><div class="qs-title">Audit (Round 16)</div><div class="qs-desc">Review your financial statements, complete the checklist, receive your official audit opinion.</div></div>
+      </div>
+    `,"","margin-bottom:18px")}
+
+    <div class="round-list">
+      ${roundItems.map(r=>`
+        <div class="round-item">
+          <div class="ri-icon" style="background:${r.color}22;border:1px solid ${r.color}33">${r.icon}</div>
+          <div class="ri-body"><div class="ri-title">${r.title}</div><div class="ri-desc">${r.desc}</div></div>
+          ${badge(r.tag,r.color)}
+        </div>`).join("")}
+    </div>
+
+    <div style="text-align:center;margin-top:10px">
+      ${btn("🚀 Start Your 12-Month Journey","startGame()","gold","xl")}
+    </div>`;
+}
+
+function startGame(){ S={round:1,biz:null,ops:[],auditChecks:{},auditNotes:""}; render(); }
+function resumeGame(){
+  const saved=loadSave(); if(!saved) return;
+  S=saved; render();
+}
+function discardSave(){ clearSave(); render(); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROUND 1 — SETUP
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderSetup(){
+  const bt = S.biz?.bizType||"food";
+  const cash = S.biz?.startCash||1500;
+  const loan = S.biz?.loan||false;
+  const loanAmt = S.biz?.loanAmt||1000;
+  const solo = S.biz?.solo!==false;
+
+  const bizOpts = BIZ_TYPES.map(b=>`
+    <div class="biz-opt ${bt===b.id?"sel":""}" onclick="selBiz('${b.id}')">
+      <div class="biz-lbl">${b.label}</div>
+      <div class="biz-ex">${b.examples}</div>
+    </div>`).join("");
+
+  return `
+    ${roundHdr("🚀","var(--accent)","Round 1","Business Setup","Name your business, pick funding & team")}
+    <div class="col">
+      <div class="biz-grid">${bizOpts}</div>
+      ${inp("Business Name","biz-name","text","","","","Give your business a memorable name")}
+      <div class="g2">
+        ${inp("Starting Cash","biz-cash","number",cash,"$","","Your personal investment")}
+        <div class="inp-wrap">
+          <label class="inp-label">Team</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <div class="staff-opt ${solo?"sel":""}" onclick="selStaff(true)" style="${solo?"background:var(--as);border-color:var(--accent)":""}">
+              <div style="font-weight:700">Solo Owner</div>
+            </div>
+            <div class="staff-opt ${!solo?"sel":""}" onclick="selStaff(false)" style="${!solo?"background:var(--as);border-color:var(--accent)":""}">
+              <div style="font-weight:700">+ Employee</div>
+              <div style="color:var(--red);font-size:10px;margin-top:2px">+$400/mo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <button class="toggle" id="loan-toggle" onclick="toggleLoan()" style="background:${loan?"var(--accent)":"var(--border)"}">
+            <div class="knob" style="left:${loan?"22px":"3px"}"></div>
+          </button>
+          <span style="font-weight:700;font-size:13px">Take a Startup Loan</span>
+          ${loan?badge("10%/mo Interest","var(--red)"):""}
+        </div>
+        <div id="loan-section" style="display:${loan?"block":"none"}">
+          ${inp("Loan Amount","loan-amt","number",loanAmt,"$")}
+        </div>
+      </div>
+      ${card(`<div class="g3">
+        ${stat("Your Cash",fmt(cash),"var(--accent)")}
+        ${stat("Loan",loan?fmt(loanAmt):"None",loan?"var(--red)":"var(--muted)")}
+        ${stat("Total Capital",fmt(+cash+(loan?+loanAmt:0)),"var(--gold)")}
+      </div>`,"","background:#080c18")}
+      ${btn("Round 2: Set Your Price →","submitSetup()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+let _loanOn = false; let _soloOn = true; let _bizType = "food";
+function selBiz(id){ _bizType=id; const bt=BIZ_TYPES.find(b=>b.id===id); document.querySelectorAll(".biz-opt").forEach(el=>el.classList.remove("sel")); document.querySelectorAll(".biz-opt").forEach(el=>{ if(el.querySelector(".biz-lbl").textContent===bt.label) el.classList.add("sel"); }); updateCapital(); }
+function selStaff(s){ _soloOn=s; document.querySelectorAll(".staff-opt").forEach((el,i)=>{ el.classList.toggle("sel",i===(s?0:1)); el.style.background=i===(s?0:1)?"var(--as)":""; el.style.borderColor=i===(s?0:1)?"var(--accent)":"var(--border)"; }); }
+function toggleLoan(){ _loanOn=!_loanOn; const t=document.getElementById("loan-toggle"); t.style.background=_loanOn?"var(--accent)":"var(--border)"; t.querySelector(".knob").style.left=_loanOn?"22px":"3px"; document.getElementById("loan-section").style.display=_loanOn?"block":"none"; updateCapital(); }
+function updateCapital(){ const c=+(document.getElementById("biz-cash")?.value||0); const l=_loanOn?+(document.getElementById("loan-amt")?.value||0):0; /* live update handled in submit */ }
+
+function submitSetup(){
+  const name = (document.getElementById("biz-name")?.value||"").trim();
+  if(!name){ alert("Give your business a name!"); return; }
+  const bt = BIZ_TYPES.find(b=>b.id===_bizType)||BIZ_TYPES[0];
+  const cash = +(document.getElementById("biz-cash")?.value||1500);
+  const loanAmt = _loanOn?+(document.getElementById("loan-amt")?.value||0):0;
+  S.biz = {bizType:_bizType,bizLabel:bt.label,name,startCash:cash,loan:_loanOn,loanAmt,solo:_soloOn,totalCash:cash+loanAmt,defaultPrice:bt.price,defaultSupplies:bt.supplies,price:bt.price,custGoal:20,mktBudget:100,baseCustomers:16};
+  advance();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROUND 2 — PRICING
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderPricing(){
+  const price = S.biz.price||S.biz.defaultPrice;
+  const goal = S.biz.custGoal||20;
+  return `
+    ${roundHdr("💰","var(--gold)","Round 2","Pricing Strategy","Set your price and monthly revenue goal")}
+    <div class="col">
+      ${card(`<p style="color:var(--text);font-size:13px;line-height:1.75;margin:0">
+        Higher price = more revenue per transaction, fewer buyers. Lower price = more buyers, thinner margins. Set strategically for <strong style="color:var(--accent)">${S.biz.name}</strong> over a <strong style="color:var(--gold)">12-month run</strong>.
+      </p>`,"","background:#080c18")}
+      <div class="g2">
+        ${inp("Price per Sale","price","number",price,"$","",`Suggested: $${S.biz.defaultPrice}`)}
+        ${inp("Monthly Customer Goal","cust-goal","number",goal,"","customers")}
+      </div>
+      ${card(`<div style="text-align:center">
+        <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px">Monthly Revenue Goal</div>
+        <div id="rev-goal-disp" style="color:var(--accent);font-size:32px;font-weight:900;font-family:'Space Mono',monospace;margin:7px 0">${fmt(price*goal)}</div>
+        <div style="color:var(--muted);font-size:12px">${goal} customers × ${fmt(price)} each</div>
+        <div style="color:var(--dim);font-size:11px;margin-top:5px">12-month target: ${fmt(price*goal*12)}</div>
+      </div>`,"glow-accent","background:var(--as);border:1px solid #00c89633")}
+      ${btn("Round 3: Plan Marketing →","submitPricing()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+function submitPricing(){
+  const price = +(document.getElementById("price")?.value||S.biz.defaultPrice);
+  const goal = +(document.getElementById("cust-goal")?.value||20);
+  S.biz.price = price; S.biz.custGoal = goal;
+  advance();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ROUND 3 — MARKETING
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderMarketing(){
+  const cur = S.biz.mktBudget||100;
+  const opts = [0,100,250,500].map(b=>{
+    const boost=MKT_BOOSTS[b]; const sel=cur===b;
+    return `<div class="mkt-opt ${sel?"sel":""}" onclick="selMkt(${b})" id="mkt-${b}">
+      ${sel?'<span class="mkt-check">✓</span>':""}
+      <div class="mkt-price" style="color:${sel?"var(--accent)":"var(--text)"}">${b===0?"Free":fmt(b)}</div>
+      <div class="mkt-boost">${boost}</div>
+      <div class="mkt-lbl">customers/month</div>
+      <div class="mkt-desc">${b===0?"Word of mouth only":b===100?"Flyers + social":b===250?"Paid ads + content":"Full campaign"}</div>
+    </div>`;
+  }).join("");
+
+  return `
+    ${roundHdr("📣","var(--blue)","Round 3","Marketing Plan","Choose your monthly advertising budget")}
+    <div class="col">
+      <div class="mkt-grid">${opts}</div>
+      ${card(`<div class="g3">
+        ${stat("Monthly Spend",fmt(cur),"var(--gold)")}
+        ${stat("Customers/Month",MKT_BOOSTS[cur],"var(--accent)")}
+        ${stat("12-Month Ad Cost",fmt(cur*12),"var(--red)")}
+      </div>`,"glow-gold","background:var(--gs)")}
+      ${btn("Start January — Month 1 →","submitMarketing()","gold","lg full")}
+      ${restartLink()}
+    </div>`;
+}
+
+let _mktBudget = 100;
+function selMkt(b){
+  _mktBudget=b;
+  document.querySelectorAll(".mkt-opt").forEach(el=>{ el.classList.remove("sel"); el.style.background=""; el.style.borderColor="var(--border)"; });
+  const el=document.getElementById("mkt-"+b);
+  if(el){ el.classList.add("sel"); el.style.background="var(--as)"; el.style.borderColor="var(--accent)"; }
+}
+function submitMarketing(){
+  S.biz.mktBudget = _mktBudget;
+  S.biz.baseCustomers = MKT_BOOSTS[_mktBudget];
+  advance();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MONTH ROUNDS (4-15)
+// ═══════════════════════════════════════════════════════════════════════════════
+let _diceRolled=false; let _chosenEvent=null; let _diceInterval=null; let _diceCount=0;
+
+function renderMonth(mi){ // mi = 0-11
+  _diceRolled=false; _chosenEvent=null;
+  const prevCash = S.ops.length>0 ? S.ops[S.ops.length-1].cashEnd : S.biz.totalCash;
+  const defSupplies = S.biz.defaultSupplies;
+
+  return `
+    ${roundHdr("📅","var(--blue)",`Round ${mi+4}`,`${MONTH_NAMES[mi]} — Month ${mi+1} of 12`,`Set expenses and roll 2 dice for your event`)}
+    <div class="col">
+      <div class="month-banner">
+        <div class="mo-icon">📅</div>
+        <div>
+          <div class="mo-title">${MONTH_NAMES[mi]} — Month ${mi+1} of 12</div>
+          <div class="mo-sub">Set your expenses, then roll 2 dice — event auto-applied</div>
+        </div>
+        <div class="mo-cash">
+          <div class="mo-cash-lbl">Cash Available</div>
+          <div class="mo-cash-val">${fmt(prevCash)}</div>
+        </div>
+      </div>
+
+      <div class="g2">
+        ${inp("Supplies / Inventory","supplies","number",defSupplies,"$")}
+        ${inp("Rent / Workspace","rent","number",250,"$")}
+        ${inp("Misc Expenses","misc","number",80,"$")}
+        <div class="inp-wrap">
+          <label class="inp-label">Fixed Auto-Costs</label>
+          <div class="fixed-costs">
+            ${!S.biz.solo?`<div class="fc-row"><span>Employee</span><span style="color:var(--red)">+$400</span></div>`:""}
+            ${S.biz.loan?`<div class="fc-row"><span>Loan (10%)</span><span style="color:var(--red)">+${fmt(S.biz.loanAmt*0.1)}</span></div>`:""}
+            <div class="fc-row"><span>Marketing</span><span style="color:var(--gold)">+${fmt(S.biz.mktBudget)}</span></div>
+            <div class="fc-row total"><span>Base Total</span><span id="base-total-disp">calculating…</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card glow-purple" style="background:linear-gradient(135deg,#110a28,#0a1020)">
+        <div style="color:var(--purple);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px">
+          🎲 ${MONTH_NAMES[mi]} — Roll 2 Dice · Event Auto-Drawn
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+          <div style="display:flex;gap:20px;align-items:center">
+            <div id="d1" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="d2" class="dice-face" style="border:2px solid var(--border);background:var(--card)">·</div>
+            <div id="dice-sum" class="dice-sum" style="display:none">
+              <div class="sum-lbl">Sum</div>
+              <div class="sum-val" id="sum-val">—</div>
+            </div>
+          </div>
+          <div id="dice-ctrl">
+            ${btn("🎲 Roll 2 Dice","rollDice("+mi+")","purple","lg")}
+          </div>
+          <div id="event-reveal" style="width:100%;display:none"></div>
+        </div>
+      </div>
+
+      <div id="results-preview" style="display:none"></div>
+
+      ${btn("Close "+MONTH_NAMES[mi]+" Books →","submitMonth("+mi+")","gold","lg full",true,"id='close-btn'")}
+      ${restartLink()}
+    </div>`;
+}
+
+function rollDice(mi){
+  if(_diceRolled) return;
+  _diceCount=0;
+  const d1el=document.getElementById("d1");
+  const d2el=document.getElementById("d2");
+  const ctrl=document.getElementById("dice-ctrl");
+  ctrl.innerHTML=`<div style="color:var(--purple);font-weight:800;font-size:13px;animation:pulse 0.45s infinite">Rolling…</div>`;
+  d1el.classList.add("shake"); d2el.classList.add("shake");
+  d1el.style.border="2px solid var(--purple)"; d1el.style.background="var(--ps)";
+  d2el.style.border="2px solid var(--purple)"; d2el.style.background="var(--ps)";
+  _diceInterval=setInterval(()=>{
+    const r1=Math.floor(Math.random()*6), r2=Math.floor(Math.random()*6);
+    d1el.textContent=DICE_FACES[r1]; d2el.textContent=DICE_FACES[r2];
+    _diceCount++;
+    if(_diceCount>=20){
+      clearInterval(_diceInterval);
+      const f1=Math.floor(Math.random()*6), f2=Math.floor(Math.random()*6);
+      d1el.textContent=DICE_FACES[f1]; d2el.textContent=DICE_FACES[f2];
+      d1el.classList.remove("shake"); d2el.classList.remove("shake");
+      d1el.style.border="2px solid var(--gold)"; d1el.style.background="var(--gs)";
+      d2el.style.border="2px solid var(--gold)"; d2el.style.background="var(--gs)";
+      d1el.style.boxShadow="0 0 22px #f5b73166"; d2el.style.boxShadow="0 0 22px #f5b73166";
+      const sum=f1+f2+2;
+      const sumEl=document.getElementById("dice-sum"); sumEl.style.display="flex";
+      document.getElementById("sum-val").textContent=sum;
+      ctrl.innerHTML=`<div style="display:flex;gap:8px">${badge("Die 1: "+(f1+1),"var(--gold)")} ${badge("Die 2: "+(f2+1),"var(--gold)")}</div>`;
+      _diceRolled=true;
+      const ev=pickEvent(f1,f2,mi);
+      _chosenEvent=ev;
+      showEventReveal(ev,mi);
+    }
+  },65);
+}
+
+function showEventReveal(ev,mi){
+  const revEl=document.getElementById("event-reveal");
+  revEl.style.display="block";
+  revEl.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">🎴 Your Roll → Event Card</div>
+    <div style="background:linear-gradient(135deg,#1a1030,#0e1828);border:2px solid var(--purple)88;border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:center;min-height:80px;animation:pulse 0.6s infinite" id="ev-face-down">
+      <span style="font-size:36px">🎴</span><span style="color:var(--purple);font-weight:800;font-size:14px;margin-left:12px">Revealing…</span>
+    </div>`;
+  setTimeout(()=>{
+    const faceDown=document.getElementById("ev-face-down");
+    if(!faceDown) return;
+    faceDown.style.animation="none";
+    faceDown.className="reveal";
+    faceDown.style.background=ev.c+"22";
+    faceDown.style.border=`2px solid ${ev.c}`;
+    faceDown.style.boxShadow=`0 0 28px ${ev.c}55`;
+    faceDown.style.justifyContent="flex-start";
+    faceDown.style.gap="14px";
+    faceDown.innerHTML=`
+      <span style="font-size:34px;flex-shrink:0">${ev.e}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="color:${ev.c};font-weight:900;font-size:15px">${ev.t}</div>
+          ${badge(ev.lbl,ev.c)}
+        </div>
+        <div style="color:var(--muted);font-size:12px">${ev.d}</div>
+      </div>
+      <div style="flex-shrink:0;text-align:center">
+        <div style="color:${ev.c};font-size:11px;font-weight:800">AUTO</div>
+        <div style="color:${ev.c};font-size:10px">APPLIED</div>
+      </div>`;
+    setTimeout(()=>showResultsPreview(mi),400);
+    setTimeout(()=>{ const cb=document.getElementById("close-btn"); if(cb) cb.disabled=false; },500);
+  },700);
+}
+
+function showResultsPreview(mi){
+  const supplies=+(document.getElementById("supplies")?.value||S.biz.defaultSupplies);
+  const rent=+(document.getElementById("rent")?.value||250);
+  const misc=+(document.getElementById("misc")?.value||80);
+  const empCost=S.biz.solo?0:400;
+  const loanPmt=S.biz.loan?Math.round(S.biz.loanAmt*0.10):0;
+  const baseExp=supplies+rent+misc+empCost+S.biz.mktBudget+loanPmt;
+  const ev=_chosenEvent;
+  let customers=S.biz.baseCustomers, cashAdj=0, expMult=1;
+  if(ev){ if(ev.ef==="customers") customers=Math.max(0,customers+ev.v); if(ev.ef==="cash") cashAdj=ev.v; if(ev.ef==="expenses") expMult=1+ev.v; }
+  const adjExp=Math.round(baseExp*expMult);
+  const revenue=Math.round(customers*S.biz.price);
+  const profit=revenue-adjExp;
+  const prevCash=S.ops.length>0?S.ops[S.ops.length-1].cashEnd:S.biz.totalCash;
+  const cashEnd=prevCash+revenue-adjExp+cashAdj;
+
+  const prv=document.getElementById("results-preview");
+  if(!prv) return;
+  prv.style.display="block";
+  prv.innerHTML=card(`
+    <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:13px">📊 ${MONTH_NAMES[mi]} — Final Results</div>
+    <div class="g4">
+      ${stat("Customers",customers,"var(--accent)")}
+      ${stat("Revenue",fmt(revenue),"var(--blue)")}
+      ${stat("Expenses",fmt(adjExp),"var(--red)")}
+      ${stat("Profit",fmt(profit),profit>=0?"var(--accent)":"var(--red)")}
+    </div>
+    <div class="g2" style="margin-top:13px;padding-top:13px;border-top:1px solid var(--border)">
+      ${stat("Cash Start",fmt(prevCash),"var(--muted)")}
+      ${stat("Cash End",fmt(cashEnd),cashEnd>=0?"var(--gold)":"var(--red)")}
+    </div>
+    <div class="results-ev" style="background:${ev.c}18;border:1px solid ${ev.c}44;margin-top:12px">
+      <span class="re-emoji">${ev.e}</span>
+      <div><div class="re-title" style="color:${ev.c}">${ev.t}</div><div class="re-desc">${ev.d} → <strong style="color:${ev.c}">${ev.lbl}</strong></div></div>
+    </div>
+  `,"glow-accent","background:#080c18;border:1px solid var(--accent)33");
+}
+
+function submitMonth(mi){
+  if(!_chosenEvent){ alert("Roll the dice first!"); return; }
+  const supplies=+(document.getElementById("supplies")?.value||S.biz.defaultSupplies);
+  const rent=+(document.getElementById("rent")?.value||250);
+  const misc=+(document.getElementById("misc")?.value||80);
+  const empCost=S.biz.solo?0:400;
+  const loanPmt=S.biz.loan?Math.round(S.biz.loanAmt*0.10):0;
+  const baseExp=supplies+rent+misc+empCost+S.biz.mktBudget+loanPmt;
+  const ev=_chosenEvent;
+  let customers=S.biz.baseCustomers, cashAdj=0, expMult=1;
+  if(ev.ef==="customers") customers=Math.max(0,customers+ev.v);
+  if(ev.ef==="cash")      cashAdj=ev.v;
+  if(ev.ef==="expenses")  expMult=1+ev.v;
+  const adjExp=Math.round(baseExp*expMult);
+  const revenue=Math.round(customers*S.biz.price);
+  const profit=revenue-adjExp;
+  const prevCash=S.ops.length>0?S.ops[S.ops.length-1].cashEnd:S.biz.totalCash;
+  const cashEnd=prevCash+revenue-adjExp+cashAdj;
+  const debt=S.biz.loan?Math.max(0,S.biz.loanAmt-loanPmt*(mi+1)):0;
+  S.ops.push({month:mi+1,monthName:MONTH_NAMES[mi],supplies,rent,misc,empCost,loanPmt,baseExp,adjExp,cashAdj,customers,revenue,profit,cashStart:prevCash,cashEnd,debt,event:ev,mktBudget:S.biz.mktBudget});
+  advance();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIT (Round 16)
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderAudit(){
+  const ops=S.ops;
+  const totalRevenue=ops.reduce((a,r)=>a+(r.revenue||0),0);
+  const totalExpenses=ops.reduce((a,r)=>a+(r.adjExp||0),0);
+  const totalProfit=totalRevenue-totalExpenses;
+  const cashEnd=ops[ops.length-1]?.cashEnd||0;
+  const cashStart=S.biz.totalCash;
+  const debt=ops[ops.length-1]?.debt||0;
+  const inventory=S.biz.defaultSupplies;
+  const totalCashAdj=ops.reduce((a,r)=>a+(r.cashAdj||0),0);
+  const equity=cashEnd+inventory-debt;
+  const totalLoanPmts=ops.reduce((a,r)=>a+(r.loanPmt||0),0);
+  const totalEmpCost=ops.reduce((a,r)=>a+(r.empCost||0),0);
+  const totalMkt=ops.reduce((a,r)=>a+(r.mktBudget||0),0);
+  const totalRent=ops.reduce((a,r)=>a+(r.rent||0),0);
+  const totalSupplies=ops.reduce((a,r)=>a+(r.supplies||0),0);
+  const totalMisc=ops.reduce((a,r)=>a+(r.misc||0),0);
+
+  const flagCount=Object.values(S.auditChecks).filter(v=>v==="flag").length;
+  const passCount=Object.values(S.auditChecks).filter(v=>v==="pass").length;
+  const allChecked=AUDIT_CHECKS.every(c=>S.auditChecks[c.id]);
+  let opinion,opinionColor,opinionIcon;
+  if(!allChecked){opinion="Incomplete";opinionColor="var(--muted)";opinionIcon="⏳";}
+  else if(flagCount===0&&cashEnd>0){opinion="Unqualified (Clean)";opinionColor="var(--accent)";opinionIcon="✅";}
+  else if(flagCount<=2){opinion="Qualified Opinion";opinionColor="var(--gold)";opinionIcon="⚠️";}
+  else{opinion="Adverse / Disclaimer";opinionColor="var(--red)";opinionIcon="🚨";}
+
+  const scores=calcScores(ops);
+  const drTotal=cashEnd+inventory+totalExpenses;
+  const crTotal=debt+equity+totalRevenue;
+  const balanced=Math.abs(drTotal-crTotal)<5;
+
+  const tabs=[
+    {id:"trial",lbl:"📋 Trial Balance"},
+    {id:"income",lbl:"📈 Income Statement"},
+    {id:"balance",lbl:"⚖️ Balance Sheet"},
+    {id:"cashflow",lbl:"💵 Cash Flow"},
+    {id:"checklist",lbl:"🔍 Audit Checklist"},
+    {id:"opinion",lbl:"🏛️ Audit Opinion"},
+  ];
+  const activeTab=window._auditTab||"trial";
+
+  let tabContent="";
+  if(activeTab==="trial"){
+    const rows=[
+      {lbl:"Cash",dr:cashEnd,cr:0},{lbl:"Inventory/Supplies",dr:inventory,cr:0},
+      {lbl:"Loan Payable",dr:0,cr:debt},{lbl:"Owner's Equity",dr:0,cr:equity},
+      {lbl:"Sales Revenue",dr:0,cr:totalRevenue},{lbl:"Rent Expense",dr:totalRent,cr:0},
+      {lbl:"Supplies Expense",dr:totalSupplies,cr:0},{lbl:"Marketing Expense",dr:totalMkt,cr:0},
+      {lbl:"Wages Expense",dr:totalEmpCost,cr:0},{lbl:"Misc Expense",dr:totalMisc,cr:0},
+      {lbl:"Loan Interest",dr:totalLoanPmts,cr:0},
+    ];
+    tabContent=`<div class="stmt-scroll"><table class="tb-table">
+      <thead><tr><th>Account</th><th style="color:var(--accent)">Debit</th><th style="color:var(--gold)">Credit</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr><td>${r.lbl}</td><td class="${r.dr>0?"dr":"dash"}">${r.dr>0?fmt(r.dr):"—"}</td><td class="${r.cr>0?"cr":"dash"}">${r.cr>0?fmt(r.cr):"—"}</td></tr>`).join("")}
+      <tr class="total-row"><td style="color:var(--text)">TOTALS</td><td class="dr">${fmt(drTotal)}</td><td class="cr">${fmt(crTotal)}</td></tr>
+      </tbody></table></div>
+      <div style="margin-top:10px;padding:10px 14px;background:${balanced?"var(--as)":"var(--rs)"};border:1px solid ${balanced?"var(--accent)":"var(--red)"}44;border-radius:9px;font-size:12px;color:${balanced?"var(--accent)":"var(--red)"};font-weight:700">
+        ${balanced?"✓ Trial Balance is BALANCED — Debits equal Credits":"⚠ Trial Balance is OUT OF BALANCE — Review your entries"}
+      </div>`;
+  }
+  else if(activeTab==="income"){
+    const rows=[
+      {lbl:"Sales Revenue",amt:totalRevenue,type:"revenue"},
+      {lbl:"  Rent Expense",amt:-totalRent,type:"exp"},{lbl:"  Supplies Expense",amt:-totalSupplies,type:"exp"},
+      {lbl:"  Marketing Expense",amt:-totalMkt,type:"exp"},{lbl:"  Wages Expense",amt:-totalEmpCost,type:"exp"},
+      {lbl:"  Misc Expense",amt:-totalMisc,type:"exp"},{lbl:"  Loan Interest",amt:-totalLoanPmts,type:"exp"},
+      {lbl:"Total Expenses",amt:-totalExpenses,type:"sub"},{lbl:"NET INCOME / (LOSS)",amt:totalProfit,type:"total"},
+    ];
+    tabContent=`<div class="stmt-scroll">${rows.map(r=>{
+      const isT=r.type==="total",isS=r.type==="sub";
+      const lblColor=isT||isS?"var(--text)":"var(--muted)";
+      const amtColor=isT?(r.amt>=0?"var(--accent)":"var(--red)"):isS?"var(--red)":(r.amt>=0?"var(--accent)":"var(--red)");
+      const fw=isT||isS?"800":"400";
+      const pl=r.lbl.startsWith("  ")?"padding-left:14px":"";
+      const bt=isT?"border-top:2px solid var(--border)":"border-top:1px solid #1a264022";
+      return `<div class="stmt-row" style="${bt}">
+        <span class="lbl" style="color:${lblColor};font-weight:${fw};${pl}">${r.lbl.trim()}</span>
+        <span class="amt" style="color:${amtColor};font-weight:${fw}">${r.amt>=0?fmt(r.amt):"("+fmt(Math.abs(r.amt))+")"}</span>
+      </div>`;
+    }).join("")}
+    <div style="margin-top:10px;padding:10px 14px;background:${totalProfit>=0?"var(--as)":"var(--rs)"};border:1px solid ${totalProfit>=0?"var(--accent)":"var(--red)"}44;border-radius:9px;display:flex;justify-content:space-between">
+      <span style="color:${totalProfit>=0?"var(--accent)":"var(--red)"};font-weight:800;font-size:13px">Profit Margin</span>
+      <span style="color:${totalProfit>=0?"var(--accent)":"var(--red)"};font-weight:800;font-family:'Space Mono',monospace">${pct(totalProfit,totalRevenue)}</span>
+    </div></div>`;
+  }
+  else if(activeTab==="balance"){
+    const rows=[
+      {h:"ASSETS"},{lbl:"  Cash",amt:cashEnd},{lbl:"  Inventory",amt:inventory},{lbl:"  Total Assets",amt:cashEnd+inventory,bold:true},
+      {h:"LIABILITIES"},{lbl:"  Loan Payable",amt:debt},{lbl:"  Total Liabilities",amt:debt,bold:true},
+      {h:"OWNER'S EQUITY"},{lbl:"  Beginning Capital",amt:cashStart},{lbl:"  Net Income / (Loss)",amt:totalProfit},{lbl:"  Total Owner's Equity",amt:equity,bold:true},
+      {lbl:"TOTAL LIAB + EQUITY",amt:debt+equity,bold:true,teal:true},
+    ];
+    tabContent=`<div class="stmt-scroll">${rows.map(r=>{
+      if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+      const amtColor=r.teal?"var(--teal)":r.bold?(r.amt>=0?"var(--gold)":"var(--red)"):(r.amt>=0?"var(--accent)":"var(--red)");
+      const pl=r.lbl?.startsWith("  ")?"padding-left:14px":"";
+      return `<div class="stmt-row" style="border-top:1px solid #1a264022;font-weight:${r.bold?"800":"400"}">
+        <span class="lbl" style="color:${r.bold?"var(--text)":"var(--muted)"};${pl}">${r.lbl?.trim()}</span>
+        <span class="amt" style="color:${amtColor};font-weight:${r.bold?"800":"500"}">${r.amt>=0?fmt(r.amt):"("+fmt(Math.abs(r.amt))+")"}</span>
+      </div>`;
+    }).join("")}</div>`;
+  }
+  else if(activeTab==="cashflow"){
+    const netOp=totalRevenue-totalExpenses+totalCashAdj;
+    const netFin=(S.biz.loan?S.biz.loanAmt:0)-totalLoanPmts;
+    const rows=[
+      {h:"OPERATING ACTIVITIES"},{lbl:"  Cash from Sales",amt:totalRevenue},{lbl:"  Cash Paid — Expenses",amt:-totalExpenses},{lbl:"  Event Adjustments",amt:totalCashAdj},{lbl:"  Net Operating Cash",amt:netOp,bold:true},
+      {h:"FINANCING ACTIVITIES"},{lbl:"  Loan Proceeds",amt:S.biz.loan?S.biz.loanAmt:0},{lbl:"  Loan Repayments",amt:-totalLoanPmts},{lbl:"  Net Financing Cash",amt:netFin,bold:true},
+      {lbl:"NET CHANGE IN CASH",amt:cashEnd-cashStart,bold:true,teal:true},
+      {lbl:"Beginning Cash Balance",amt:cashStart},{lbl:"ENDING CASH BALANCE",amt:cashEnd,bold:true},
+    ];
+    tabContent=`<div class="stmt-scroll">${rows.map(r=>{
+      if(r.h) return `<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;padding:10px 0 3px;border-top:1px solid var(--border)">${r.h}</div>`;
+      const amtColor=r.teal?"var(--teal)":r.bold?(r.amt>=0?"var(--gold)":"var(--red)"):(r.amt>=0?"var(--accent)":"var(--red)");
+      const pl=r.lbl?.startsWith("  ")?"padding-left:14px":"";
+      return `<div class="stmt-row" style="border-top:1px solid #1a264022;font-weight:${r.bold?"800":"400"}">
+        <span class="lbl" style="color:${r.bold?"var(--text)":"var(--muted)"};${pl}">${r.lbl?.trim()}</span>
+        <span class="amt" style="color:${amtColor};font-weight:${r.bold?"800":"500"}">${r.amt>=0?fmt(r.amt):"("+fmt(Math.abs(r.amt))+")"}</span>
+      </div>`;
+    }).join("")}</div>`;
+  }
+  else if(activeTab==="checklist"){
+    const items=AUDIT_CHECKS.map(c=>{
+      const val=S.auditChecks[c.id];
+      let bg="var(--card)",border="var(--border)";
+      if(val==="pass"){bg="var(--as)";border="var(--accent)";}
+      if(val==="flag"){bg="var(--rs)";border="var(--red)";}
+      const riskBadge=c.risk?badge("Risk: "+c.risk,c.risk==="low"?"var(--accent)":"var(--gold)"):"";
+      return `<div class="chk-item" style="background:${bg};border-color:${border}">
+        <div class="chk-text">
+          <div class="chk-title">${c.lbl}</div>
+          <div class="chk-accts">${c.accts.map(a=>badge(a,"var(--blue)")).join("")} ${riskBadge}</div>
+        </div>
+        <div class="chk-btns">
+          <button class="btn sm ${val==="pass"?"primary":"ghost"}" onclick="setCheck('${c.id}','pass')" style="${val==="pass"?"":"color:var(--accent);border:1px solid var(--accent)55"}">✓ Pass</button>
+          <button class="btn sm ${val==="flag"?"red":"ghost"}" onclick="setCheck('${c.id}','flag')" style="${val==="flag"?"":"color:var(--red);border:1px solid var(--red)55"}">⚑ Flag</button>
+        </div>
+      </div>`;
+    }).join("");
+    tabContent=`${items}
+      ${card(`<div class="g3">
+        ${stat("Checked",`${passCount+flagCount}/${AUDIT_CHECKS.length}`,"var(--blue)")}
+        ${stat("Passed",passCount,"var(--accent)")}
+        ${stat("Flagged",flagCount,flagCount>0?"var(--red)":"var(--muted)")}
+      </div>`,"","background:#080c18")}
+      ${allChecked?btn("🏛️ View Audit Opinion →","setAuditTab('opinion')","teal","lg full"):""}`;
+  }
+  else if(activeTab==="opinion"){
+    if(!allChecked){
+      tabContent=card(`<div style="text-align:center;padding:24px 0">
+        <div style="font-size:36px;margin-bottom:10px">⏳</div>
+        <div style="color:var(--gold);font-weight:800;font-size:16px">Complete the Checklist First</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:6px;line-height:1.7">All 12 items must be marked Pass or Flag before an opinion can be issued.</div>
+        <div style="margin-top:16px">${btn("Go to Checklist →","setAuditTab('checklist')","gold","md")}</div>
+      </div>`,"glow-gold");
+    } else {
+      const opBody=flagCount===0&&cashEnd>0
+        ?"In our opinion, the financial statements present fairly, in all material respects, the financial position of the company. No material misstatements were identified."
+        :flagCount<=2
+        ?`Except for the ${flagCount} matter(s) flagged, the statements present fairly in all material respects. Management should address the flagged items in the next reporting period.`
+        :"The financial statements contain multiple material exceptions. The auditor is unable to confirm the statements present fairly. Significant corrective action is required.";
+
+      const findings=flagCount>0?card(`
+        <div style="color:var(--red);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">⚑ Audit Findings</div>
+        ${AUDIT_CHECKS.filter(c=>S.auditChecks[c.id]==="flag").map((c,i)=>`
+          <div style="padding:10px 0;border-top:${i>0?"1px solid var(--border)":"none"};display:flex;gap:12px;align-items:flex-start">
+            ${badge("Finding "+(i+1),"var(--red)")}
+            <div>
+              <div style="color:var(--text);font-weight:700;font-size:12px">${c.lbl}</div>
+              <div style="color:var(--muted);font-size:11px;margin-top:2px">Accounts: ${c.accts.join(", ")}</div>
+            </div>
+          </div>`).join("")}
+      `):"";
+
+      const maxAbs=Math.max(...ops.map(o=>Math.abs(o.profit||0)),1);
+      const profitChart=ops.map((m,i)=>{
+        const w=Math.min(50,Math.abs(m.profit)/maxAbs*50);
+        const left=m.profit>=0?"50%":`${50-w}%`;
+        return `<div class="profit-bar-wrap">
+          <span style="color:var(--muted);font-size:9px;width:18px;flex-shrink:0">M${i+1}</span>
+          <span style="color:var(--dim);font-size:9px;width:56px;flex-shrink:0">${m.monthName.slice(0,3)}</span>
+          <div class="profit-bar-track flex-1">
+            <div class="profit-bar-mid"></div>
+            <div class="profit-bar-fill" style="left:${left};width:${w}%;background:${m.profit>=0?"var(--accent)":"var(--red)"}"></div>
+          </div>
+          <span style="color:${m.profit>=0?"var(--accent)":"var(--red)"};font-size:9px;font-family:'Space Mono',monospace;width:55px;text-align:right;flex-shrink:0">${fmtS(m.profit)}</span>
+          <span style="font-size:12px;flex-shrink:0">${m.event?.e||""}</span>
+        </div>`;
+      }).join("");
+
+      tabContent=`
+        <div class="opinion-box" style="background:${opinionColor}18;border:1px solid ${opinionColor}55;border-radius:14px;margin-bottom:14px">
+          <div class="op-icon">${opinionIcon}</div>
+          <div class="op-title" style="color:${opinionColor}">Auditor's Opinion</div>
+          <div class="op-verdict" style="color:${opinionColor}">${opinion}</div>
+          <div class="op-body" style="color:var(--muted)">${opBody}</div>
+        </div>
+
+        ${findings}
+
+        ${card(`<div style="color:var(--gold);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px">📊 12-Month Financial Summary</div>
+          <div class="g3" style="margin-bottom:14px">
+            ${stat("Total Revenue",fmt(totalRevenue),"var(--accent)")}
+            ${stat("Total Expenses",fmt(totalExpenses),"var(--red)")}
+            ${stat("Net Profit",fmt(totalProfit),totalProfit>=0?"var(--accent)":"var(--red)")}
+            ${stat("Ending Cash",fmt(cashEnd),"var(--gold)")}
+            ${stat("Loan Balance",debt>0?fmt(debt):"Paid Off",debt>0?"var(--red)":"var(--accent)")}
+            ${stat("Owner Equity",fmt(equity),equity>=0?"var(--blue)":"var(--red)")}
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:14px">
+            <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">Month-by-Month Profit</div>
+            ${profitChart}
+          </div>
+        `,"glow-gold","background:var(--gs)")}
+
+        ${card(`
+          <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:14px">🎯 Final Performance Scores</div>
+          ${[{k:"profit",l:"Profit Management",i:"📈"},{k:"cash",l:"Cash Flow Control",i:"💵"},{k:"debt",l:"Debt Management",i:"🏦"},{k:"growth",l:"Growth & Customers",i:"🚀"},{k:"decisions",l:"Financial Decisions",i:"🎯"}].map(s=>`
+            <div style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <span style="font-size:12px">${s.i} ${s.l}</span>
+                <span style="color:var(--accent);font-weight:800;font-family:'Space Mono',monospace">${scores[s.k]}/100</span>
+              </div>
+              ${pbar(scores[s.k],scores[s.k]>70?"var(--accent)":scores[s.k]>40?"var(--gold)":"var(--red)")}
+            </div>`).join("")}
+          <div class="score-summary">
+            <span style="font-weight:800;font-size:14px">🏆 Overall Score</span>
+            <span style="color:var(--gold);font-weight:900;font-size:26px;font-family:'Space Mono',monospace">${scores.total}/100</span>
+          </div>
+        `)}
+
+        <div class="cert">
+          <div class="cert-icon">🏆</div>
+          <div class="cert-title">Certificate of Completion</div>
+          <div class="cert-sub">nugO Business Builder Simulation</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:14px">This certifies that</div>
+          <div class="cert-biz">${S.biz.name}</div>
+          <div style="color:var(--muted);font-size:12px">completed all 16 rounds including a Full Audit Simulation</div>
+          <div style="color:var(--teal);font-size:13px;font-weight:700;margin-top:4px">From Startup to Statements — 12-Month Business Journey</div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+            ${badge("Score: "+scores.total+"/100","var(--gold)","lg")}
+            ${badge(opinionIcon+" "+opinion,opinionColor,"lg")}
+          </div>
+          <div class="cert-skills">
+            ${["Business Planning","Pricing Strategy","Marketing Decisions","12-Month Operations","2-Dice Event System","Income Statement","Balance Sheet","Cash Flow Statement","Trial Balance","Audit Checklist","Audit Opinion","nugO Portfolio"].map(s=>`
+              <div class="cert-skill"><span class="ck">✓</span><span class="sk">${s}</span></div>`).join("")}
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:16px">
+          ${btn("↺ Start a New Business","restartFull()","ghost","md")}
+        </div>`;
+    }
+  }
+
+  return `
+    ${roundHdr("🔍","var(--teal)","Round 16","Full Audit Simulation","Trial Balance → Statements → Audit Opinion")}
+
+    <div style="background:linear-gradient(135deg,#0a1228,#0d1520);border:1px solid var(--teal)44;border-radius:14px;padding:15px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+      <div style="font-size:30px">🔍</div>
+      <div style="flex:1">
+        <div style="color:var(--teal);font-weight:900;font-size:15px">Full Audit Simulation</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:2px">${S.biz.name} · 12-Month Period · Jan – Dec</div>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        ${stat("Net Profit",fmt(totalProfit),totalProfit>=0?"var(--accent)":"var(--red)","sm")}
+        ${stat("Ending Cash",fmt(cashEnd),"var(--gold)","sm")}
+        ${stat("Opinion",opinionIcon+" "+opinion,opinionColor,"sm")}
+      </div>
+    </div>
+
+    <div class="tabs">
+      ${tabs.map(t=>`<button class="tab ${activeTab===t.id?"active":""}" onclick="setAuditTab('${t.id}')" style="${activeTab===t.id?"background:var(--teal);color:#060a12":""}">${t.lbl}</button>`).join("")}
+    </div>
+
+    ${card(tabContent)}
+    ${restartLink()}`;
+}
+
+function setCheck(id,val){
+  S.auditChecks[id]=val;
+  window._auditTab=window._auditTab||"checklist";
+  saveGame();
+  render();
+}
+function setAuditTab(tab){ window._auditTab=tab; render(); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SHARED UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+function roundHdr(icon,color,rndLbl,title,desc){
+  const isAudit=rndLbl.includes("16");
+  const isMon=S.round>=4&&S.round<=15;
+  const bgColor=isAudit?"var(--ts)":isMon?"var(--bs)":"var(--as)";
+  const brdColor=isAudit?"var(--teal)":isMon?"var(--blue)":"var(--accent)";
+  return `<div class="round-hdr" style="background:linear-gradient(135deg,${bgColor},transparent);border:1px solid ${brdColor}44">
+    <div class="rh-icon" style="background:${bgColor};font-size:24px">${icon}</div>
+    <div style="flex:1">
+      <div class="rh-badges">
+        ${badge(rndLbl,"var(--accent)")}
+        ${badge("of "+TOTAL_ROUNDS,"var(--dim)")}
+        ${isMon?badge(MONTH_NAMES[S.round-4],"var(--blue)"):""}
+        ${isAudit?badge("Final Round","var(--teal)"):""}
+      </div>
+      <div class="rh-title">${title}</div>
+      <div class="rh-desc">${desc}</div>
+    </div>
+    <button class="btn dark sm" onclick="openHTP()">❓</button>
+  </div>`;
+}
+
+function restartLink(){
+  return `<div id="restart-link" style="text-align:center;margin-top:16px">
+    <button onclick="if(confirm('Restart and lose all progress?'))restartFull()" style="background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:11px;font-family:'Space Mono',monospace;text-decoration:underline">↺ Restart from beginning</button>
+  </div>`;
+}
+
+function restartFull(){ clearSave(); S={round:0,biz:null,ops:[],auditChecks:{},auditNotes:""}; window._auditTab="trial"; render(); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HOW TO PLAY MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
+let _htpStep=0;
+function openHTP(){ _htpStep=0; renderHTP(); document.getElementById("htp-modal").style.display="flex"; }
+function closeHTP(){ document.getElementById("htp-modal").style.display="none"; }
+function htpNav(dir){ _htpStep=Math.max(0,Math.min(HTP_STEPS.length-1,_htpStep+dir)); renderHTP(); }
+
+function renderHTP(){
+  const s=HTP_STEPS[_htpStep];
+  document.getElementById("htp-step-lbl").textContent=`Step ${_htpStep+1} of ${HTP_STEPS.length}`;
+  document.getElementById("htp-dots").innerHTML=HTP_STEPS.map((_,i)=>
+    `<div class="modal-prog-seg" onclick="_htpStep=${i};renderHTP()" style="background:${i<=_htpStep?s.color:"var(--border)"}"></div>`
+  ).join("");
+  document.getElementById("htp-content").innerHTML=`
+    <div class="htp-icon">${s.icon}</div>
+    <div class="htp-title" style="color:${s.color}">${s.title}</div>
+    <div class="htp-body">${s.body}</div>`;
+  document.getElementById("htp-prev").style.display=_htpStep===0?"none":"inline-block";
+  const nextBtn=document.getElementById("htp-next");
+  if(_htpStep===HTP_STEPS.length-1){
+    nextBtn.textContent="Got it — Let's Go! 🚀";
+    nextBtn.className="btn gold md";
+    nextBtn.onclick=closeHTP;
+  } else {
+    nextBtn.textContent="Next →";
+    nextBtn.className="btn blue md";
+    nextBtn.onclick=()=>htpNav(1);
+  }
+  document.getElementById("htp-box").style.borderColor=s.color+"55";
+  document.getElementById("htp-box").style.boxShadow=`0 0 48px ${s.color}33`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════════
+// Pre-set toggles from saved state on page load
+window.onload = function(){
+  const saved=loadSave();
+  if(saved&&saved.biz) { _bizType=saved.biz.bizType||"food"; _loanOn=saved.biz.loan||false; _soloOn=saved.biz.solo!==false; _mktBudget=saved.biz.mktBudget||100; }
+  window._auditTab = "trial";
+  render();
+};
+</script>
+</body>
+</html>
