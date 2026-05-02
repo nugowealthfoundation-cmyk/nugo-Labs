@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nugO Email Mastery Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090f;--card:#0e1320;--border:#1a2640;
+  --accent:#3d9eff;--as:#3d9eff18;
+  --gold:#f5b731;--gs:#f5b73118;
+  --red:#f04060;--rs:#f0406018;
+  --green:#4cdb8a;--grs:#4cdb8a18;
+  --blue:#3d9eff;--bs:#3d9eff18;
+  --purple:#a875f0;--ps:#a875f018;
+  --orange:#ff7c3a;--os:#ff7c3a18;
+  --teal:#00d4d4;--ts:#00d4d418;
+  --outlook:#0078d4;--gmail:#ea4335;
+  --text:#ddeeff;--muted:#7a90b0;--dim:#374a66;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input,select,textarea{font-family:'Syne',sans-serif;}
+button{font-family:'Space Mono',monospace;cursor:pointer;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.fu{animation:fadeUp .32s ease forwards;}
+.shake{animation:shake .4s ease;}
+.pop{animation:pop .3s ease;}
+
+#app{max-width:720px;margin:0 auto;padding:0 16px 80px;}
+#hdr{background:linear-gradient(180deg,#070d1a,transparent);padding:20px 18px 0;margin-bottom:6px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+#hdr-inner{max-width:720px;margin:0 auto;}
+.hdr-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.logo-box{background:var(--as);border:1px solid var(--accent)33;border-radius:11px;padding:7px 13px;font-size:19px;flex-shrink:0;}
+.logo-title{color:var(--accent);font-weight:900;font-size:16px;letter-spacing:-0.5px;}
+.logo-sub{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;}
+.hdr-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.mod-progress{display:flex;gap:4px;margin-top:14px;margin-bottom:2px;}
+.mp-seg{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .3s;cursor:pointer;}
+.mp-labels{display:flex;justify-content:space-between;margin-top:4px;}
+.mp-labels span{color:var(--muted);font-size:9px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 2px 20px #00000055;}
+.card.blue{border-color:var(--blue)55;box-shadow:0 0 28px var(--blue)22;}
+.card.gold{border-color:var(--gold)55;box-shadow:0 0 28px var(--gold)22;}
+.card.green{border-color:var(--green)55;box-shadow:0 0 28px var(--green)22;}
+.card.red{border-color:var(--red)55;box-shadow:0 0 28px var(--red)22;}
+.card.purple{border-color:var(--purple)55;box-shadow:0 0 28px var(--purple)22;}
+.card.teal{border-color:var(--teal)55;box-shadow:0 0 28px var(--teal)22;}
+.card.dark{background:#080c18;}
+.card.outlook{border-color:#0078d455;box-shadow:0 0 28px #0078d422;}
+.card.gmail{border-color:#ea433555;box-shadow:0 0 28px #ea433522;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;}
+.col{display:flex;flex-direction:column;gap:15px;}
+.stat{text-align:center;}
+.stat .val{font-family:'Space Mono',monospace;font-weight:800;line-height:1;}
+.stat .lbl{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.badge{display:inline-block;border-radius:99px;font-weight:700;white-space:nowrap;}
+.pbar{background:#151f35;border-radius:99px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:99px;transition:width .9s cubic-bezier(.4,2,.6,1);}
+.inp-wrap{display:flex;flex-direction:column;gap:5px;}
+.inp-label{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.inp-hint{color:var(--dim);font-size:10px;}
+.inp-row{display:flex;align-items:center;background:#080c18;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.inp-pre{color:var(--muted);padding:9px 11px;background:#111825;font-size:12px;border-right:1px solid var(--border);}
+.inp-row input,.inp-row select{flex:1;background:transparent;border:none;outline:none;color:var(--text);padding:9px 13px;font-size:14px;font-family:'Space Mono',monospace;width:100%;}
+.btn{border-radius:10px;font-weight:800;font-size:12px;letter-spacing:.3px;transition:opacity .15s,transform .1s;border:none;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.btn.blue{background:var(--blue);color:#060a12;}
+.btn.gold{background:var(--gold);color:#060a12;}
+.btn.ghost{background:transparent;color:var(--blue);border:1px solid var(--blue)55;}
+.btn.dark{background:#151f35;color:var(--muted);border:1px solid var(--border);}
+.btn.green{background:var(--green);color:#060a12;}
+.btn.red{background:var(--red);color:#fff;}
+.btn.teal{background:var(--teal);color:#060a12;}
+.btn.outlook{background:#0078d4;color:#fff;}
+.btn.gmail{background:#ea4335;color:#fff;}
+.btn.sm{padding:6px 14px;font-size:11px;}
+.btn.md{padding:9px 20px;}
+.btn.lg{padding:13px 28px;font-size:14px;}
+.btn.xl{padding:15px 38px;font-size:16px;}
+.btn.full{width:100%;}
+.section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:14px;}
+.mod-hdr{border-radius:14px;padding:20px;margin-bottom:16px;}
+.email-preview{background:#080c18;border:1px solid var(--border);border-radius:12px;padding:16px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.8;}
+.email-field{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--border)22;}
+.email-field .field-label{color:var(--muted);min-width:60px;font-size:11px;}
+.email-field .field-val{color:var(--text);font-size:12px;}
+.email-body-preview{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)22;color:var(--text);font-size:12px;line-height:1.8;}
+.template-card{border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .13s;}
+.template-card:hover{border-color:var(--blue)55;background:var(--as);}
+.template-card .tc-title{font-weight:800;font-size:13px;margin-bottom:4px;}
+.template-card .tc-preview{color:var(--muted);font-size:11px;font-style:italic;}
+.shortcut-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--border)22;font-size:12px;}
+.shortcut-key{background:#151f35;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-family:'Space Mono',monospace;font-size:11px;color:var(--blue);}
+.dos-donts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.do-card{background:var(--grs);border:1px solid var(--green)44;border-radius:10px;padding:14px;}
+.dont-card{background:var(--rs);border:1px solid var(--red)44;border-radius:10px;padding:14px;}
+.quiz-opt{border:2px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .13s;margin-bottom:8px;font-size:13px;}
+.quiz-opt:hover{border-color:var(--blue)55;background:var(--as);}
+.quiz-opt.correct{border-color:var(--green);background:var(--grs);}
+.quiz-opt.wrong{border-color:var(--red);background:var(--rs);}
+.score-badge{display:inline-block;background:var(--gold);color:#060a12;border-radius:99px;padding:4px 14px;font-weight:800;font-size:14px;font-family:'Space Mono',monospace;}
+.wb-input{background:#080c18;border:1px solid var(--border);border-radius:9px;padding:10px 13px;width:100%;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:60px;}
+.wb-input:focus{border-color:var(--blue)66;}
+.sim-email{background:#080c18;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.sim-header{background:#111825;padding:12px 16px;border-bottom:1px solid var(--border);}
+.sim-field{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)22;}
+.sim-field label{color:var(--muted);font-size:11px;min-width:50px;}
+.sim-field input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:'Syne',sans-serif;}
+.sim-body{padding:14px 16px;}
+.sim-body textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:'Syne',sans-serif;resize:none;min-height:120px;line-height:1.7;}
+.cert{background:linear-gradient(135deg,#0a1428,#060e20);border:1px solid var(--blue)55;border-radius:16px;padding:28px;text-align:center;}
+.day-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .13s;}
+.day-check.done{background:var(--green);border-color:var(--green);color:#060a12;}
+.check-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border)22;}
+.comp-table{width:100%;border-collapse:collapse;font-size:11px;}
+.comp-table th{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:8px;text-align:left;border-bottom:1px solid var(--border);}
+.comp-table td{padding:9px 8px;border-bottom:1px solid var(--border)22;font-size:12px;}
+@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}.dos-donts{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-inner">
+    <div class="hdr-row">
+      <div class="logo-box">📧</div>
+      <div>
+        <div class="logo-title">nugO Email Mastery Lab</div>
+        <div class="logo-sub">Outlook · Gmail · Workplace Communication</div>
+      </div>
+      <div class="hdr-right">
+        <div id="prog-pct" style="color:var(--blue);font-size:10px;font-weight:700;font-family:'Space Mono',monospace">0%</div>
+        <button class="btn dark sm" id="cert-btn" onclick="toggleCert()" style="display:none">🏆 Certificate</button>
+      </div>
+    </div>
+    <div class="mod-progress" id="mod-progress"></div>
+    <div class="mp-labels">
+      <span id="mod-lbl">Module 1 of 7</span>
+      <span id="mod-name" style="color:var(--blue)">Email Fundamentals</span>
+    </div>
+  </div>
+</div>
+
+<div id="app"><div id="screen" class="fu"></div></div>
+
+<script>
+const SAVE_KEY = "nugo-email-v1";
+let S = {module:0, completed:[], workbook:{}, checks:{}, quiz:{}, showCert:false, simScore:null};
+
+function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");if(d)S={...S,...d};}catch(e){}}
+
+const MODULES = [
+  {num:1,icon:"📧",title:"Email Fundamentals",        color:"var(--blue)"},
+  {num:2,icon:"📁",title:"Inbox Organization",         color:"var(--gold)"},
+  {num:3,icon:"✍️", title:"Writing Professional Emails",color:"var(--green)"},
+  {num:4,icon:"📅",title:"Calendar & Scheduling",      color:"var(--purple)"},
+  {num:5,icon:"🔒",title:"Email Security",             color:"var(--red)"},
+  {num:6,icon:"🤝",title:"Workplace Communication",    color:"var(--teal)"},
+  {num:7,icon:"💼",title:"Outlook vs Gmail Mastery",   color:"var(--orange)"},
+];
+
+const fmt   = n => "$" + Math.abs(Math.round(n)).toLocaleString();
+const clamp = (v,lo,hi) => Math.min(hi, Math.max(lo, v));
+const b     = (txt,fn,v="blue",sz="md",dis=false) =>
+  `<button class="btn ${v} ${sz}" onclick="${fn}" ${dis?"disabled":""}>${txt}</button>`;
+const bdg   = (txt,color,sz="sm") =>
+  `<span class="badge" style="background:${color}28;color:${color};border:1px solid ${color}44;padding:${sz==="lg"?"4px 14px":"2px 10px"};font-size:${sz==="lg"?13:11}px">${txt}</span>`;
+const st    = (lbl,val,color) =>
+  `<div class="stat"><div class="val" style="color:${color};font-size:20px">${val}</div><div class="lbl">${lbl}</div></div>`;
+const card  = (c,cls="",style="") => `<div class="card ${cls}" style="${style}">${c}</div>`;
+const modHdr = (m) => `
+  <div class="mod-hdr" style="background:linear-gradient(135deg,${m.color}18,transparent);border:1px solid ${m.color}44">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="font-size:28px;background:${m.color}22;border-radius:10px;padding:10px 12px;flex-shrink:0">${m.icon}</div>
+      <div>
+        <div style="display:flex;gap:7px;margin-bottom:5px;flex-wrap:wrap">
+          ${bdg("Module "+m.num,"var(--blue)")}
+          ${bdg("of 7","var(--dim)")}
+          ${S.completed.includes(m.num-1)?bdg("✓ Complete","var(--green)"):""}
+        </div>
+        <div style="font-size:17px;font-weight:900">${m.title}</div>
+      </div>
+    </div>
+  </div>`;
+const navBtns = (mi) => {
+  const prev = mi>0 ? b("← "+MODULES[mi-1].title.split(" ")[0],"goModule("+(mi-1)+")", "dark","sm") : "";
+  const next = mi<6
+    ? b("Next: "+MODULES[mi+1].title+" →","completeModule("+mi+")","blue","lg full")
+    : b("🏆 Complete & Earn Certificate","completeModule("+mi+")","gold","lg full");
+  return `<div style="display:flex;gap:8px">${prev}<div style="flex:1"></div></div>${next}`;
+};
+const wbBlock = (label, id, placeholder) => `
+  <div>
+    <label style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px">${label}</label>
+    <textarea class="wb-input" id="wb-${id}" oninput="wbSave('${id}')" placeholder="${placeholder}">${S.workbook[id]||""}</textarea>
+  </div>`;
+const checkItem = (id,text) => {
+  const done=S.checks[id];
+  return `<div class="check-row">
+    <div class="day-check ${done?"done":""}" onclick="toggleCheck('${id}')">${done?"✓":""}</div>
+    <span style="color:${done?"var(--muted)":"var(--text)"};font-size:12px;${done?"text-decoration:line-through":""}">${text}</span>
+  </div>`;
+};
+
+function wbSave(id){const el=document.getElementById("wb-"+id);if(el){S.workbook[id]=el.value;save();}}
+function toggleCheck(id){S.checks[id]=!S.checks[id];save();const el=document.querySelector(`[onclick="toggleCheck('${id}')"]`);if(el){el.classList.toggle("done",S.checks[id]);el.textContent=S.checks[id]?"✓":"";const row=el.nextElementSibling;if(row){row.style.textDecoration=S.checks[id]?"line-through":"none";row.style.color=S.checks[id]?"var(--muted)":"var(--text)";}}}
+function goModule(i){S.module=i;S.showCert=false;save();render();}
+function completeModule(i){if(!S.completed.includes(i))S.completed.push(i);if(i<6)S.module=i+1;else S.showCert=true;save();render();}
+function toggleCert(){S.showCert=!S.showCert;save();render();}
+function copyTemplate(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.textContent="✅ Copied!";setTimeout(()=>btn.textContent="📋 Copy",2000);});}
+
+function render(){
+  updateProgress();
+  window.scrollTo({top:0,behavior:"smooth"});
+  const el=document.getElementById("screen");
+  el.className="fu"; void el.offsetWidth;
+  if(S.showCert){el.innerHTML=renderCert();return;}
+  const renders=[renderM1,renderM2,renderM3,renderM4,renderM5,renderM6,renderM7];
+  el.innerHTML = S.module===0 && S.completed.length===0 ? renderIntro() : renders[S.module]();
+}
+
+function updateProgress(){
+  const pct=Math.round((S.completed.length/7)*100);
+  const pp=document.getElementById("prog-pct");if(pp)pp.textContent=pct+"%";
+  const ml=document.getElementById("mod-lbl");if(ml)ml.textContent="Module "+(S.module+1)+" of 7";
+  const mn=document.getElementById("mod-name");if(mn)mn.textContent=MODULES[S.module].title;
+  MODULES.forEach((_,i)=>{
+    const seg=document.getElementById("mseg-"+i);
+    if(seg)seg.style.background=S.completed.includes(i)?"var(--green)":i===S.module?"var(--blue)88":"var(--border)";
+  });
+  const cb=document.getElementById("cert-btn");
+  if(cb)cb.style.display=S.completed.length===7?"inline-block":"none";
+}
+
+// ═══════════════════════════════════
+// INTRO
+// ═══════════════════════════════════
+function renderIntro(){
+  return `<div class="col fu">
+    <div style="text-align:center;padding:26px 0 18px">
+      <div style="font-size:52px;margin-bottom:12px">📧</div>
+      <h1 style="font-size:24px;font-weight:900;margin:0 0 10px;line-height:1.25">Email Mastery<br><span style="color:var(--blue)">for the Workplace</span></h1>
+      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 20px">
+        Master <strong style="color:#0078d4">Outlook</strong> and <strong style="color:#ea4335">Gmail</strong> for the modern workplace. Write professional emails, organize your inbox, schedule meetings, and protect yourself online.
+      </p>
+      <button class="btn blue xl" onclick="goModule(0)">Start Module 1 →</button>
+    </div>
+    <div class="g3" style="margin-bottom:18px">
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">✍️</div><div style="font-weight:700;font-size:11px">20+ Templates</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Copy-paste professional emails</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">⌨️</div><div style="font-weight:700;font-size:11px">Shortcuts Guide</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Outlook + Gmail keyboard shortcuts</div></div>
+      <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🔍</div><div style="font-weight:700;font-size:11px">Email Simulator</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Practice & get scored</div></div>
+    </div>
+    ${card(`
+      <div class="section-title">📚 7 Modules</div>
+      ${MODULES.map((m,i)=>`
+        <div style="display:flex;gap:11px;padding:10px 0;border-top:${i>0?"1px solid var(--border)":"none"};align-items:center;cursor:pointer" onclick="goModule(${i})">
+          <div style="width:28px;height:28px;border-radius:50%;background:${m.color}22;border:1px solid ${m.color}55;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${m.icon}</div>
+          <div style="flex:1"><div style="font-weight:700;font-size:12px">Module ${m.num}: ${m.title}</div></div>
+          ${S.completed.includes(i)?bdg("✓ Done","var(--green)"):bdg("Start →",m.color)}
+        </div>`).join("")}
+    `)}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 1 — EMAIL FUNDAMENTALS
+// ═══════════════════════════════════
+function renderM1(){
+  const m=MODULES[0];
+  return `${modHdr(m)}<div class="col">
+    ${card(`
+      <div class="section-title">📧 Parts of a Professional Email</div>
+      <div class="email-preview">
+        <div class="email-field"><span class="field-label">FROM:</span><span class="field-val" style="color:var(--blue)">yourname@company.com</span></div>
+        <div class="email-field"><span class="field-label">TO:</span><span class="field-val">supervisor@company.com</span></div>
+        <div class="email-field"><span class="field-label">CC:</span><span class="field-val" style="color:var(--muted)">colleague@company.com (optional — only if they NEED to see it)</span></div>
+        <div class="email-field"><span class="field-label">SUBJECT:</span><span class="field-val" style="color:var(--gold);font-weight:700">Meeting Request — Q3 Budget Review — Friday 2PM</span></div>
+        <div class="email-body-preview">
+          <div style="color:var(--muted);font-size:10px;margin-bottom:8px">BODY:</div>
+          <div>Hi [Name],</div><br>
+          <div>I hope this message finds you well. I am writing to request a brief meeting to discuss the Q3 budget review.</div><br>
+          <div>Would Friday at 2:00 PM work for you? I am also available Thursday after 3:00 PM if that is more convenient.</div><br>
+          <div>Please let me know what works best for your schedule.</div><br>
+          <div>Best regards,<br>[Your Name]<br>[Your Title]<br>[Phone Number]</div>
+        </div>
+      </div>
+    `,"blue")}
+    ${card(`
+      <div class="section-title">✅ Subject Line Rules</div>
+      <div class="dos-donts">
+        <div class="do-card">
+          <div style="color:var(--green);font-weight:800;font-size:12px;margin-bottom:8px">✅ GOOD Subject Lines</div>
+          ${["Meeting Request — Budget Review — Fri 2PM","Question About Client Presentation — Due Friday","Action Required: Please Review Contract by EOD","Following Up — Job Application — John Smith","Out of Office: Jan 15–18 — Contact Sarah for urgent matters"].map(s=>`<div style="color:var(--text);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✓ ${s}</div>`).join("")}
+        </div>
+        <div class="dont-card">
+          <div style="color:var(--red);font-weight:800;font-size:12px;margin-bottom:8px">❌ BAD Subject Lines</div>
+          ${["(blank subject line)","Hey","Question","URGENT!!!!! READ NOW","Following up on my follow up on my email","Hi it's me from yesterday"].map(s=>`<div style="color:var(--muted);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✗ ${s}</div>`).join("")}
+        </div>
+      </div>
+    `)}
+    ${card(`
+      <div class="section-title">🎭 Professional Tone Guide</div>
+      <div style="overflow-x:auto">
+        <table class="comp-table">
+          <thead><tr><th>Situation</th><th style="color:var(--red)">❌ Avoid</th><th style="color:var(--green)">✅ Use Instead</th></tr></thead>
+          <tbody>
+            ${[
+              ["Opening","Hey!","Dear [Name], / Hi [Name],"],
+              ["Closing","Later / Bye","Best regards, / Thank you,"],
+              ["Asking a favor","I need you to...","Would you be able to..."],
+              ["Disagreeing","You're wrong about...","I see it differently — could we discuss..."],
+              ["Following up","Why haven't you replied?","I wanted to follow up on my previous email..."],
+              ["Being brief","(no explanation)","I'll keep this brief — [point]. Please let me know if you need more detail."],
+              ["Forwarding","FYI","I wanted to share this with you because..."],
+            ].map(r=>`<tr><td style="font-weight:700;color:var(--muted)">${r[0]}</td><td style="color:var(--red)">${r[1]}</td><td style="color:var(--green)">${r[2]}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `,"dark")}
+    ${card(`
+      <div class="section-title">⚡ The 5 Rules Every Professional Email Must Follow</div>
+      ${[
+        {n:"1",c:"var(--blue)",  r:"One email, one purpose","d":"Don't combine multiple unrelated topics. Send separate emails for separate subjects."},
+        {n:"2",c:"var(--gold)",  r:"Clear subject line always","d":"Never send an email with a blank subject line. Ever. In any workplace."},
+        {n:"3",c:"var(--green)", r:"Reply within 24 hours","d":"Even if just to say 'Got it — I'll respond fully by [date].' Silence = unprofessional."},
+        {n:"4",c:"var(--purple)",r:"Proofread before sending","d":"Read it out loud. Check names, dates, and attachments before hitting send."},
+        {n:"5",c:"var(--teal)",  r:"Assume it can be forwarded","d":"Never write anything in a work email you wouldn't say in a meeting room."},
+      ].map(item=>`
+        <div style="display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--border)22;align-items:flex-start">
+          <div style="width:26px;height:26px;border-radius:50%;background:${item.c}22;border:1px solid ${item.c}55;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0;color:${item.c};font-family:'Space Mono',monospace">${item.n}</div>
+          <div><div style="font-weight:800;font-size:13px;color:${item.c}">${item.r}</div><div style="color:var(--muted);font-size:11px;margin-top:3px">${item.d}</div></div>
+        </div>`).join("")}
+    `)}
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("Write a professional subject line for: emailing your boss to request a day off next Friday","m1-subject","Example: Time-Off Request — Friday [Date] — [Your Name]")}
+      ${wbBlock("Rewrite this unprofessional opening: 'Hey!! I need u to look at this asap!!'","m1-rewrite","Dear [Name], I hope you are doing well. I wanted to bring something to your attention...")}
+    </div>`,"dark")}
+    ${navBtns(0)}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 2 — INBOX ORGANIZATION
+// ═══════════════════════════════════
+function renderM2(){
+  const m=MODULES[1];
+  return `${modHdr(m)}<div class="col">
+    ${card(`
+      <div class="section-title">📁 The Zero Inbox Method</div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:14px">
+        Zero Inbox doesn't mean you answer every email instantly. It means every email is <strong style="color:var(--text)">processed</strong> — moved to the right folder or acted on — so your inbox only contains items that need action today.
+      </p>
+      <div class="col">
+        ${[
+          {icon:"⚡",label:"Do it (under 2 minutes)",  desc:"Reply, forward, or act on it right now. Then archive or delete.",color:"var(--green)"},
+          {icon:"📅",label:"Schedule it",              desc:"Needs more time — move to a 'Follow Up' or 'Action Required' folder.",color:"var(--blue)"},
+          {icon:"📁",label:"File it",                  desc:"For reference only — move to the appropriate project or topic folder.",color:"var(--gold)"},
+          {icon:"🗑️",label:"Delete it",               desc:"Newsletters, FYIs, notifications you don't need — delete immediately.",color:"var(--red)"},
+        ].map(item=>`
+          <div style="display:flex;gap:12px;padding:10px;border:1px solid ${item.color}33;border-radius:10px;background:${item.color}10;align-items:center">
+            <span style="font-size:24px">${item.icon}</span>
+            <div><div style="font-weight:800;font-size:13px;color:${item.color}">${item.label}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${item.desc}</div></div>
+          </div>`).join("")}
+      </div>
+    `,"gold")}
+    ${card(`
+      <div class="section-title">📂 Recommended Folder Structure</div>
+      <div class="g2">
+        <div>
+          <div style="color:#0078d4;font-weight:800;font-size:12px;margin-bottom:10px">📘 Outlook Folders</div>
+          ${["📥 Inbox (action items only)","⚡ Action Required","📅 Waiting For Reply","📁 Projects (subfolders per project)","👥 Clients / Customers","📋 HR & Admin","🗄️ Archive (all done items)","🗑️ Delete after 30 days"].map(f=>`<div style="font-size:11px;padding:5px 0;border-top:1px solid var(--border)22;color:var(--muted)">${f}</div>`).join("")}
+        </div>
+        <div>
+          <div style="color:#ea4335;font-weight:800;font-size:12px;margin-bottom:10px">📕 Gmail Labels</div>
+          ${["📥 Inbox (action items only)","🔴 Action Required (red label)","🟡 Waiting (yellow label)","🔵 Projects (blue label)","⭐ Important (starred)","📋 HR & Admin","🗄️ All Mail (auto-archive)","🗑️ Trash (auto-empties)"].map(f=>`<div style="font-size:11px;padding:5px 0;border-top:1px solid var(--border)22;color:var(--muted)">${f}</div>`).join("")}
+        </div>
+      </div>
+    `)}
+    ${card(`
+      <div class="section-title">🔧 Filters & Rules — Save Hours Every Week</div>
+      ${[
+        {platform:"📘 Outlook",action:"Home → Rules → Manage Rules & Alerts → New Rule",desc:"Automatically move newsletters to a folder, flag emails from your boss, or delete certain senders."},
+        {platform:"📕 Gmail",action:"Settings → Filters & Blocked Addresses → Create New Filter",desc:"Automatically label, archive, or star emails based on sender, subject, or keywords."},
+      ].map(item=>`
+        <div style="padding:12px 0;border-top:1px solid var(--border)22">
+          <div style="font-weight:800;font-size:13px;margin-bottom:5px">${item.platform}</div>
+          <div style="background:#080c18;border-radius:8px;padding:8px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--blue);margin-bottom:6px">${item.action}</div>
+          <div style="color:var(--muted);font-size:12px">${item.desc}</div>
+        </div>`).join("")}
+      <div style="margin-top:10px;padding:10px 14px;background:var(--as);border-radius:9px;font-size:12px;color:var(--blue)">
+        💡 Pro Tip: Create a filter for your boss's email so it always goes to the top and triggers a notification — even if you have notifications turned off for everything else.
+      </div>
+    `,"dark")}
+    ${card(`
+      <div class="section-title">✅ Inbox Organization Checklist</div>
+      ${[
+        "Created an 'Action Required' folder or label",
+        "Created a 'Waiting For Reply' folder or label",
+        "Set up at least 1 automatic filter or rule",
+        "Unsubscribed from at least 5 newsletters you never read",
+        "Processed and filed all emails older than 1 week",
+        "Turned off non-essential email notifications on phone",
+        "Set up Out of Office auto-reply (even if not traveling)",
+      ].map((t,i)=>checkItem("inbox-"+i,t)).join("")}
+    `,"dark")}
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("List the 5 folders or labels you will create in your email right now","m2-folders","1. Action Required\n2. Waiting For Reply\n3.\n4.\n5.")}
+      ${wbBlock("What is one filter you will set up and why?","m2-filter","Example: Filter all newsletters to a 'Read Later' folder so they don't clutter my inbox...")}
+    </div>`,"dark")}
+    ${navBtns(1)}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 3 — PROFESSIONAL EMAIL TEMPLATES
+// ═══════════════════════════════════
+function renderM3(){
+  const m=MODULES[2];
+  const templates=[
+    {cat:"📅 Scheduling",title:"Meeting Request",body:`Hi [Name],\n\nI hope you are doing well. I am writing to request a brief meeting to discuss [topic].\n\nWould [Day] at [Time] work for your schedule? I am also available [alternate day/time] if that is more convenient.\n\nPlease let me know what works best for you. I look forward to speaking with you.\n\nBest regards,\n[Your Name]`},
+    {cat:"📅 Scheduling",title:"Meeting Confirmation",body:`Hi [Name],\n\nThank you for confirming. I am looking forward to our meeting on [Day, Date] at [Time].\n\nI will send a calendar invite shortly. Please let me know if you have any questions beforehand.\n\nBest regards,\n[Your Name]`},
+    {cat:"🙏 Requests",title:"Time-Off Request",body:`Dear [Manager's Name],\n\nI am writing to formally request time off from [Start Date] to [End Date] for [brief reason — personal, medical, vacation].\n\nI will ensure all my responsibilities are covered before my absence. I have also coordinated with [colleague's name] to handle any urgent matters during this time.\n\nPlease let me know if you need any additional information.\n\nThank you for your consideration,\n[Your Name]`},
+    {cat:"🙏 Requests",title:"Help or Assistance Request",body:`Hi [Name],\n\nI hope this message finds you well. I wanted to reach out because I could use your expertise on [specific topic or task].\n\n[Brief explanation of what you need and why.]\n\nI completely understand if you are busy — please let me know what works for your schedule. Any guidance you can provide would be greatly appreciated.\n\nThank you so much,\n[Your Name]`},
+    {cat:"🔄 Follow-Up",title:"Following Up on Previous Email",body:`Hi [Name],\n\nI wanted to follow up on my email from [date] regarding [topic]. I want to make sure it did not get lost in the shuffle.\n\n[Briefly restate your request or question in one sentence.]\n\nPlease let me know if you need any additional information from me. I appreciate your time.\n\nBest regards,\n[Your Name]`},
+    {cat:"🔄 Follow-Up",title:"Following Up After Interview",body:`Dear [Interviewer's Name],\n\nThank you so much for taking the time to meet with me on [date] to discuss the [Job Title] position at [Company].\n\nI enjoyed learning more about the role and the team. Our conversation reinforced my enthusiasm for this opportunity, and I am confident that my experience in [relevant skill] would allow me to contribute meaningfully.\n\nI look forward to hearing about next steps. Please do not hesitate to reach out if you need any additional information.\n\nWarm regards,\n[Your Name]`},
+    {cat:"😔 Apologies",title:"Apology for a Mistake",body:`Dear [Name],\n\nI am writing to sincerely apologize for [brief description of the mistake]. I understand this may have caused inconvenience, and I take full responsibility.\n\nTo correct this, I have already [action taken or planned]. I am committed to ensuring this does not happen again.\n\nThank you for your patience and understanding.\n\nSincerely,\n[Your Name]`},
+    {cat:"😔 Apologies",title:"Apology for Late Reply",body:`Hi [Name],\n\nI apologize for my delayed response — [brief reason if appropriate]. Thank you for your patience.\n\nRegarding your question about [topic]: [your answer or next step].\n\nPlease let me know if you need anything else.\n\nBest regards,\n[Your Name]`},
+    {cat:"📢 Updates",title:"Project Status Update",body:`Hi [Team/Name],\n\nI wanted to provide a quick update on [project name]:\n\n✅ Completed: [what's done]\n🔄 In Progress: [what's being worked on]\n⏳ Next Steps: [upcoming tasks]\n📅 Target Completion: [date]\n\nPlease let me know if you have any questions or concerns.\n\nBest regards,\n[Your Name]`},
+    {cat:"📢 Updates",title:"Out of Office Auto-Reply",body:`Thank you for your email. I am currently out of the office from [Start Date] through [Return Date].\n\nI will respond to your message upon my return on [Return Date]. If this is urgent, please contact [Colleague Name] at [email] or [phone].\n\nThank you for your understanding.\n\n[Your Name]`},
+    {cat:"👋 Introductions",title:"Introducing Yourself to a New Team",body:`Hi Team,\n\nI am excited to introduce myself — my name is [Your Name] and I recently joined [Department/Team] as [Job Title].\n\nI am looking forward to getting to know everyone and contributing to [team goal]. Please feel free to reach out if you have questions or if there is anything I can do to help as I get settled in.\n\nI look forward to working with you all!\n\nBest regards,\n[Your Name]`},
+    {cat:"👋 Introductions",title:"Connecting Two People (Introduction Email)",body:`Hi [Person A] and [Person B],\n\nI wanted to connect you both because I think you would benefit from knowing each other.\n\n[Person A], this is [Person B] — [brief description of who they are and what they do].\n\n[Person B], this is [Person A] — [brief description].\n\nI will leave it to you both to take it from here. I hope this connection is valuable!\n\nBest regards,\n[Your Name]`},
+  ];
+
+  const cats=[...new Set(templates.map(t=>t.cat))];
+  const selCat=S.workbook.tmpl_cat||cats[0];
+
+  return `${modHdr(m)}<div class="col">
+    ${card(`
+      <div class="section-title">📋 Email Simulator — Practice Writing</div>
+      <p style="color:var(--muted);font-size:12px;line-height:1.7;margin-bottom:14px">Fill in the email below. Your subject line and greeting will be scored for professionalism.</p>
+      <div class="sim-email">
+        <div class="sim-header">
+          <div style="color:var(--blue);font-weight:700;font-size:12px;margin-bottom:8px">📝 Compose Email</div>
+          <div class="sim-field"><label>TO:</label><input id="sim-to" placeholder="recipient@company.com"></div>
+          <div class="sim-field"><label>SUBJECT:</label><input id="sim-subject" placeholder="Write a professional subject line..."></div>
+        </div>
+        <div class="sim-body">
+          <textarea id="sim-body" placeholder="Write your email here. Start with a professional greeting..."></textarea>
+        </div>
+      </div>
+      <button class="btn blue full" style="margin-top:10px" onclick="scoreEmail()">📊 Score My Email</button>
+      <div id="sim-result" style="margin-top:10px"></div>
+    `,"green")}
+    <div>
+      <div class="section-title">📂 Browse by Category</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+        ${cats.map(cat=>`<button class="btn ${selCat===cat?"blue":"dark"} sm" onclick="S.workbook.tmpl_cat='${cat}';save();render()">${cat}</button>`).join("")}
+      </div>
+      <div class="col">
+        ${templates.filter(t=>t.cat===selCat).map(t=>`
+          <div class="template-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+              <div class="tc-title">${t.title}</div>
+              <button class="btn dark sm" onclick="copyTemplate(this,'${t.body.replace(/\n/g,"\\n").replace(/'/g,"\\'")}')">📋 Copy</button>
+            </div>
+            <div class="tc-preview">${t.body.split("\n")[0]}...</div>
+          </div>`).join("")}
+      </div>
+    </div>
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("Write a complete professional email requesting a reference letter from a former supervisor","m3-reference","Dear [Name],\n\nI hope you are doing well...")}
+    </div>`,"dark")}
+    ${navBtns(2)}
+  </div>`;
+}
+
+function scoreEmail(){
+  const to=document.getElementById("sim-to")?.value||"";
+  const subject=document.getElementById("sim-subject")?.value||"";
+  const body=document.getElementById("sim-body")?.value||"";
+  let score=0; const feedback=[];
+  if(to.includes("@")){score+=10;feedback.push({c:"var(--green)",m:"✓ Valid recipient address"});}
+  else feedback.push({c:"var(--red)",m:"✗ Add a valid email address"});
+  if(subject.length>=10&&subject.length<=80){score+=20;feedback.push({c:"var(--green)",m:"✓ Good subject line length"});}
+  else if(subject.length<10) feedback.push({c:"var(--red)",m:"✗ Subject line too short — be more specific"});
+  else feedback.push({c:"var(--orange)",m:"⚠ Subject line a bit long — try to be more concise"});
+  if(subject.length>0&&subject[0]===subject[0].toUpperCase()){score+=10;feedback.push({c:"var(--green)",m:"✓ Subject line properly capitalized"});}
+  const hasGreeting=body.toLowerCase().includes("dear")||body.toLowerCase().includes("hi ")||body.toLowerCase().includes("hello");
+  if(hasGreeting){score+=20;feedback.push({c:"var(--green)",m:"✓ Professional greeting included"});}
+  else feedback.push({c:"var(--red)",m:"✗ Missing greeting (Dear/Hi [Name])"});
+  const hasClosing=body.toLowerCase().includes("regards")||body.toLowerCase().includes("sincerely")||body.toLowerCase().includes("thank you");
+  if(hasClosing){score+=20;feedback.push({c:"var(--green)",m:"✓ Professional closing included"});}
+  else feedback.push({c:"var(--red)",m:"✗ Missing closing (Best regards, Thank you,)"});
+  if(body.length>80){score+=10;feedback.push({c:"var(--green)",m:"✓ Email has sufficient content"});}
+  const informal=["hey!","lol","haha","gonna","wanna","tbh","ngl","omg","idk"];
+  const hasInformal=informal.some(w=>body.toLowerCase().includes(w));
+  if(!hasInformal){score+=10;feedback.push({c:"var(--green)",m:"✓ No informal language detected"});}
+  else feedback.push({c:"var(--red)",m:"✗ Contains informal language — keep it professional"});
+  const grade=score>=80?"A":score>=70?"B":score>=60?"C":score>=50?"D":"F";
+  const gradeColor=score>=80?"var(--green)":score>=60?"var(--gold)":"var(--red)";
+  document.getElementById("sim-result").innerHTML=card(`
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:5px">Email Professionalism Score</div>
+      <div style="color:${gradeColor};font-size:42px;font-weight:900;font-family:'Space Mono',monospace">${score}/100</div>
+      <div style="color:${gradeColor};font-size:18px;font-weight:700">Grade: ${grade}</div>
+    </div>
+    <div class="col">
+      ${feedback.map(f=>`<div style="color:${f.c};font-size:12px;padding:4px 0">${f.m}</div>`).join("")}
+    </div>
+  `,"dark");
+}
+
+// ═══════════════════════════════════
+// MODULE 4 — CALENDAR & SCHEDULING
+// ═══════════════════════════════════
+function renderM4(){
+  const m=MODULES[3];
+  return `${modHdr(m)}<div class="col">
+    ${card(`
+      <div class="section-title">📅 Meeting Request Best Practices</div>
+      ${[
+        {icon:"📝",title:"Always include an agenda",desc:"Before sending a meeting invite, add 3–5 bullet points in the notes field explaining what will be covered. People need to know why their time is being requested."},
+        {icon:"⏰",title:"Set the right duration",desc:"Most meetings should be 25 or 50 minutes (not 30 or 60). This gives people 5–10 minutes to get to their next meeting or take a break."},
+        {icon:"🌍",title:"Include time zones for remote teams",desc:"Always specify the time zone: '2:00 PM EST / 11:00 AM PST'. One missing time zone = one late person."},
+        {icon:"📍",title:"Add location or video link",desc:"Always include either a physical room, Zoom/Teams link, or phone number. Don't make people ask where to go."},
+        {icon:"🔔",title:"Set reminders strategically",desc:"15-minute reminder for important meetings. Day-before reminder for anything requiring preparation."},
+        {icon:"🔄",title:"Recurring meetings need a purpose",desc:"Before setting up a recurring meeting, ask: could this be an email instead? Most recurring meetings can be replaced with a weekly email update."},
+      ].map(item=>`
+        <div style="display:flex;gap:12px;padding:11px 0;border-top:1px solid var(--border)22;align-items:flex-start">
+          <span style="font-size:22px;flex-shrink:0">${item.icon}</span>
+          <div><div style="font-weight:800;font-size:13px">${item.title}</div><div style="color:var(--muted);font-size:12px;margin-top:3px;line-height:1.7">${item.desc}</div></div>
+        </div>`).join("")}
+    `,"purple")}
+    <div class="g2">
+      ${card(`
+        <div style="color:#0078d4;font-weight:800;font-size:13px;margin-bottom:12px">📘 Outlook Calendar Tips</div>
+        ${[
+          "New event: Ctrl+Shift+A","View day/week/month: Alt+1/2/3","Propose new time if invite conflicts","Use 'Scheduling Assistant' to see others' availability","Color-code categories (red=urgent, blue=meetings, green=personal)","Add 'Response Options' to require RSVP","Set buffer time between meetings","Share calendar with coworkers for visibility",
+        ].map(t=>`<div style="font-size:11px;color:var(--muted);padding:5px 0;border-top:1px solid var(--border)22">• ${t}</div>`).join("")}
+      `,"outline"),
+      card(`
+        <div style="color:#ea4335;font-weight:800;font-size:13px;margin-bottom:12px">📕 Google Calendar Tips</div>
+        ${[
+          "New event: C key","Quick add: Q key","Go to today: T key","Use 'Find a time' for group scheduling","Add Google Meet link automatically","Color-code calendars by type","Set working hours so others don't schedule outside them","RSVP to events from email directly",
+        ].map(t=>`<div style="font-size:11px;color:var(--muted);padding:5px 0;border-top:1px solid var(--border)22">• ${t}</div>`).join("")}
+      `,"outline")}
+    </div>
+    ${card(`
+      <div class="section-title">⌨️ Calendar Keyboard Shortcuts</div>
+      <div class="g2">
+        <div>
+          <div style="color:#0078d4;font-weight:700;font-size:11px;margin-bottom:8px;text-transform:uppercase">📘 Outlook</div>
+          ${[["Ctrl+Shift+A","New appointment"],["Ctrl+Shift+Q","New meeting request"],["Alt+1","Day view"],["Alt+2","Week view"],["Alt+3","Month view"],["Ctrl+G","Go to specific date"]].map(s=>`<div class="shortcut-row"><span style="color:var(--muted);font-size:11px">${s[1]}</span><span class="shortcut-key">${s[0]}</span></div>`).join("")}
+        </div>
+        <div>
+          <div style="color:#ea4335;font-weight:700;font-size:11px;margin-bottom:8px;text-transform:uppercase">📕 Gmail Calendar</div>
+          ${[["C","Create event"],["E","Edit event"],["T","Today"],["D","Day view"],["W","Week view"],["M","Month view"]].map(s=>`<div class="shortcut-row"><span style="color:var(--muted);font-size:11px">${s[1]}</span><span class="shortcut-key">${s[0]}</span></div>`).join("")}
+        </div>
+      </div>
+    `,"dark")}
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("Write a meeting request for a 30-minute check-in with your supervisor to discuss your first 30 days at a new job","m4-meeting","Subject: 30-Day Check-In Request — [Your Name]\n\nHi [Name],\n\nI hope you are doing well...")}
+    </div>`,"dark")}
+    ${navBtns(3)}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 5 — EMAIL SECURITY
+// ═══════════════════════════════════
+function renderM5(){
+  const m=MODULES[4];
+  const quizQ = [
+    {q:"You receive an email from 'IT Support' asking you to click a link and enter your password to prevent account deletion. What do you do?",opts:["Click the link and enter your password quickly","Forward it to your coworkers to warn them","Do NOT click. Forward to IT. Delete the email.","Reply asking if it's real"],ans:2},
+    {q:"What is the safest password practice for your work email?",opts:["Use your birthday — it's easy to remember","Same password as your personal accounts for convenience","Unique 12+ character password + enable 2-factor authentication","Write it on a sticky note on your monitor"],ans:2},
+    {q:"Your colleague emails asking you to wire $2,000 for a 'surprise company event' and to keep it secret. What do you do?",opts:["Wire the money — your colleague needs help","Call or text your colleague directly to verify before doing anything","Reply to the email asking for confirmation","Post in the company Slack to ask others"],ans:1},
+    {q:"Which of these is a phishing red flag?",opts:["An email from your company domain","An email asking you to verify your account by clicking a link","A calendar invite from a known colleague","A newsletter you subscribed to"],ans:1},
+  ];
+  const qi=S.quiz.sec_q||0;
+  const answered=S.quiz["sec_ans_"+qi];
+  const allDone=qi>=quizQ.length;
+
+  return `${modHdr(m)}<div class="col">
+    ${card(`
+      <div class="section-title">🚨 Phishing — The #1 Email Threat</div>
+      <p style="color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:14px">
+        Phishing emails trick you into giving up passwords, clicking malware, or transferring money. <strong style="color:var(--text)">Over 90% of data breaches start with a phishing email.</strong> Knowing the signs protects you and your employer.
+      </p>
+      <div class="col">
+        ${[
+          {icon:"🚩",sign:"Urgency or threats","detail":"'Your account will be deleted in 24 hours!' — Real companies don't operate this way."},
+          {icon:"🔗",sign:"Suspicious link","detail":"Hover over any link before clicking. The URL shown and the actual destination should match."},
+          {icon:"✉️",sign:"Wrong email domain","detail":"Email from 'support@paypa1.com' instead of 'paypal.com'. Notice the '1' instead of 'l'."},
+          {icon:"💰",sign:"Unexpected money request","detail":"Any email requesting a wire transfer, gift cards, or payment — always verify by phone first."},
+          {icon:"📎",sign:"Unexpected attachment","detail":"Never open attachments from unknown senders. Even known senders — if unexpected, verify first."},
+          {icon:"🤐",sign:"'Keep this secret'","detail":"Legitimate business requests are never secret. If someone asks you to hide it from management, it's a scam."},
+        ].map(item=>`
+          <div style="display:flex;gap:12px;padding:10px;border:1px solid var(--red)33;border-radius:10px;background:var(--rs)10">
+            <span style="font-size:22px;flex-shrink:0">${item.icon}</span>
+            <div><div style="font-weight:800;font-size:13px;color:var(--red)">${item.sign}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${item.detail}</div></div>
+          </div>`).join("")}
+      </div>
+    `,"red")}
+    ${card(`
+      <div class="section-title">🛡️ Email Security Checklist</div>
+      ${[
+        "Enable 2-factor authentication on work email",
+        "Never use work email for personal subscriptions",
+        "Lock your screen when stepping away from your computer",
+        "Never forward sensitive work emails to personal accounts",
+        "Report suspicious emails to IT — don't just delete them",
+        "Verify any money request via phone before acting",
+        "Use a unique password for your work email account",
+        "Know your company's email security policy",
+      ].map((t,i)=>checkItem("sec-"+i,t)).join("")}
+    `,"dark")}
+    ${card(`
+      <div class="section-title">🧠 Security Quiz — Test Your Knowledge</div>
+      ${allDone ? `
+        <div style="text-align:center;padding:16px 0">
+          <div style="font-size:36px;margin-bottom:10px">🎯</div>
+          <div style="color:var(--green);font-weight:800;font-size:18px">Quiz Complete!</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px">You scored ${Object.keys(S.quiz).filter(k=>k.startsWith("sec_ans")).filter(k=>{const qi=parseInt(k.split("_")[2]);return S.quiz[k]===quizQ[qi]?.ans;}).length} out of ${quizQ.length}</div>
+          <button class="btn dark sm" style="margin-top:12px" onclick="S.quiz={};save();render()">↺ Retake Quiz</button>
+        </div>` : `
+        <div style="color:var(--muted);font-size:10px;margin-bottom:10px">Question ${qi+1} of ${quizQ.length}</div>
+        <div style="font-weight:700;font-size:14px;margin-bottom:14px;line-height:1.6">${quizQ[qi].q}</div>
+        ${quizQ[qi].opts.map((opt,i)=>{
+          let cls="";
+          if(answered!==undefined){cls=i===quizQ[qi].ans?"correct":i===answered?"wrong":"";}
+          return `<div class="quiz-opt ${cls}" onclick="${answered===undefined?`answerQuiz(${i})`:""}">
+            <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-right:8px">${String.fromCharCode(65+i)}.</span>${opt}
+            ${cls==="correct"?" ✓":""}${cls==="wrong"?" ✗":""}
+          </div>`;
+        }).join("")}
+        ${answered!==undefined?`<div style="margin-top:10px;padding:10px 14px;background:${answered===quizQ[qi].ans?"var(--grs)":"var(--rs)"};border-radius:9px;font-size:12px;color:${answered===quizQ[qi].ans?"var(--green)":"var(--red)"}">
+          ${answered===quizQ[qi].ans?"✓ Correct!":"✗ Incorrect — "+["A","B","C","D"][quizQ[qi].ans]+" is the right answer."}
+          <button class="btn ${qi<quizQ.length-1?"blue":"green"} sm" style="margin-left:10px" onclick="S.quiz.sec_q=${qi+1};save();render()">${qi<quizQ.length-1?"Next Question →":"See Results"}</button>
+        </div>`:""}
+      `}
+    `,"dark")}
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("Describe what you would do if you received a suspicious email claiming to be from your company's CEO asking for gift cards","m5-scenario","I would first...")}
+    </div>`,"dark")}
+    ${navBtns(4)}
+  </div>`;
+}
+
+function answerQuiz(i){const qi=S.quiz.sec_q||0;S.quiz["sec_ans_"+qi]=i;save();render();}
+
+// ═══════════════════════════════════
+// MODULE 6 — WORKPLACE COMMUNICATION
+// ═══════════════════════════════════
+function renderM6(){
+  const m=MODULES[5];
+  return `${modHdr(m)}<div class="col">
+    ${card(`
+      <div class="section-title">🤝 CC vs BCC vs Reply All — The Rules</div>
+      <div class="col">
+        ${[
+          {field:"TO:",color:"var(--blue)",    title:"Primary recipient",  rule:"The person you are directly writing to and who needs to respond or take action.",when:"1 person or a small team who all need to respond"},
+          {field:"CC:",color:"var(--gold)",    title:"Carbon Copy",        rule:"People who need to be informed but don't need to take action. They can see who else received it.",when:"Your manager who should be aware, a colleague who asked to be kept in the loop"},
+          {field:"BCC:",color:"var(--purple)", title:"Blind Carbon Copy",  rule:"Recipients can't see who else is BCC'd. Use to protect privacy of large recipient lists.",when:"Mass announcements, newsletter sends, protecting client email addresses"},
+          {field:"REPLY ALL:",color:"var(--red)",title:"Sends to everyone","rule":"Only use when EVERYONE on the thread genuinely needs your response. The #1 most misused button in email.",when:"Team-wide decisions only. NOT for 'Thanks!' or 'Sounds good!' replies"},
+        ].map(item=>`
+          <div style="border-left:3px solid ${item.color};padding:10px 14px;background:${item.color}10;border-radius:0 10px 10px 0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+              <span style="font-family:'Space Mono',monospace;font-weight:700;color:${item.color};font-size:13px">${item.field}</span>
+              <span style="font-weight:800;font-size:13px">${item.title}</span>
+            </div>
+            <div style="color:var(--muted);font-size:12px;margin-bottom:5px">${item.rule}</div>
+            <div style="color:var(--text);font-size:11px"><strong style="color:${item.color}">Use when:</strong> ${item.when}</div>
+          </div>`).join("")}
+      </div>
+    `,"teal")}
+    ${card(`
+      <div class="section-title">⚠️ The Most Common Email Mistakes at Work</div>
+      ${[
+        {rank:"01",mistake:"Reply-All to a company-wide email","consequence":"Everyone sees your personal reply. Can be embarrassing or even career-damaging.","fix":"Always check: does EVERYONE on this thread need my response?"},
+        {rank:"02",mistake:"Sending without attaching the attachment","consequence":"Looks careless. Requires a follow-up email and wastes everyone's time.","fix":"Mention the attachment in your email body first — Outlook/Gmail will warn you if it's missing."},
+        {rank:"03",mistake:"Using email when a call would be faster","consequence":"Back-and-forth email chains for decisions that take 30 seconds by phone.","fix":"If an email chain goes more than 3 replies, pick up the phone."},
+        {rank:"04",mistake:"Emotional responses sent in anger","consequence":"Permanent written record of your frustration. Can be shared, forwarded, used in HR proceedings.","fix":"Draft the email. Wait 24 hours. Read it again before sending."},
+        {rank:"05",mistake:"Too long, no clear ask","consequence":"Recipient doesn't know what you need. Email gets ignored or deprioritized.","fix":"State what you need in the first 2 sentences. Put detail below."},
+        {rank:"06",mistake:"Using personal email for work matters","consequence":"Creates legal and security issues. Your employer cannot access or back up personal accounts.","fix":"Always use your company email for any work-related communication."},
+      ].map((item,i)=>`
+        <div style="display:flex;gap:12px;padding:12px 0;border-top:${i>0?"1px solid var(--border)22":"none"}">
+          <div style="font-size:18px;font-weight:900;font-family:'Space Mono',monospace;color:var(--red);opacity:.4;flex-shrink:0;width:28px">${item.rank}</div>
+          <div>
+            <div style="font-weight:800;font-size:13px;color:var(--red);margin-bottom:4px">${item.mistake}</div>
+            <div style="color:var(--muted);font-size:11px;margin-bottom:5px">⚠️ ${item.consequence}</div>
+            <div style="color:var(--green);font-size:11px">✅ Fix: ${item.fix}</div>
+          </div>
+        </div>`).join("")}
+    `)}
+    ${card(`
+      <div class="section-title">📝 Email Chain Etiquette</div>
+      ${[
+        "Keep the original email thread when replying — don't start a new email for the same topic",
+        "Change the subject line if the topic changes significantly",
+        "Don't let email chains go more than 5–6 replies — pick up the phone",
+        "Summarize at the top when adding new people to a long chain: 'Adding [Name] to this thread — see below for context'",
+        "Always read the full chain before replying — someone may have already answered",
+        "When resolving a chain: mark it resolved in the subject: '[RESOLVED] Project Update'",
+      ].map((t,i)=>checkItem("chain-"+i,t)).join("")}
+    `,"dark")}
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("Your coworker sends a company-wide Reply All saying 'Thanks!' to an announcement. How do you handle this going forward to prevent it in your own emails?","m6-replyall","I will always check before hitting Reply All by asking myself...")}
+      ${wbBlock("Describe a situation where you should pick up the phone instead of emailing","m6-phone","Example: When there has been a misunderstanding that requires tone and nuance...")}
+    </div>`,"dark")}
+    ${navBtns(5)}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// MODULE 7 — OUTLOOK vs GMAIL MASTERY
+// ═══════════════════════════════════
+function renderM7(){
+  const m=MODULES[6];
+  const tab=S.workbook.m7_tab||"compare";
+  return `${modHdr(m)}<div class="col">
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      ${[["compare","⚖️ Compare"],["outlook","📘 Outlook"],["gmail","📕 Gmail"],["shortcuts","⌨️ Shortcuts"]].map(([id,lbl])=>`
+        <button class="btn ${tab===id?"blue":"dark"} sm" onclick="S.workbook.m7_tab='${id}';save();render()">${lbl}</button>`).join("")}
+    </div>
+
+    ${tab==="compare"?card(`
+      <div class="section-title">⚖️ Outlook vs Gmail — Side by Side</div>
+      <div style="overflow-x:auto">
+        <table class="comp-table">
+          <thead><tr><th>Feature</th><th style="color:#0078d4">📘 Outlook</th><th style="color:#ea4335">📕 Gmail</th></tr></thead>
+          <tbody>
+            ${[
+              ["Best for","Corporate / enterprise","Startups, small biz, remote"],
+              ["Organization","Folders","Labels (can apply multiple)"],
+              ["Search","Good — Advanced Find","Excellent — best-in-class"],
+              ["Calendar","Deeply integrated","Google Calendar (separate)"],
+              ["Offline access","Yes (desktop app)","Limited (browser)"],
+              ["Rules/Filters","Rules (powerful)","Filters (easy to set up)"],
+              ["Storage","50GB typical","15GB free / paid plans"],
+              ["Integration","Microsoft 365 suite","Google Workspace suite"],
+              ["Mobile app","Outlook app (excellent)","Gmail app (excellent)"],
+              ["Cost","Included in Microsoft 365","Free / Google Workspace"],
+              ["Focus Inbox","Focused Inbox feature","Priority Inbox feature"],
+              ["Snooze emails","Yes","Yes"],
+              ["Undo send","Yes (up to 30 sec)","Yes (up to 30 sec)"],
+              ["Scheduled send","Yes","Yes"],
+            ].map(r=>`<tr><td style="font-weight:700;color:var(--muted)">${r[0]}</td><td style="color:var(--text)">${r[1]}</td><td style="color:var(--text)">${r[2]}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `):""}
+
+    ${tab==="outlook"?`
+      <div class="col">
+        ${card(`
+          <div style="color:#0078d4;font-weight:900;font-size:16px;margin-bottom:14px">📘 Microsoft Outlook — Power Features</div>
+          ${[
+            {icon:"📌",feature:"Quick Steps",how:"Home → Quick Steps → Create New",desc:"One-click actions that do multiple things at once. Example: Mark read + Move to folder + Forward to manager — all with one click."},
+            {icon:"🎨",feature:"Conditional Formatting",how:"View → View Settings → Conditional Formatting",desc:"Automatically color emails from specific senders. Make your boss's emails appear in red, client emails in blue."},
+            {icon:"⏰",feature:"Delay Delivery",how:"New Email → Options → Delay Delivery",desc:"Write an email now, schedule it to send at 9am tomorrow. Never send an email at midnight again."},
+            {icon:"🔍",feature:"Advanced Search",how:"Ctrl+Shift+F or search bar → Search Tools",desc:"Search by sender, date range, has attachment, folder, subject keyword. Find any email in seconds."},
+            {icon:"📋",feature:"Email Templates",how:"New Email → write email → File → Save as Template",desc:"Save commonly sent emails as templates. Open with one click and customize. Saves hours per week."},
+            {icon:"📊",feature:"Focused Inbox",how:"View → Show Focused Inbox",desc:"Outlook automatically separates important emails from clutter. Train it by moving emails between tabs."},
+          ].map(item=>`
+            <div style="display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--border)22">
+              <span style="font-size:22px;flex-shrink:0">${item.icon}</span>
+              <div>
+                <div style="font-weight:800;font-size:13px;color:#0078d4">${item.feature}</div>
+                <div style="background:#080c18;border-radius:6px;padding:4px 8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--blue);margin:4px 0">${item.how}</div>
+                <div style="color:var(--muted);font-size:11px;line-height:1.7">${item.desc}</div>
+              </div>
+            </div>`).join("")}
+        `,"outlook")}
+      </div>` : ""}
+
+    ${tab==="gmail"?`
+      <div class="col">
+        ${card(`
+          <div style="color:#ea4335;font-weight:900;font-size:16px;margin-bottom:14px">📕 Gmail — Power Features</div>
+          ${[
+            {icon:"⭐",feature:"Multiple Inboxes",how:"Settings → Inbox → Inbox Type → Multiple Inboxes",desc:"Split your inbox into custom sections — Action Required, Waiting, Reading List — all visible at once."},
+            {icon:"🔕",feature:"Mute Conversations",how:"Open email → More (⋮) → Mute",desc:"Mutes an ongoing email chain you don't need to follow. Emails still arrive but won't notify you."},
+            {icon:"⏰",feature:"Snooze Emails",how:"Hover over email → Clock icon → Choose time",desc:"Remove an email from inbox temporarily. It comes back at exactly when you're ready to deal with it."},
+            {icon:"📝",feature:"Canned Responses",how:"Settings → Advanced → Canned Responses → Enable",desc:"Save email templates and insert with two clicks. Perfect for frequently sent messages."},
+            {icon:"🔗",feature:"Smart Compose",how:"Enabled by default → press Tab to accept suggestions",desc:"Gmail predicts and completes your sentences. Works surprisingly well for common phrases."},
+            {icon:"🏷️",feature:"Nested Labels",how:"Settings → Labels → Create new label → Nest under",desc:"Create sub-labels like Projects/Client A, Projects/Client B — same as subfolder structure in Outlook."},
+          ].map(item=>`
+            <div style="display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--border)22">
+              <span style="font-size:22px;flex-shrink:0">${item.icon}</span>
+              <div>
+                <div style="font-weight:800;font-size:13px;color:#ea4335">${item.feature}</div>
+                <div style="background:#080c18;border-radius:6px;padding:4px 8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--red);margin:4px 0">${item.how}</div>
+                <div style="color:var(--muted);font-size:11px;line-height:1.7">${item.desc}</div>
+              </div>
+            </div>`).join("")}
+        `,"gmail")}
+      </div>` : ""}
+
+    ${tab==="shortcuts"?card(`
+      <div class="section-title">⌨️ Master Keyboard Shortcuts</div>
+      <p style="color:var(--muted);font-size:12px;margin-bottom:14px">Learning 10 shortcuts saves 30+ minutes per day. That's 3+ hours per week.</p>
+      <div class="g2">
+        <div>
+          <div style="color:#0078d4;font-weight:800;font-size:12px;text-transform:uppercase;margin-bottom:10px">📘 Outlook</div>
+          ${[["Ctrl+N","New email"],["Ctrl+R","Reply"],["Ctrl+Shift+R","Reply All"],["Ctrl+F","Forward"],["Ctrl+Enter","Send"],["Ctrl+Z","Undo send"],["Ctrl+E","Search inbox"],["Ctrl+1","Go to Mail"],["Ctrl+2","Go to Calendar"],["Ctrl+3","Go to Contacts"],["Delete","Delete email"],["Ctrl+Shift+A","New appointment"]].map(s=>`<div class="shortcut-row"><span style="color:var(--muted);font-size:11px">${s[1]}</span><span class="shortcut-key">${s[0]}</span></div>`).join("")}
+        </div>
+        <div>
+          <div style="color:#ea4335;font-weight:800;font-size:12px;text-transform:uppercase;margin-bottom:10px">📕 Gmail</div>
+          ${[["C","Compose new"],["R","Reply"],["A","Reply All"],["F","Forward"],["Tab+Enter","Send"],["E","Archive"],["#","Delete"],["Z","Undo"],["/ or Ctrl+F","Search"],["G then I","Go to Inbox"],["?","All shortcuts"],["Shift+U","Mark unread"]].map(s=>`<div class="shortcut-row"><span style="color:var(--muted);font-size:11px">${s[1]}</span><span class="shortcut-key">${s[0]}</span></div>`).join("")}
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:10px 14px;background:var(--as);border-radius:9px;font-size:12px;color:var(--blue)">
+        💡 Gmail Tip: Press <span class="shortcut-key">?</span> at any time to see ALL Gmail keyboard shortcuts in an overlay.
+      </div>
+    `,"dark"):""}
+
+    ${card(`<div class="section-title">✏️ Workbook</div><div class="col">
+      ${wbBlock("Which email platform do you use at work or school? List 3 features you will start using this week","m7-platform","Platform: ___\n1.\n2.\n3.")}
+      ${wbBlock("Write your personal commitment to professional email habits","m7-commit","Going forward I will always...")}
+    </div>`,"dark")}
+    ${navBtns(6)}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// CERTIFICATE
+// ═══════════════════════════════════
+function renderCert(){
+  const wbFilled=Object.keys(S.workbook).filter(k=>S.workbook[k]&&S.workbook[k].length>10).length;
+  const checksCompleted=Object.values(S.checks).filter(v=>v).length;
+  return `<div class="col fu">
+    <div class="cert">
+      <div style="font-size:50px;margin-bottom:10px">🏆</div>
+      <div style="color:var(--blue);font-size:22px;font-weight:900">Certificate of Completion</div>
+      <div style="color:var(--text);font-size:14px;margin-top:5px">nugO Email Mastery Lab</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:14px">This certifies completion of</div>
+      <div style="color:var(--blue);font-size:17px;font-weight:700;margin:6px 0">Professional Email & Workplace Communication</div>
+      <div style="color:var(--muted);font-size:12px">Outlook · Gmail · 7 Modules · Interactive Workbook</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+        ${[["7 Modules Complete","var(--green)"],["Outlook Mastery","#0078d4"],["Gmail Mastery","#ea4335"],[wbFilled+" Workbook Entries","var(--gold)"],[checksCompleted+" Checklist Items","var(--teal)"]].map(([l,c])=>`<span class="badge lg" style="background:${c}28;color:${c};border:1px solid ${c}44;padding:4px 14px;font-size:12px">${l}</span>`).join("")}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:16px;text-align:left">
+        ${["Email Fundamentals","Professional Subject Lines","Inbox Zero Method","Folder Organization","20+ Email Templates","Email Simulator","Calendar & Scheduling","Email Security & Phishing","CC / BCC / Reply All Rules","Outlook Power Features","Gmail Power Features","Keyboard Shortcuts"].map(s=>`
+          <div style="display:flex;gap:6px;align-items:center"><span style="color:var(--blue);font-size:11px">✓</span><span style="color:var(--muted);font-size:10px">${s}</span></div>`).join("")}
+      </div>
+    </div>
+    ${S.workbook && Object.keys(S.workbook).filter(k=>S.workbook[k]&&S.workbook[k].length>10).length>0?card(`
+      <div class="section-title">📋 Your Completed Workbook</div>
+      ${[["m1-subject","Professional Subject Line Practice"],["m1-rewrite","Email Rewrite Exercise"],["m2-folders","Your Folder Structure Plan"],["m2-filter","Filter Setup Plan"],["m3-reference","Reference Letter Email"],["m4-meeting","Meeting Request Practice"],["m5-scenario","Security Scenario Response"],["m6-replyall","Reply All Strategy"],["m6-phone","When to Call vs Email"],["m7-platform","Platform Features to Use"],["m7-commit","Professional Email Commitment"]].map(([k,lbl])=>S.workbook[k]?`
+        <div style="padding:10px 0;border-top:1px solid var(--border)22">
+          <div style="color:var(--blue);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:4px">${lbl}</div>
+          <div style="color:var(--text);font-size:12px;line-height:1.7;white-space:pre-line">${S.workbook[k]}</div>
+        </div>`:"").join("")}
+    `,"dark"):""}
+    <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn blue lg" onclick="S.showCert=false;render()">← Back to Modules</button>
+      <button class="btn dark lg" onclick="window.print()">🖨️ Print Certificate</button>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+window.onload = function(){
+  load();
+  const bar=document.getElementById("mod-progress");
+  if(bar) bar.innerHTML=Array(7).fill("").map((_,i)=>`<div class="mp-seg" id="mseg-${i}" onclick="goModule(${i})"></div>`).join("");
+  render();
+  updateProgress();
+};
+</script>
+</body>
+</html>
