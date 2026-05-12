@@ -158,9 +158,6 @@ button{font-family:'Space Mono',monospace;cursor:pointer;}
 <div id="app"><div id="screen"></div></div>
 
 <script>
-// ═══════════════════════════════════
-// DATA
-// ═══════════════════════════════════
 const PROFILES=[
   {id:"fresh",  icon:"😰",label:"Fresh Start",      desc:"No credit history, collections, late payments",    score:520,util:85,age:1,  mix:1,inq:3,missed:4,color:"var(--red)"},
   {id:"rebuild",icon:"💳",label:"Rebuilder",         desc:"Some accounts, high utilization, missed payments",  score:580,util:65,age:2,  mix:2,inq:2,missed:2,color:"var(--orange)"},
@@ -170,7 +167,6 @@ const PROFILES=[
   {id:"optimizer",icon:"⭐",label:"Optimizer",       desc:"Very good credit, pushing toward excellent",        score:720,util:15,age:8,  mix:4,inq:0,missed:0,color:"var(--green)"},
   {id:"maintain",icon:"🏆",label:"Maintainer",       desc:"Excellent credit, protecting and maximizing",       score:760,util:8, age:12, mix:4,inq:0,missed:0,color:"var(--teal)"},
 ];
-
 const CREDIT_EVENTS=[
   {id:"late",    e:"⏰",t:"Missed Payment!",         d:"You missed a payment this month.",                     ef:"score",v:-25,  lbl:"-25 Points",  c:"var(--red)"},
   {id:"ontime",  e:"✅",t:"On-Time Payment Streak",  d:"3 consecutive on-time payments recorded.",             ef:"score",v:8,    lbl:"+8 Points",   c:"var(--green)"},
@@ -193,12 +189,10 @@ const CREDIT_EVENTS=[
   {id:"balancedrop",e:"💪",t:"Balance Dropped 50%",  d:"You cut your card balance in half this month.",       ef:"util",v:-18,   lbl:"-18% Util",  c:"var(--green)"},
   {id:"inqfades", e:"⏱️",t:"Old Inquiry Faded",      d:"A hard inquiry from 2 years ago dropped off your report.",ef:"score",v:5, lbl:"+5 Points",  c:"var(--blue)"},
 ];
-
 const MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DICE_FACES=["⚀","⚁","⚂","⚃","⚄","⚅"];
 const TOTAL_ROUNDS=16;
 const SAVE_KEY="nugo-credit-v1";
-
 const HTP=[
   {icon:"⭐",title:"Welcome to the Credit Simulation Lab",color:"var(--blue)",body:"This lab simulates building and repairing your credit score over 8 months. You make real credit decisions, face real events, and watch your score respond — just like real life. No perfect answers — just smart strategy."},
   {icon:"👤",title:"Round 1 — Pick Your Credit Profile",color:"var(--blue)",body:"Choose a credit profile that matches your current situation — Fresh Start (520), Rebuilder (580), Climber (620), Home Buyer Prep (660), Business Ready (680), Optimizer (720), or Maintainer (760). Each has a unique credit report and set of challenges."},
@@ -210,7 +204,6 @@ const HTP=[
   {icon:"📊",title:"Round 15 — Final Credit Report",color:"var(--gold)",body:"After 8 months, your updated credit report shows every change — accounts paid, disputes resolved, new inquiries, and your final utilization. Compare it to your starting report to see exactly what moved your score."},
   {icon:"🏆",title:"Round 16 — Full Credit Audit",color:"var(--teal)",body:"Review your complete score journey month by month, see the breakdown of all 5 credit factors, complete the 10-item credit health checklist, and receive your Credit Mastery Rating — Poor, Fair, Good, or Excellent strategy. Earn your Certificate of Completion."},
 ];
-
 const AUDIT_CHECKS=[
   {id:"autopay",  lbl:"Set up autopay on all accounts to prevent missed payments",   cat:"Payment History"},
   {id:"util30",   lbl:"Kept all card utilization below 30%",                         cat:"Utilization"},
@@ -224,9 +217,6 @@ const AUDIT_CHECKS=[
   {id:"goal",     lbl:"Score moved closer to your target goal",                      cat:"Overall Progress"},
 ];
 
-// ═══════════════════════════════════
-// STATE
-// ═══════════════════════════════════
 let S={round:0,profile:null,months:[],auditChecks:{},strategy:{},disputes:[]};
 let _profileId="fresh",_htpStep=0,_auditTab="journey";
 let _diceRolled=false,_chosenEvent=null,_diceInterval=null;
@@ -236,46 +226,33 @@ function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"null"
 function clearSave(){try{localStorage.removeItem(SAVE_KEY);}catch{}}
 function advance(){S.round++;if(S.round>0&&S.profile)saveGame();render();}
 
-// ═══════════════════════════════════
-// CREDIT SCORE ENGINE
-// ═══════════════════════════════════
 function calcScore(profile,months,strategy){
   let score=profile.startScore;
   let util=profile.util;
   const disputes=S.disputes||[];
-
-  // Dispute bonus
   score+=disputes.length*8;
-
-  // Strategy bonuses
   if(strategy.autopay)  score+=5;
   if(strategy.utilTarget<=10) score+=15;
   else if(strategy.utilTarget<=20) score+=8;
   else if(strategy.utilTarget<=30) score+=3;
   if(strategy.noNewAccounts) score+=5;
   if(strategy.keepOldAccounts) score+=8;
-
-  // Monthly events
   months.forEach(m=>{
     if(m.event){
       if(m.event.ef==="score") score+=m.event.v;
       if(m.event.ef==="util")  util=Math.max(1,Math.min(99,util+m.event.v));
     }
-    // Payment decision
     if(m.payment==="full")  score+=4;
     if(m.payment==="more")  score+=2;
     if(m.payment==="min")   score+=0;
     if(m.payment==="skip")  score-=28;
   });
-
-  // Utilization factor
   if(util<=9)  score+=20;
   else if(util<=19) score+=12;
   else if(util<=29) score+=5;
   else if(util<=49) score-=5;
   else if(util<=74) score-=15;
   else score-=30;
-
   return {score:Math.min(850,Math.max(300,Math.round(score))),util:Math.max(1,Math.min(99,util))};
 }
 
@@ -286,12 +263,8 @@ function scoreLabel(score){
   if(score<800) return {label:"Very Good",color:"var(--green)"};
   return             {label:"Excellent",  color:"var(--teal)"};
 }
-
 function pickEvent(d1,d2,mi){return CREDIT_EVENTS[((d1+d2+2-2)*2+mi)%CREDIT_EVENTS.length];}
 
-// ═══════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════
 const fmt  = n=>"$"+Math.abs(Math.round(n)).toLocaleString();
 const clamp= (v,lo,hi)=>Math.min(hi,Math.max(lo,v));
 const b    = (txt,fn,v="primary",sz="md",dis=false)=>
@@ -319,9 +292,7 @@ function scoreGauge(score){
       <span style="color:${sl.color};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${score}</span>
       <span style="color:${sl.color};font-weight:700;font-size:14px;align-self:flex-end">${sl.label}</span>
     </div>
-    <div class="score-gauge">
-      <div class="score-needle" style="left:${pct}%"></div>
-    </div>
+    <div class="score-gauge"><div class="score-needle" style="left:${pct}%"></div></div>
     <div style="display:flex;justify-content:space-between;margin-top:4px">
       <span style="color:var(--red);font-size:9px">300</span>
       <span style="color:var(--orange);font-size:9px">580</span>
@@ -370,13 +341,10 @@ function updateHeader(){
     ph.style.display="block";
     const nm=document.getElementById("prof-hdr-name");if(nm)nm.textContent=S.profile.name;
     const sc=document.getElementById("prof-hdr-score");
-    if(sc){const cs=calcScore(S.profile,S.months,S.strategy||{});if(sc)sc.textContent="Score: "+cs.score;}
+    if(sc){const cs=calcScore(S.profile,S.months,S.strategy||{});sc.textContent="Score: "+cs.score;}
   }
 }
 
-// ═══════════════════════════════════
-// ROUTER
-// ═══════════════════════════════════
 function render(){
   updateHeader();window.scrollTo({top:0,behavior:"smooth"});
   const el=document.getElementById("screen");
@@ -393,11 +361,8 @@ function render(){
   else if(S.round===16) el.innerHTML=renderAudit();
 }
 
-// ═══════════════════════════════════
-// INTRO
-// ═══════════════════════════════════
 function renderIntro(){
-  const saved=loadsaveGame();
+  const saved=loadSave();
   const resumeBanner=saved&&saved.round>0&&saved.profile?`
     <div class="resume-banner">
       <div style="font-size:26px">💾</div>
@@ -409,9 +374,7 @@ function renderIntro(){
     <div style="text-align:center;padding:26px 0 18px">
       <div style="font-size:50px;margin-bottom:10px">⭐</div>
       <h1 style="font-size:23px;font-weight:900;margin:0 0 10px;line-height:1.25">Credit Simulation Lab<br><span style="color:var(--blue)">Build Your Score. Change Your Life.</span></h1>
-      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 18px">
-        Start with a damaged or fair credit score. Make real credit decisions. Face 8 months of real events. Watch your score respond — then face a <strong style="color:var(--teal)">Full Credit Audit</strong>.
-      </p>
+      <p style="color:var(--muted);font-size:13px;line-height:1.75;max-width:460px;margin:0 auto 18px">Start with a damaged or fair credit score. Make real credit decisions. Face 8 months of real events. Watch your score respond — then face a <strong style="color:var(--teal)">Full Credit Audit</strong>.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px">
         ${b("⭐ Start Your Credit Journey","startGame()","primary","xl")}
         ${b("❓ How to Play","openHTP()","ghost","lg")}
@@ -423,57 +386,30 @@ function renderIntro(){
       <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">🎲</div><div style="font-weight:700;font-size:11px">20 Credit Events</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Auto-applied each month</div></div>
       <div class="card" style="text-align:center;padding:15px 10px"><div style="font-size:22px;margin-bottom:5px">📊</div><div style="font-weight:700;font-size:11px">Full Credit Audit</div><div style="color:var(--muted);font-size:10px;margin-top:3px">Score breakdown + certificate</div></div>
     </div>
-    ${card(`
-      <div class="section-title">📋 16-Round Structure</div>
-      ${[
-        ["var(--blue)",  "👤 Setup",    "Rounds 1–2", "Pick profile, read your credit report"],
-        ["var(--purple)","🧠 Strategy", "Rounds 3–6", "Dispute, utilization, payments, accounts"],
-        ["var(--blue)",  "📅 Simulate", "Rounds 7–14","8 months of credit events + decisions"],
-        ["var(--gold)",  "📋 Report",   "Round 15",   "Final credit report — see all changes"],
-        ["var(--teal)",  "🔍 Audit",    "Round 16",   "Full credit audit + certificate"],
-      ].map(([col,tag,rnd,desc])=>`
-        <div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border);align-items:center">
-          <div style="width:24px;height:24px;border-radius:50%;background:${col}28;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${tag.split(" ")[0]}</div>
-          <div style="flex:1"><div style="font-weight:700;font-size:12px">${tag} — ${rnd}</div><div style="color:var(--muted);font-size:10px;margin-top:2px">${desc}</div></div>
-          ${bdg(rnd,col)}
-        </div>`).join("")}
-    `,"","margin-bottom:18px")}
+    ${card(`<div class="section-title">📋 16-Round Structure</div>${[
+      ["var(--blue)","👤 Setup","Rounds 1–2","Pick profile, read your credit report"],
+      ["var(--purple)","🧠 Strategy","Rounds 3–6","Dispute, utilization, payments, accounts"],
+      ["var(--blue)","📅 Simulate","Rounds 7–14","8 months of credit events + decisions"],
+      ["var(--gold)","📋 Report","Round 15","Final credit report — see all changes"],
+      ["var(--teal)","🔍 Audit","Round 16","Full credit audit + certificate"],
+    ].map(([col,tag,rnd,desc])=>`<div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border);align-items:center"><div style="width:24px;height:24px;border-radius:50%;background:${col}28;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">${tag.split(" ")[0]}</div><div style="flex:1"><div style="font-weight:700;font-size:12px">${tag} — ${rnd}</div><div style="color:var(--muted);font-size:10px;margin-top:2px">${desc}</div></div>${bdg(rnd,col)}</div>`).join("")}`,"","margin-bottom:18px")}
     <div style="text-align:center">${b("⭐ Start Your Credit Journey","startGame()","primary","xl")}</div>`;
 }
 
 function startGame(){S={round:1,profile:null,months:[],auditChecks:{},strategy:{autopay:false,utilTarget:30,noNewAccounts:true,keepOldAccounts:true},disputes:[]};_auditTab="journey";render();}
-function resumeGame(){const saved=loadsaveGame();if(!saved)return;S=saved;_auditTab="journey";render();}
-function discardSave(){clearsaveGame();render();}
-function restartFull(){clearsaveGame();S={round:0,profile:null,months:[],auditChecks:{},strategy:{},disputes:[]};_auditTab="journey";render();}
+function resumeGame(){const saved=loadSave();if(!saved)return;S=saved;_auditTab="journey";render();}
+function discardSave(){clearSave();render();}
+function restartFull(){clearSave();S={round:0,profile:null,months:[],auditChecks:{},strategy:{},disputes:[]};_auditTab="journey";render();}
 
-// ═══════════════════════════════════
-// ROUND 1 — PICK PROFILE
-// ═══════════════════════════════════
 function renderPickProfile(){
-  const opts=PROFILES.map(p=>`
-    <div class="profile-opt ${_profileId===p.id?"sel":""}" data-pid="${p.id}" onclick="selProfile('${p.id}')">
-      <div style="font-size:24px;margin-bottom:5px">${p.icon}</div>
-      <div style="font-weight:800;font-size:13px;color:${_profileId===p.id?"var(--blue)":"var(--text)"}">${p.label}</div>
-      <div style="color:var(--muted);font-size:11px;margin-top:3px">${p.desc}</div>
-      <div style="margin-top:8px">${bdg("Score: "+p.score,p.color)}</div>
-    </div>`).join("");
+  const opts=PROFILES.map(p=>`<div class="profile-opt ${_profileId===p.id?"sel":""}" data-pid="${p.id}" onclick="selProfile('${p.id}')"><div style="font-size:24px;margin-bottom:5px">${p.icon}</div><div style="font-weight:800;font-size:13px;color:${_profileId===p.id?"var(--blue)":"var(--text)"}">${p.label}</div><div style="color:var(--muted);font-size:11px;margin-top:3px">${p.desc}</div><div style="margin-top:8px">${bdg("Score: "+p.score,p.color)}</div></div>`).join("");
   const sel=PROFILES.find(p=>p.id===_profileId);
   const sl=scoreLabel(sel.score);
-  return `
-    ${roundHdr("👤","1","Choose Your Credit Profile","Pick the scenario that matches your situation")}
+  return `${roundHdr("👤","1","Choose Your Credit Profile","Pick the scenario that matches your situation")}
     <div class="col">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${opts}</div>
       ${inp("Your Name","pname","text","","","","Used on your certificate")}
-      ${card(`
-        <div class="section-title">📊 ${sel.label} — Starting Credit Position</div>
-        ${scoreGauge(sel.score)}
-        <div class="g4" style="margin-top:14px">
-          ${st("Starting Score",sel.score,sl.color)}
-          ${st("Utilization",sel.util+"%",sel.util>50?"var(--red)":sel.util>30?"var(--gold)":"var(--green)")}
-          ${st("Credit Age",sel.age+" yrs","var(--blue)")}
-          ${st("Missed Payments",sel.missed,sel.missed>0?"var(--red)":"var(--green)")}
-        </div>
-      `,"blue","background:#080c18")}
+      ${card(`<div class="section-title">📊 ${sel.label} — Starting Credit Position</div>${scoreGauge(sel.score)}<div class="g4" style="margin-top:14px">${st("Starting Score",sel.score,sl.color)}${st("Utilization",sel.util+"%",sel.util>50?"var(--red)":sel.util>30?"var(--gold)":"var(--green)")}${st("Credit Age",sel.age+" yrs","var(--blue)")}${st("Missed Payments",sel.missed,sel.missed>0?"var(--red)":"var(--green)")}</div>`,"blue","background:#080c18")}
       ${b("Round 2: Read Your Credit Report →","submitPickProfile()","primary","lg full")}
       ${restartLink()}
     </div>`;
@@ -496,20 +432,16 @@ function submitPickProfile(){
   advance();
 }
 
-// ═══════════════════════════════════
-// ROUND 2 — CREDIT REPORT
-// ═══════════════════════════════════
 function renderCreditReport(){
   const p=S.profile;
   const sl=scoreLabel(p.score);
   const factors=[
     {name:"Payment History",weight:"35%",score:p.missed>2?40:p.missed>0?65:90,impact:p.missed>0?"var(--red)":"var(--green)",desc:p.missed>0?p.missed+" missed payments on record — biggest negative factor":"All payments on time — strongest factor"},
     {name:"Credit Utilization",weight:"30%",score:p.util>70?30:p.util>50?50:p.util>30?70:p.util>20?85:95,impact:p.util>30?"var(--red)":"var(--green)",desc:"Currently at "+p.util+"% — target is below 30%, ideal below 10%"},
-    {name:"Length of History",weight:"15%",score:p.age<3?50:p.age<6?70:p.age<10?85:95,impact:p.age<3?"var(--orange)":"var(--green)",desc:"Oldest account: "+p.age+" years — "+( p.age<3?"too short":"good history length")},
-    {name:"Credit Mix",weight:"10%",score:p.mix===1?50:p.mix===2?70:p.mix===3?85:95,impact:p.mix<3?"var(--orange)":"var(--green)",desc:p.mix+" account type"+(p.mix!==1?"s":"")+" — "+( p.mix<3?"more variety helps":"good mix")},
-    {name:"New Inquiries",weight:"10%",score:p.inq>3?40:p.inq>1?70:p.inq>0?85:95,impact:p.inq>1?"var(--orange)":"var(--green)",desc:p.inq+" recent hard inquir"+( p.inq!==1?"ies":"y")+" — "+( p.inq>2?"too many — hurts score":"manageable")},
+    {name:"Length of History",weight:"15%",score:p.age<3?50:p.age<6?70:p.age<10?85:95,impact:p.age<3?"var(--orange)":"var(--green)",desc:"Oldest account: "+p.age+" years — "+(p.age<3?"too short":"good history length")},
+    {name:"Credit Mix",weight:"10%",score:p.mix===1?50:p.mix===2?70:p.mix===3?85:95,impact:p.mix<3?"var(--orange)":"var(--green)",desc:p.mix+" account type"+(p.mix!==1?"s":"")+" — "+(p.mix<3?"more variety helps":"good mix")},
+    {name:"New Inquiries",weight:"10%",score:p.inq>3?40:p.inq>1?70:p.inq>0?85:95,impact:p.inq>1?"var(--orange)":"var(--green)",desc:p.inq+" recent hard inquir"+(p.inq!==1?"ies":"y")+" — "+(p.inq>2?"too many — hurts score":"manageable")},
   ];
-
   const accounts=[
     {type:"Credit Card A",limit:2000,balance:Math.round(2000*p.util/100),status:p.missed>1?"Late 30 days":"Current",age:"3 years"},
     {type:"Credit Card B",limit:1500,balance:Math.round(1500*(p.util*0.8)/100),status:p.missed>2?"Late 60 days":p.missed>0?"Late 30 days":"Current",age:p.age+" years"},
@@ -517,75 +449,20 @@ function renderCreditReport(){
     ...(p.mix>=3?[{type:"Student Loan",limit:25000,balance:20000,status:"Current",age:"4 years"}]:[]),
     ...(p.missed>3?[{type:"Collection Account",limit:800,balance:800,status:"In Collections",age:"1 year"}]:[]),
   ];
-
-  return `
-    ${roundHdr("📋","2","Your Simulated Credit Report","Study every factor — this is what's driving your score")}
+  return `${roundHdr("📋","2","Your Simulated Credit Report","Study every factor — this is what's driving your score")}
     <div class="col">
       <div class="credit-report">
-        <div class="cr-header">
-          <div>
-            <div style="color:var(--blue);font-weight:700;font-size:13px">EQUIFAX CREDIT REPORT</div>
-            <div style="color:var(--muted);font-size:10px">Simulated · ${new Date().toLocaleDateString()}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="color:${sl.color};font-size:24px;font-weight:900">${p.score}</div>
-            <div style="color:${sl.color};font-size:11px;font-weight:700">${sl.label}</div>
-          </div>
-        </div>
-        <div class="cr-section">
-          <div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">PERSONAL INFORMATION</div>
-          <div class="cr-row"><span style="color:var(--muted)">Name</span><span>${p.name}</span></div>
-          <div class="cr-row"><span style="color:var(--muted)">Profile Type</span><span>${p.label}</span></div>
-          <div class="cr-row"><span style="color:var(--muted)">Report Date</span><span>${new Date().toLocaleDateString()}</span></div>
-        </div>
-        <div class="cr-section">
-          <div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">ACCOUNTS (${accounts.length})</div>
-          ${accounts.map(a=>`
-            <div style="padding:8px 0;border-top:1px solid var(--border)22">
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                <span style="font-weight:700">${a.type}</span>
-                <span style="color:${a.status==="Current"?"var(--green)":"var(--red)"};font-weight:700">${a.status}</span>
-              </div>
-              <div style="display:flex;gap:12px;flex-wrap:wrap">
-                <span style="color:var(--muted)">Limit: $${a.limit.toLocaleString()}</span>
-                <span style="color:var(--muted)">Balance: $${a.balance.toLocaleString()}</span>
-                <span style="color:var(--muted)">Age: ${a.age}</span>
-              </div>
-              ${a.type!=="Auto Loan"&&a.type!=="Student Loan"&&a.type!=="Collection Account"?`
-                <div style="margin-top:5px">
-                  <div class="util-bar" style="width:${Math.round((a.balance/a.limit)*100)}%;background:${(a.balance/a.limit)>0.5?"var(--red)":(a.balance/a.limit)>0.3?"var(--orange)":"var(--green)"}"></div>
-                  <div style="color:var(--muted);font-size:10px;margin-top:2px">${Math.round((a.balance/a.limit)*100)}% utilized</div>
-                </div>`:""}
-            </div>`).join("")}
-        </div>
-        <div class="cr-section">
-          <div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">SCORE FACTORS</div>
-          ${factors.map(f=>`
-            <div class="factor-row">
-              <div style="flex:1">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-weight:700;font-size:12px">${f.name}</span>
-                  <span style="color:var(--muted);font-size:10px">${f.weight} of score</span>
-                </div>
-                <div style="height:8px;background:#151f35;border-radius:99px;overflow:hidden;margin-bottom:4px">
-                  <div style="width:${f.score}%;height:100%;background:${f.impact};border-radius:99px"></div>
-                </div>
-                <div style="color:var(--muted);font-size:10px">${f.desc}</div>
-              </div>
-            </div>`).join("")}
-        </div>
+        <div class="cr-header"><div><div style="color:var(--blue);font-weight:700;font-size:13px">EQUIFAX CREDIT REPORT</div><div style="color:var(--muted);font-size:10px">Simulated · ${new Date().toLocaleDateString()}</div></div><div style="text-align:right"><div style="color:${sl.color};font-size:24px;font-weight:900">${p.score}</div><div style="color:${sl.color};font-size:11px;font-weight:700">${sl.label}</div></div></div>
+        <div class="cr-section"><div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">PERSONAL INFORMATION</div><div class="cr-row"><span style="color:var(--muted)">Name</span><span>${p.name}</span></div><div class="cr-row"><span style="color:var(--muted)">Profile Type</span><span>${p.label}</span></div><div class="cr-row"><span style="color:var(--muted)">Report Date</span><span>${new Date().toLocaleDateString()}</span></div></div>
+        <div class="cr-section"><div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">ACCOUNTS (${accounts.length})</div>${accounts.map(a=>`<div style="padding:8px 0;border-top:1px solid var(--border)22"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:700">${a.type}</span><span style="color:${a.status==="Current"?"var(--green)":"var(--red)"};font-weight:700">${a.status}</span></div><div style="display:flex;gap:12px;flex-wrap:wrap"><span style="color:var(--muted)">Limit: $${a.limit.toLocaleString()}</span><span style="color:var(--muted)">Balance: $${a.balance.toLocaleString()}</span><span style="color:var(--muted)">Age: ${a.age}</span></div>${a.type!=="Auto Loan"&&a.type!=="Student Loan"&&a.type!=="Collection Account"?`<div style="margin-top:5px"><div class="util-bar" style="width:${Math.round((a.balance/a.limit)*100)}%;background:${(a.balance/a.limit)>0.5?"var(--red)":(a.balance/a.limit)>0.3?"var(--orange)":"var(--green)"}"></div><div style="color:var(--muted);font-size:10px;margin-top:2px">${Math.round((a.balance/a.limit)*100)}% utilized</div></div>`:""}</div>`).join("")}</div>
+        <div class="cr-section"><div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">SCORE FACTORS</div>${factors.map(f=>`<div class="factor-row"><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:700;font-size:12px">${f.name}</span><span style="color:var(--muted);font-size:10px">${f.weight} of score</span></div><div style="height:8px;background:#151f35;border-radius:99px;overflow:hidden;margin-bottom:4px"><div style="width:${f.score}%;height:100%;background:${f.impact};border-radius:99px"></div></div><div style="color:var(--muted);font-size:10px">${f.desc}</div></div></div>`).join("")}</div>
       </div>
-      <div style="padding:12px 14px;background:var(--as);border:1px solid var(--blue)44;border-radius:10px;font-size:12px;color:var(--blue)">
-        💡 Study this report carefully. In Round 3 you will decide what to dispute. In Rounds 4–6 you will set your strategy for the next 8 months.
-      </div>
+      <div style="padding:12px 14px;background:var(--as);border:1px solid var(--blue)44;border-radius:10px;font-size:12px;color:var(--blue)">💡 Study this report carefully. In Round 3 you will decide what to dispute. In Rounds 4–6 you will set your strategy for the next 8 months.</div>
       ${b("Round 3: Choose Dispute Strategy →","advance()","primary","lg full")}
       ${restartLink()}
     </div>`;
 }
 
-// ═══════════════════════════════════
-// ROUND 3 — DISPUTE STRATEGY
-// ═══════════════════════════════════
 function renderDispute(){
   const p=S.profile;
   const items=[
@@ -596,32 +473,12 @@ function renderDispute(){
     {id:"balance",icon:"💳",title:"Request Balance Update",desc:"Ask creditors to update your current balance if it's showing an old higher balance.",impact:"+5–15 points",color:"var(--gold)"},
   ];
   const chosen=S.disputes||[];
-  return `
-    ${roundHdr("📝","3","Dispute Strategy","Choose which items to dispute on your credit report")}
+  return `${roundHdr("📝","3","Dispute Strategy","Choose which items to dispute on your credit report")}
     <div class="col">
-      ${card(`
-        <div class="section-title">📚 How Credit Disputes Work</div>
-        <p style="color:var(--text);font-size:13px;line-height:1.8;margin-bottom:12px">Under the Fair Credit Reporting Act (FCRA), you have the right to dispute any inaccurate, incomplete, or unverifiable information on your credit report. The bureau has <strong style="color:var(--gold)">30 days to investigate and respond</strong>.</p>
-        <div style="background:#080c18;border-radius:9px;padding:12px 14px;font-size:12px">
-          ${["Dispute only items you believe are inaccurate — not just negative items","Send disputes in writing (certified mail) to keep a paper trail","You can dispute directly with the credit bureau OR the creditor","If the bureau verifies the information, it stays — keep the documentation","Multiple disputes at once may look suspicious — be strategic"].map((t,i)=>`<div style="padding:5px 0;border-top:${i>0?"1px solid var(--border)22":"none"};color:var(--muted)">${i+1}. ${t}</div>`).join("")}
-        </div>`,"","background:#080c18")}
+      ${card(`<div class="section-title">📚 How Credit Disputes Work</div><p style="color:var(--text);font-size:13px;line-height:1.8;margin-bottom:12px">Under the Fair Credit Reporting Act (FCRA), you have the right to dispute any inaccurate, incomplete, or unverifiable information on your credit report. The bureau has <strong style="color:var(--gold)">30 days to investigate and respond</strong>.</p><div style="background:#080c18;border-radius:9px;padding:12px 14px;font-size:12px">${["Dispute only items you believe are inaccurate — not just negative items","Send disputes in writing (certified mail) to keep a paper trail","You can dispute directly with the credit bureau OR the creditor","If the bureau verifies the information, it stays — keep the documentation","Multiple disputes at once may look suspicious — be strategic"].map((t,i)=>`<div style="padding:5px 0;border-top:${i>0?"1px solid var(--border)22":"none"};color:var(--muted)">${i+1}. ${t}</div>`).join("")}</div>`,"","background:#080c18")}
       <div class="section-title" style="margin-bottom:8px">Select Items to Dispute (choose wisely):</div>
-      ${items.map(item=>`
-        <div class="dispute-opt ${chosen.includes(item.id)?"sel":""}" data-did="${item.id}" onclick="toggleDispute('${item.id}')">
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <span style="font-size:22px">${item.icon}</span>
-            <div style="flex:1">
-              <div style="font-weight:800;font-size:13px;color:${chosen.includes(item.id)?"var(--blue)":"var(--text)"}">${item.title}</div>
-              <div style="color:var(--muted);font-size:11px;margin-top:3px">${item.desc}</div>
-              <div style="color:${item.color};font-size:11px;font-weight:700;margin-top:4px">Potential impact: ${item.impact}</div>
-            </div>
-            ${chosen.includes(item.id)?`<span style="color:var(--blue);font-size:18px;flex-shrink:0">✓</span>`:""}
-          </div>
-        </div>`).join("")}
-      ${card(`<div class="g2">
-        ${st("Items Selected",chosen.length,"var(--blue)")}
-        ${st("Potential Gain",chosen.length>0?"+"+chosen.length*12+" pts est.":"—",chosen.length>0?"var(--green)":"var(--muted)")}
-      </div>`,"","background:#080c18")}
+      ${items.map(item=>`<div class="dispute-opt ${chosen.includes(item.id)?"sel":""}" data-did="${item.id}" onclick="toggleDispute('${item.id}')"><div style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:22px">${item.icon}</span><div style="flex:1"><div style="font-weight:800;font-size:13px;color:${chosen.includes(item.id)?"var(--blue)":"var(--text)"}">${item.title}</div><div style="color:var(--muted);font-size:11px;margin-top:3px">${item.desc}</div><div style="color:${item.color};font-size:11px;font-weight:700;margin-top:4px">Potential impact: ${item.impact}</div></div>${chosen.includes(item.id)?`<span style="color:var(--blue);font-size:18px;flex-shrink:0">✓</span>`:""}</div></div>`).join("")}
+      ${card(`<div class="g2">${st("Items Selected",chosen.length,"var(--blue)")}${st("Potential Gain",chosen.length>0?"+"+chosen.length*12+" pts est.":"—",chosen.length>0?"var(--green)":"var(--muted)")}</div>`,"","background:#080c18")}
       ${b("Round 4: Set Utilization Targets →","submitDispute()","primary","lg full")}
       ${restartLink()}
     </div>`;
@@ -641,37 +498,15 @@ function toggleDispute(id){
 }
 function submitDispute(){S.strategy.disputes=[...S.disputes];advance();}
 
-// ═══════════════════════════════════
-// ROUND 4 — UTILIZATION PLAN
-// ═══════════════════════════════════
 function renderUtilization(){
   const p=S.profile;
   const target=S.strategy.utilTarget||30;
   const targets=[{v:9,lbl:"Under 10%",impact:"+15–20 pts",c:"var(--teal)"},{v:19,lbl:"Under 20%",impact:"+8–12 pts",c:"var(--green)"},{v:29,lbl:"Under 30%",impact:"+3–7 pts",c:"var(--gold)"},{v:49,lbl:"Under 50%",impact:"Neutral",c:"var(--orange)"},{v:99,lbl:"Stay Current",impact:"-5 to -15 pts",c:"var(--red)"}];
-  return `
-    ${roundHdr("💳","4","Utilization Target","Set your credit utilization target for the next 8 months")}
+  return `${roundHdr("💳","4","Utilization Target","Set your credit utilization target for the next 8 months")}
     <div class="col">
-      ${card(`
-        <div class="section-title">📊 Credit Utilization — 30% of Your Score</div>
-        <p style="color:var(--text);font-size:13px;line-height:1.8;margin-bottom:14px">Credit utilization is the percentage of your available credit you're using. It's the <strong style="color:var(--gold)">second biggest factor</strong> in your score. The lower the better — under 10% is ideal.</p>
-        <div style="margin-bottom:14px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="color:var(--muted);font-size:11px">Your current utilization</span>
-            <span style="color:${p.util>50?"var(--red)":p.util>30?"var(--orange)":"var(--green)"};font-weight:700;font-family:'Space Mono',monospace">${p.util}%</span>
-          </div>
-          ${pb(p.util,p.util>50?"var(--red)":p.util>30?"var(--orange)":"var(--green)",12)}
-        </div>
-        <div style="color:var(--muted);font-size:11px;line-height:1.8">
-          💡 To lower utilization: Pay down card balances OR request a credit limit increase. Both work. Never close cards — that raises your utilization instantly.
-        </div>`,"blue")}
+      ${card(`<div class="section-title">📊 Credit Utilization — 30% of Your Score</div><p style="color:var(--text);font-size:13px;line-height:1.8;margin-bottom:14px">Credit utilization is the percentage of your available credit you're using. It's the <strong style="color:var(--gold)">second biggest factor</strong> in your score. The lower the better — under 10% is ideal.</p><div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="color:var(--muted);font-size:11px">Your current utilization</span><span style="color:${p.util>50?"var(--red)":p.util>30?"var(--orange)":"var(--green)"};font-weight:700;font-family:'Space Mono',monospace">${p.util}%</span></div>${pb(p.util,p.util>50?"var(--red)":p.util>30?"var(--orange)":"var(--green)",12)}</div><div style="color:var(--muted);font-size:11px;line-height:1.8">💡 To lower utilization: Pay down card balances OR request a credit limit increase. Both work. Never close cards — that raises your utilization instantly.</div>`,"blue")}
       <div class="section-title" style="margin-bottom:8px">Set Your Target Utilization:</div>
-      <div class="g2">
-        ${targets.map(t=>`
-          <div onclick="selUtil(${t.v})" style="border:2px solid ${target===t.v?"var(--blue)":"var(--border)"};background:${target===t.v?"var(--as)":"var(--card)"};border-radius:12px;padding:14px;cursor:pointer;transition:all .13s;text-align:center">
-            <div style="font-weight:800;font-size:16px;color:${target===t.v?"var(--blue)":"var(--text)"}">${t.lbl}</div>
-            <div style="color:${t.c};font-weight:700;font-size:13px;margin-top:4px">${t.impact}</div>
-          </div>`).join("")}
-      </div>
+      <div class="g2">${targets.map(t=>`<div onclick="selUtil(${t.v})" style="border:2px solid ${target===t.v?"var(--blue)":"var(--border)"};background:${target===t.v?"var(--as)":"var(--card)"};border-radius:12px;padding:14px;cursor:pointer;transition:all .13s;text-align:center"><div style="font-weight:800;font-size:16px;color:${target===t.v?"var(--blue)":"var(--text)"}">${t.lbl}</div><div style="color:${t.c};font-weight:700;font-size:13px;margin-top:4px">${t.impact}</div></div>`).join("")}</div>
       ${b("Round 5: Set Payment Strategy →","submitUtil()","primary","lg full")}
       ${restartLink()}
     </div>`;
@@ -680,44 +515,22 @@ function renderUtilization(){
 function selUtil(v){S.strategy.utilTarget=v;render();}
 function submitUtil(){advance();}
 
-// ═══════════════════════════════════
-// ROUND 5 — PAYMENT STRATEGY
-// ═══════════════════════════════════
 function renderPaymentStrategy(){
   const opts=[
-    {id:"full",icon:"💯",title:"Pay Full Balance Every Month",  desc:"Eliminates interest. Best for score and wallet. Utilization effectively becomes 0%.",impact:"+4 pts/month",color:"var(--teal)"},
-    {id:"more",icon:"📈",title:"Pay More Than Minimum",         desc:"Reduces balance over time. Score improves as utilization drops.",                   impact:"+2 pts/month",color:"var(--green)"},
-    {id:"min", icon:"✅",title:"Pay Minimum Only",              desc:"Keeps account current but balance doesn't decrease. Interest accrues.",              impact:"0 pts/month",color:"var(--gold)"},
-    {id:"skip",icon:"⚠️",title:"Sometimes Skip Payments",       desc:"Missed payments destroy your score faster than anything else.",                      impact:"-28 pts/missed",color:"var(--red)"},
+    {id:"full",icon:"💯",title:"Pay Full Balance Every Month",desc:"Eliminates interest. Best for score and wallet. Utilization effectively becomes 0%.",impact:"+4 pts/month",color:"var(--teal)"},
+    {id:"more",icon:"📈",title:"Pay More Than Minimum",desc:"Reduces balance over time. Score improves as utilization drops.",impact:"+2 pts/month",color:"var(--green)"},
+    {id:"min", icon:"✅",title:"Pay Minimum Only",desc:"Keeps account current but balance doesn't decrease. Interest accrues.",impact:"0 pts/month",color:"var(--gold)"},
+    {id:"skip",icon:"⚠️",title:"Sometimes Skip Payments",desc:"Missed payments destroy your score faster than anything else.",impact:"-28 pts/missed",color:"var(--red)"},
   ];
   const sel=S.strategy.paymentMethod||"more";
   const autopay=S.strategy.autopay||false;
-  return `
-    ${roundHdr("💰","5","Payment Strategy","Choose how you will handle payments for the next 8 months")}
+  return `${roundHdr("💰","5","Payment Strategy","Choose how you will handle payments for the next 8 months")}
     <div class="col">
-      ${card(`
-        <div class="section-title">📊 Payment History — 35% of Your Score</div>
-        <p style="color:var(--text);font-size:13px;line-height:1.8">Payment history is the <strong style="color:var(--gold)">single biggest factor</strong> in your credit score. One missed payment can drop your score 25–30 points and stays on your report for 7 years. There is no faster way to destroy your credit.</p>`,"gold")}
-      <div class="col">
-        ${opts.map(o=>`
-          <div onclick="selPayment('${o.id}')" style="border:2px solid ${sel===o.id?o.color:"var(--border)"};background:${sel===o.id?o.color+"18":"var(--card)"};border-radius:13px;padding:15px;cursor:pointer;display:flex;gap:13px;align-items:center;transition:all .13s">
-            <span style="font-size:28px">${o.icon}</span>
-            <div style="flex:1">
-              <div style="font-weight:800;font-size:13px;color:${sel===o.id?o.color:"var(--text)"}">${o.title}</div>
-              <div style="color:var(--muted);font-size:11px;margin-top:3px">${o.desc}</div>
-              <div style="color:${o.color};font-size:11px;font-weight:700;margin-top:4px">${o.impact}</div>
-            </div>
-            ${sel===o.id?`<span style="color:${o.color};font-size:18px;flex-shrink:0">✓</span>`:""}
-          </div>`).join("")}
-      </div>
+      ${card(`<div class="section-title">📊 Payment History — 35% of Your Score</div><p style="color:var(--text);font-size:13px;line-height:1.8">Payment history is the <strong style="color:var(--gold)">single biggest factor</strong> in your credit score. One missed payment can drop your score 25–30 points and stays on your report for 7 years. There is no faster way to destroy your credit.</p>`,"gold")}
+      <div class="col">${opts.map(o=>`<div onclick="selPayment('${o.id}')" style="border:2px solid ${sel===o.id?o.color:"var(--border)"};background:${sel===o.id?o.color+"18":"var(--card)"};border-radius:13px;padding:15px;cursor:pointer;display:flex;gap:13px;align-items:center;transition:all .13s"><span style="font-size:28px">${o.icon}</span><div style="flex:1"><div style="font-weight:800;font-size:13px;color:${sel===o.id?o.color:"var(--text)"}">${o.title}</div><div style="color:var(--muted);font-size:11px;margin-top:3px">${o.desc}</div><div style="color:${o.color};font-size:11px;font-weight:700;margin-top:4px">${o.impact}</div></div>${sel===o.id?`<span style="color:${o.color};font-size:18px;flex-shrink:0">✓</span>`:""}</div>`).join("")}</div>
       <div style="display:flex;align-items:center;gap:12px;padding:14px;border:1px solid ${autopay?"var(--green)":"var(--border)"};background:${autopay?"var(--grs)":"var(--card)"};border-radius:12px;cursor:pointer" onclick="toggleAutopay()">
-        <div style="width:40px;height:22px;border-radius:99px;background:${autopay?"var(--green)":"var(--border)"};position:relative;transition:background .2s;flex-shrink:0">
-          <div style="position:absolute;top:3px;left:${autopay?"20px":"3px"};width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s"></div>
-        </div>
-        <div>
-          <div style="font-weight:800;font-size:13px">Set Up Autopay</div>
-          <div style="color:var(--muted);font-size:11px;margin-top:2px">Prevents missed payments automatically. Worth +5 points to your strategy score.</div>
-        </div>
+        <div style="width:40px;height:22px;border-radius:99px;background:${autopay?"var(--green)":"var(--border)"};position:relative;transition:background .2s;flex-shrink:0"><div style="position:absolute;top:3px;left:${autopay?"20px":"3px"};width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s"></div></div>
+        <div><div style="font-weight:800;font-size:13px">Set Up Autopay</div><div style="color:var(--muted);font-size:11px;margin-top:2px">Prevents missed payments automatically. Worth +5 points to your strategy score.</div></div>
         ${autopay?bdg("✓ Active","var(--green)"):""}
       </div>
       ${b("Round 6: Account Decisions →","submitPayment()","primary","lg full")}
@@ -729,9 +542,6 @@ function selPayment(id){S.strategy.paymentMethod=id;render();}
 function toggleAutopay(){S.strategy.autopay=!S.strategy.autopay;render();}
 function submitPayment(){advance();}
 
-// ═══════════════════════════════════
-// ROUND 6 — ACCOUNT DECISIONS
-// ═══════════════════════════════════
 function renderAccountDecisions(){
   const decisions=[
     {id:"noclose",icon:"🔒",title:"Keep All Old Accounts Open",desc:"Never close old accounts — they contribute to your length of credit history. Even if you don't use them, keep them open with a small recurring charge.",result:"Protects 15% of your score",sel:S.strategy.keepOldAccounts!==false,color:"var(--green)"},
@@ -739,33 +549,11 @@ function renderAccountDecisions(){
     {id:"autouse",icon:"🔄",title:"Use Cards for Small Recurring Charges",desc:"Put one small subscription on each card and pay it off monthly. This shows active use without building up balances.",result:"Keeps accounts active",sel:S.strategy.useForSmall||false,color:"var(--gold)"},
     {id:"creditlimit",icon:"📈",title:"Request Credit Limit Increases",desc:"Call your card issuers and request a credit limit increase. This lowers your utilization ratio without paying down any debt.",result:"Lowers utilization instantly",sel:S.strategy.requestIncrease||false,color:"var(--teal)"},
   ];
-  return `
-    ${roundHdr("🏦","6","Account Decisions","Make smart account management decisions before simulation begins")}
+  return `${roundHdr("🏦","6","Account Decisions","Make smart account management decisions before simulation begins")}
     <div class="col">
-      ${card(`
-        <div class="section-title">⚠️ The Biggest Account Mistakes</div>
-        ${[
-          {m:"Closing old credit cards",why:"Reduces available credit and shortens credit history — double damage"},
-          {m:"Opening many new accounts at once",why:"Multiple hard inquiries signal desperation to lenders"},
-          {m:"Maxing out one card",why:"Even if you pay it off monthly, if balance is reported before payment, utilization spikes"},
-          {m:"Ignoring small balances",why:"A $40 unpaid bill can go to collections and drop your score 80+ points"},
-        ].map((item,i)=>`
-          <div style="display:flex;gap:10px;padding:9px 0;border-top:${i>0?"1px solid var(--border)22":"none"}">
-            <span style="color:var(--red);font-size:14px;flex-shrink:0">✗</span>
-            <div><div style="font-weight:700;font-size:12px;color:var(--red)">${item.m}</div><div style="color:var(--muted);font-size:11px">${item.why}</div></div>
-          </div>`).join("")}
-      `,"dark","background:#080c18")}
+      ${card(`<div class="section-title">⚠️ The Biggest Account Mistakes</div>${[{m:"Closing old credit cards",why:"Reduces available credit and shortens credit history — double damage"},{m:"Opening many new accounts at once",why:"Multiple hard inquiries signal desperation to lenders"},{m:"Maxing out one card",why:"Even if you pay it off monthly, if balance is reported before payment, utilization spikes"},{m:"Ignoring small balances",why:"A $40 unpaid bill can go to collections and drop your score 80+ points"}].map((item,i)=>`<div style="display:flex;gap:10px;padding:9px 0;border-top:${i>0?"1px solid var(--border)22":"none"}"><span style="color:var(--red);font-size:14px;flex-shrink:0">✗</span><div><div style="font-weight:700;font-size:12px;color:var(--red)">${item.m}</div><div style="color:var(--muted);font-size:11px">${item.why}</div></div></div>`).join("")}`,"dark","background:#080c18")}
       <div class="section-title" style="margin-bottom:8px">Choose Your Account Decisions:</div>
-      ${decisions.map(d=>`
-        <div onclick="toggleAcctDecision('${d.id}')" style="border:2px solid ${d.sel?d.color:"var(--border)"};background:${d.sel?d.color+"18":"var(--card)"};border-radius:13px;padding:15px;cursor:pointer;display:flex;gap:13px;align-items:center;transition:all .13s">
-          <span style="font-size:26px">${d.icon}</span>
-          <div style="flex:1">
-            <div style="font-weight:800;font-size:13px;color:${d.sel?d.color:"var(--text)"}">${d.title}</div>
-            <div style="color:var(--muted);font-size:11px;margin-top:3px">${d.desc}</div>
-            <div style="color:${d.color};font-size:11px;font-weight:700;margin-top:4px">✓ ${d.result}</div>
-          </div>
-          ${d.sel?`<span style="color:${d.color};font-size:18px;flex-shrink:0">✓</span>`:""}
-        </div>`).join("")}
+      ${decisions.map(d=>`<div onclick="toggleAcctDecision('${d.id}')" style="border:2px solid ${d.sel?d.color:"var(--border)"};background:${d.sel?d.color+"18":"var(--card)"};border-radius:13px;padding:15px;cursor:pointer;display:flex;gap:13px;align-items:center;transition:all .13s"><span style="font-size:26px">${d.icon}</span><div style="flex:1"><div style="font-weight:800;font-size:13px;color:${d.sel?d.color:"var(--text)"}">${d.title}</div><div style="color:var(--muted);font-size:11px;margin-top:3px">${d.desc}</div><div style="color:${d.color};font-size:11px;font-weight:700;margin-top:4px">✓ ${d.result}</div></div>${d.sel?`<span style="color:${d.color};font-size:18px;flex-shrink:0">✓</span>`:""}</div>`).join("")}
       ${b("Start January — Month 1 →","submitAccountDecisions()","primary","lg full")}
       ${restartLink()}
     </div>`;
@@ -778,9 +566,6 @@ function toggleAcctDecision(id){
 }
 function submitAccountDecisions(){saveGame();advance();}
 
-// ═══════════════════════════════════
-// ROUNDS 7–14 — MONTHLY SIMULATION
-// ═══════════════════════════════════
 function renderMonth(mi){
   _diceRolled=false;_chosenEvent=null;
   const cs=calcScore(S.profile,S.months,S.strategy);
@@ -792,36 +577,15 @@ function renderMonth(mi){
     {id:"skip",lbl:"Skip Payment",    pts:"-28 pts", c:"var(--red)"},
   ];
   const selPay=S.strategy.paymentMethod||"more";
-  return `
-    ${roundHdr("📅",mi+7,MONTH_NAMES[mi]+" — Month "+(mi+1)+" of 8","Make your payment decision then roll for your credit event")}
+  return `${roundHdr("📅",mi+7,MONTH_NAMES[mi]+" — Month "+(mi+1)+" of 8","Make your payment decision then roll for your credit event")}
     <div class="col">
       <div style="background:linear-gradient(135deg,#060e1a,#040a14);border:1px solid var(--blue)33;border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:12px;margin-bottom:4px">
         <div style="font-size:26px">⭐</div>
-        <div>
-          <div style="color:var(--blue);font-weight:800;font-size:15px">${MONTH_NAMES[mi]} — Month ${mi+1} of 8</div>
-          <div style="color:var(--muted);font-size:10px;margin-top:2px">Choose payment → Roll 2 dice → Event auto-applied</div>
-        </div>
-        <div style="margin-left:auto;text-align:right">
-          <div style="color:var(--muted);font-size:9px;text-transform:uppercase">Current Score</div>
-          <div style="color:${sl.color};font-weight:900;font-family:'Space Mono',monospace;font-size:18px">${cs.score}</div>
-        </div>
+        <div><div style="color:var(--blue);font-weight:800;font-size:15px">${MONTH_NAMES[mi]} — Month ${mi+1} of 8</div><div style="color:var(--muted);font-size:10px;margin-top:2px">Choose payment → Roll 2 dice → Event auto-applied</div></div>
+        <div style="margin-left:auto;text-align:right"><div style="color:var(--muted);font-size:9px;text-transform:uppercase">Current Score</div><div style="color:${sl.color};font-weight:900;font-family:'Space Mono',monospace;font-size:18px">${cs.score}</div></div>
       </div>
-
-      ${card(`
-        <div class="section-title">💳 This Month's Payment Decision</div>
-        <div class="g2">
-          ${payOpts.map(o=>`
-            <div onclick="selMonthPayment('${o.id}')" style="border:2px solid ${selPay===o.id?o.c:"var(--border)"};background:${selPay===o.id?o.c+"18":"var(--card)"};border-radius:11px;padding:12px;cursor:pointer;text-align:center;transition:all .13s">
-              <div style="font-weight:800;font-size:13px;color:${selPay===o.id?o.c:"var(--text)"}">${o.lbl}</div>
-              <div style="color:${o.c};font-weight:700;font-size:12px;margin-top:4px">${o.pts}</div>
-            </div>`).join("")}
-        </div>
-        <div style="margin-top:10px;padding:8px 12px;background:var(--as);border-radius:8px;font-size:11px;color:var(--blue)">
-          💡 Current util: ${cs.util}% · Target: ${S.strategy.utilTarget||30}% · ${S.strategy.autopay?"✓ Autopay active":"⚠ No autopay set"}
-        </div>
-      `,"dark")}
-
-      <div class="card glow-purple" style="background:linear-gradient(135deg,#110a28,#0a1020)">
+      ${card(`<div class="section-title">💳 This Month's Payment Decision</div><div class="g2">${payOpts.map(o=>`<div onclick="selMonthPayment('${o.id}')" style="border:2px solid ${selPay===o.id?o.c:"var(--border)"};background:${selPay===o.id?o.c+"18":"var(--card)"};border-radius:11px;padding:12px;cursor:pointer;text-align:center;transition:all .13s"><div style="font-weight:800;font-size:13px;color:${selPay===o.id?o.c:"var(--text)"}">${o.lbl}</div><div style="color:${o.c};font-weight:700;font-size:12px;margin-top:4px">${o.pts}</div></div>`).join("")}</div><div style="margin-top:10px;padding:8px 12px;background:var(--as);border-radius:8px;font-size:11px;color:var(--blue)">💡 Current util: ${cs.util}% · Target: ${S.strategy.utilTarget||30}% · ${S.strategy.autopay?"✓ Autopay active":"⚠ No autopay set"}</div>`,"dark")}
+      <div class="card" style="background:linear-gradient(135deg,#110a28,#0a1020)">
         <div style="color:var(--purple);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:13px">🎲 ${MONTH_NAMES[mi]} Credit Event — Roll 2 Dice</div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:13px">
           <div style="display:flex;gap:18px;align-items:center">
@@ -836,9 +600,8 @@ function renderMonth(mi){
           <div id="event-reveal" style="width:100%;display:none"></div>
         </div>
       </div>
-
       <div id="results-preview" style="display:none"></div>
-      ${b("Close "+MONTH_NAMES[mi]+" →","submitMonth("+mi+")","primary","lg full",true,"id='close-btn'")}
+      ${b("Close "+MONTH_NAMES[mi]+" →","submitMonth("+mi+")","primary","lg full",true)}
       ${restartLink()}
     </div>`;
 }
@@ -877,24 +640,17 @@ function rollDice(mi){
 function showEventReveal(ev,mi){
   const revEl=document.getElementById("event-reveal");
   revEl.style.display="block";
-  revEl.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px">🎴 Dice Roll → Credit Event Drawn</div>
-    <div id="ev-face-down" style="background:linear-gradient(135deg,#061228,#040a1a);border:2px solid var(--purple)88;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;animation:pulse 0.6s infinite">
-      <span style="font-size:34px">🎴</span><span style="color:var(--purple);font-weight:800;font-size:13px">Revealing…</span>
-    </div>`;
+  revEl.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px">🎴 Dice Roll → Credit Event Drawn</div><div id="ev-face-down" style="background:linear-gradient(135deg,#061228,#040a1a);border:2px solid var(--purple)88;border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;animation:pulse 0.6s infinite"><span style="font-size:34px">🎴</span><span style="color:var(--purple);font-weight:800;font-size:13px">Revealing…</span></div>`;
   setTimeout(()=>{
     const fd=document.getElementById("ev-face-down");if(!fd)return;
     fd.style.animation="none";fd.className="month-ev reveal";
     fd.style.background=ev.c+"22";fd.style.border=`2px solid ${ev.c}`;fd.style.boxShadow=`0 0 26px ${ev.c}55`;
-    fd.innerHTML=`<span style="font-size:32px;flex-shrink:0">${ev.e}</span>
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-          <div style="color:${ev.c};font-weight:900;font-size:14px">${ev.t}</div>${bdg(ev.lbl,ev.c)}
-        </div>
-        <div style="color:var(--muted);font-size:11px">${ev.d}</div>
-      </div>
-      <div style="flex-shrink:0;text-align:center"><div style="color:${ev.c};font-size:11px;font-weight:800">AUTO</div><div style="color:${ev.c};font-size:9px">APPLIED</div></div>`;
+    fd.innerHTML=`<span style="font-size:32px;flex-shrink:0">${ev.e}</span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="color:${ev.c};font-weight:900;font-size:14px">${ev.t}</div>${bdg(ev.lbl,ev.c)}</div><div style="color:var(--muted);font-size:11px">${ev.d}</div></div><div style="flex-shrink:0;text-align:center"><div style="color:${ev.c};font-size:11px;font-weight:800">AUTO</div><div style="color:${ev.c};font-size:9px">APPLIED</div></div>`;
     setTimeout(()=>showMonthResults(mi),380);
-    setTimeout(()=>{const cb=document.getElementById("close-btn");if(cb)cb.disabled=false;},500);
+    setTimeout(()=>{
+      const btns=document.querySelectorAll(".btn.primary.lg.full");
+      btns.forEach(b=>{if(b.textContent.includes("Close"))b.disabled=false;});
+    },500);
   },680);
 }
 
@@ -906,29 +662,18 @@ function showMonthResults(mi){
   const scoreDiff=newCs.score-prevCs.score;
   const prv=document.getElementById("results-preview");if(!prv)return;
   prv.style.display="block";
-  prv.innerHTML=card(`
-    <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">⭐ ${MONTH_NAMES[mi]} — Score Update</div>
+  prv.innerHTML=card(`<div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">⭐ ${MONTH_NAMES[mi]} — Score Update</div>
     <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:14px">
-      <div style="text-align:center">
-        <div style="color:var(--muted);font-size:10px;text-transform:uppercase">Was</div>
-        <div style="color:var(--muted);font-size:26px;font-weight:900;font-family:'Space Mono',monospace">${prevCs.score}</div>
-      </div>
-      <div style="font-size:28px">${scoreDiff>0?"→":"→"}</div>
-      <div style="text-align:center">
-        <div style="color:var(--muted);font-size:10px;text-transform:uppercase">Now</div>
-        <div style="color:${scoreDiff>=0?"var(--green)":"var(--red)"};font-size:36px;font-weight:900;font-family:'Space Mono',monospace">${newCs.score}</div>
-      </div>
-      <div style="flex:1;text-align:center">
-        <div style="color:${scoreDiff>=0?"var(--green)":"var(--red)"};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${scoreDiff>=0?"+":""}${scoreDiff}</div>
-        <div style="color:var(--muted);font-size:10px">points this month</div>
-      </div>
+      <div style="text-align:center"><div style="color:var(--muted);font-size:10px;text-transform:uppercase">Was</div><div style="color:var(--muted);font-size:26px;font-weight:900;font-family:'Space Mono',monospace">${prevCs.score}</div></div>
+      <div style="font-size:28px">→</div>
+      <div style="text-align:center"><div style="color:var(--muted);font-size:10px;text-transform:uppercase">Now</div><div style="color:${scoreDiff>=0?"var(--green)":"var(--red)"};font-size:36px;font-weight:900;font-family:'Space Mono',monospace">${newCs.score}</div></div>
+      <div style="flex:1;text-align:center"><div style="color:${scoreDiff>=0?"var(--green)":"var(--red)"};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${scoreDiff>=0?"+":""}${scoreDiff}</div><div style="color:var(--muted);font-size:10px">points this month</div></div>
     </div>
     ${scoreGauge(newCs.score)}
     <div style="margin-top:11px;padding:9px 13px;background:${_chosenEvent.c}18;border:1px solid ${_chosenEvent.c}44;border-radius:9px;display:flex;align-items:center;gap:9px">
       <span style="font-size:20px">${_chosenEvent.e}</span>
       <div><div style="color:${_chosenEvent.c};font-weight:700;font-size:12px">${_chosenEvent.t}</div><div style="color:var(--muted);font-size:11px">${_chosenEvent.d} → <strong style="color:${_chosenEvent.c}">${_chosenEvent.lbl}</strong></div></div>
-    </div>
-  `,"blue","background:#080c18;border:1px solid var(--blue)33");
+    </div>`,"blue","background:#080c18;border:1px solid var(--blue)33");
 }
 
 function submitMonth(mi){
@@ -937,51 +682,18 @@ function submitMonth(mi){
   advance();
 }
 
-// ═══════════════════════════════════
-// ROUND 15 — FINAL CREDIT REPORT
-// ═══════════════════════════════════
 function renderFinalReport(){
   const p=S.profile;
   const cs=calcScore(p,S.months,S.strategy);
   const startSl=scoreLabel(p.startScore);
   const finalSl=scoreLabel(cs.score);
   const diff=cs.score-p.startScore;
-  return `
-    ${roundHdr("📋","15","Final Credit Report","See how 8 months of decisions changed your credit profile")}
+  return `${roundHdr("📋","15","Final Credit Report","See how 8 months of decisions changed your credit profile")}
     <div class="col">
       <div class="credit-report">
-        <div class="cr-header">
-          <div>
-            <div style="color:var(--blue);font-weight:700;font-size:13px">EQUIFAX CREDIT REPORT — UPDATED</div>
-            <div style="color:var(--muted);font-size:10px">After 8-Month Simulation Period</div>
-          </div>
-          <div style="text-align:right">
-            <div style="color:${finalSl.color};font-size:24px;font-weight:900">${cs.score}</div>
-            <div style="color:${finalSl.color};font-size:11px;font-weight:700">${finalSl.label}</div>
-          </div>
-        </div>
-        <div class="cr-section">
-          <div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:10px">SCORE COMPARISON</div>
-          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-            <div style="text-align:center">
-              <div style="color:var(--muted);font-size:10px">Starting Score</div>
-              <div style="color:${startSl.color};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${p.startScore}</div>
-              <div style="color:${startSl.color};font-size:11px">${startSl.label}</div>
-            </div>
-            <div style="font-size:24px">→</div>
-            <div style="text-align:center">
-              <div style="color:var(--muted);font-size:10px">Final Score</div>
-              <div style="color:${finalSl.color};font-size:36px;font-weight:900;font-family:'Space Mono',monospace">${cs.score}</div>
-              <div style="color:${finalSl.color};font-size:11px">${finalSl.label}</div>
-            </div>
-            <div style="text-align:center;flex:1">
-              <div style="color:${diff>=0?"var(--green)":"var(--red)"};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${diff>=0?"+":""}${diff}</div>
-              <div style="color:var(--muted);font-size:10px">Total Change</div>
-            </div>
-          </div>
-        </div>
-        <div class="cr-section">
-          <div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">WHAT CHANGED</div>
+        <div class="cr-header"><div><div style="color:var(--blue);font-weight:700;font-size:13px">EQUIFAX CREDIT REPORT — UPDATED</div><div style="color:var(--muted);font-size:10px">After 8-Month Simulation Period</div></div><div style="text-align:right"><div style="color:${finalSl.color};font-size:24px;font-weight:900">${cs.score}</div><div style="color:${finalSl.color};font-size:11px;font-weight:700">${finalSl.label}</div></div></div>
+        <div class="cr-section"><div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:10px">SCORE COMPARISON</div><div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><div style="text-align:center"><div style="color:var(--muted);font-size:10px">Starting Score</div><div style="color:${startSl.color};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${p.startScore}</div><div style="color:${startSl.color};font-size:11px">${startSl.label}</div></div><div style="font-size:24px">→</div><div style="text-align:center"><div style="color:var(--muted);font-size:10px">Final Score</div><div style="color:${finalSl.color};font-size:36px;font-weight:900;font-family:'Space Mono',monospace">${cs.score}</div><div style="color:${finalSl.color};font-size:11px">${finalSl.label}</div></div><div style="text-align:center;flex:1"><div style="color:${diff>=0?"var(--green)":"var(--red)"};font-size:28px;font-weight:900;font-family:'Space Mono',monospace">${diff>=0?"+":""}${diff}</div><div style="color:var(--muted);font-size:10px">Total Change</div></div></div></div>
+        <div class="cr-section"><div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">WHAT CHANGED</div>
           ${S.disputes.length>0?`<div style="color:var(--green);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✓ Disputed ${S.disputes.length} item(s) — estimated +${S.disputes.length*8} points</div>`:""}
           ${S.strategy.autopay?`<div style="color:var(--green);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✓ Autopay set up — no missed payments from automation</div>`:""}
           ${S.strategy.utilTarget<=19?`<div style="color:var(--green);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✓ Low utilization target — strong utilization improvement</div>`:""}
@@ -990,25 +702,13 @@ function renderFinalReport(){
           ${S.months.filter(m=>m.event&&m.event.v>0&&m.event.ef==="score").length>0?`<div style="color:var(--green);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✓ ${S.months.filter(m=>m.event&&m.event.v>0&&m.event.ef==="score").length} positive credit event(s) this period</div>`:""}
           ${S.months.filter(m=>m.event&&m.event.v<0&&m.event.ef==="score").length>0?`<div style="color:var(--red);font-size:11px;padding:5px 0;border-top:1px solid var(--border)22">✗ ${S.months.filter(m=>m.event&&m.event.v<0&&m.event.ef==="score").length} negative credit event(s) this period</div>`:""}
         </div>
-        <div class="cr-section">
-          <div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">MONTH-BY-MONTH EVENTS</div>
-          ${S.months.map((m,i)=>`
-            <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--border)22;align-items:center">
-              <span style="color:var(--muted);font-size:10px;min-width:55px">${m.monthName?.slice(0,3)||"Mo "+(i+1)}</span>
-              <span style="font-size:16px">${m.event?.e||"•"}</span>
-              <span style="color:var(--text);font-size:11px;flex:1">${m.event?.t||"No event"}</span>
-              <span style="color:${m.event?.v>=0?"var(--green)":"var(--red)"};font-size:11px;font-weight:700;font-family:'Space Mono',monospace">${m.event?.lbl||""}</span>
-            </div>`).join("")}
-        </div>
+        <div class="cr-section"><div style="color:var(--blue);font-weight:700;font-size:11px;margin-bottom:8px">MONTH-BY-MONTH EVENTS</div>${S.months.map((m,i)=>`<div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--border)22;align-items:center"><span style="color:var(--muted);font-size:10px;min-width:55px">${m.monthName?.slice(0,3)||"Mo "+(i+1)}</span><span style="font-size:16px">${m.event?.e||"•"}</span><span style="color:var(--text);font-size:11px;flex:1">${m.event?.t||"No event"}</span><span style="color:${m.event?.v>=0?"var(--green)":"var(--red)"};font-size:11px;font-weight:700;font-family:'Space Mono',monospace">${m.event?.lbl||""}</span></div>`).join("")}</div>
       </div>
       ${b("Round 16: Full Credit Audit →","advance()","primary","lg full")}
       ${restartLink()}
     </div>`;
 }
 
-// ═══════════════════════════════════
-// ROUND 16 — FULL CREDIT AUDIT
-// ═══════════════════════════════════
 function renderAudit(){
   const p=S.profile;
   const cs=calcScore(p,S.months,S.strategy);
@@ -1017,166 +717,55 @@ function renderAudit(){
   const flagCount=Object.values(S.auditChecks).filter(v=>v==="flag").length;
   const passCount=Object.values(S.auditChecks).filter(v=>v==="pass").length;
   const allChecked=AUDIT_CHECKS.every(c=>S.auditChecks[c.id]);
-
   let rating,ratingColor,ratingIcon;
   if(!allChecked){rating="Incomplete";ratingColor="var(--muted)";ratingIcon="⏳";}
   else if(flagCount<=1&&diff>=30){rating="Excellent Strategy";ratingColor="var(--teal)";ratingIcon="🏆";}
   else if(flagCount<=2&&diff>=10){rating="Good Strategy";ratingColor="var(--green)";ratingIcon="✅";}
   else if(flagCount<=4){rating="Fair Strategy";ratingColor="var(--gold)";ratingIcon="⚠️";}
   else{rating="Needs Improvement";ratingColor="var(--red)";ratingIcon="📚";}
-
-  const tabs=[
-    {id:"journey",lbl:"📈 Score Journey"},
-    {id:"factors",lbl:"📊 Factor Breakdown"},
-    {id:"checklist",lbl:"✅ Checklist"},
-    {id:"opinion",lbl:"🏆 Rating"},
-  ];
-
+  const tabs=[{id:"journey",lbl:"📈 Score Journey"},{id:"factors",lbl:"📊 Factor Breakdown"},{id:"checklist",lbl:"✅ Checklist"},{id:"opinion",lbl:"🏆 Rating"}];
   let tabContent="";
-
   if(_auditTab==="journey"){
     const maxScore=Math.max(p.startScore,...S.months.map((_,i)=>calcScore(p,S.months.slice(0,i+1),S.strategy).score));
-    const minScore=Math.min(p.startScore,...S.months.map((_,i)=>calcScore(p,S.months.slice(0,i+1),S.strategy).score));
-    tabContent=`
-      <div style="margin-bottom:14px">
-        <div class="g4">
-          ${st("Starting Score",p.startScore,scoreLabel(p.startScore).color)}
-          ${st("Final Score",cs.score,finalSl.color)}
-          ${st("Total Change",(diff>=0?"+":"")+diff,diff>=0?"var(--green)":"var(--red)")}
-          ${st("Peak Score",maxScore,"var(--teal)")}
-        </div>
-      </div>
+    tabContent=`<div style="margin-bottom:14px"><div class="g4">${st("Starting Score",p.startScore,scoreLabel(p.startScore).color)}${st("Final Score",cs.score,finalSl.color)}${st("Total Change",(diff>=0?"+":"")+diff,diff>=0?"var(--green)":"var(--red)")}${st("Peak Score",maxScore,"var(--teal)")}</div></div>
       <div style="color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:10px">Month-by-Month Score Movement</div>
       ${[{monthName:"Start",score:p.startScore},...S.months.map((m,i)=>({monthName:m.monthName||"Month "+(i+1),score:calcScore(p,S.months.slice(0,i+1),S.strategy).score,event:m.event}))].map((m,i,arr)=>{
-        const prev=i>0?arr[i-1].score:m.score;
-        const chg=m.score-prev;
-        const w=Math.round(clamp((m.score-300)/550,0,1)*100);
-        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <span style="color:var(--muted);font-size:9px;width:55px;flex-shrink:0">${m.monthName?.slice(0,3)||"Start"}</span>
-          <div style="flex:1;background:#151f35;border-radius:3px;height:14px;overflow:hidden;position:relative">
-            <div style="width:${w}%;height:100%;background:${scoreLabel(m.score).color};border-radius:3px;transition:width 1s"></div>
-          </div>
-          <span style="color:${scoreLabel(m.score).color};font-size:10px;font-family:'Space Mono',monospace;width:35px;text-align:right;flex-shrink:0">${m.score}</span>
-          ${i>0?`<span style="color:${chg>=0?"var(--green)":"var(--red)"};font-size:9px;font-family:'Space Mono',monospace;width:30px;flex-shrink:0">${chg>=0?"+":""}${chg}</span><span style="font-size:12px;flex-shrink:0">${m.event?.e||""}</span>`:"<span style='width:60px;flex-shrink:0'></span>"}
-        </div>`;
+        const prev=i>0?arr[i-1].score:m.score;const chg=m.score-prev;const w=Math.round(clamp((m.score-300)/550,0,1)*100);
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:var(--muted);font-size:9px;width:55px;flex-shrink:0">${m.monthName?.slice(0,3)||"Start"}</span><div style="flex:1;background:#151f35;border-radius:3px;height:14px;overflow:hidden"><div style="width:${w}%;height:100%;background:${scoreLabel(m.score).color};border-radius:3px;transition:width 1s"></div></div><span style="color:${scoreLabel(m.score).color};font-size:10px;font-family:'Space Mono',monospace;width:35px;text-align:right;flex-shrink:0">${m.score}</span>${i>0?`<span style="color:${chg>=0?"var(--green)":"var(--red)"};font-size:9px;font-family:'Space Mono',monospace;width:30px;flex-shrink:0">${chg>=0?"+":""}${chg}</span><span style="font-size:12px;flex-shrink:0">${m.event?.e||""}</span>`:"<span style='width:60px;flex-shrink:0'></span>"}</div>`;
       }).join("")}`;
-  }
-  else if(_auditTab==="factors"){
+  } else if(_auditTab==="factors"){
     const factors=[
       {name:"Payment History",weight:35,score:S.months.filter(m=>m.payment==="skip").length===0?90:S.months.filter(m=>m.payment==="skip").length===1?65:40,color:"var(--blue)",desc:"Based on your "+S.months.filter(m=>m.payment==="skip").length+" missed payment(s)"},
       {name:"Credit Utilization",weight:30,score:S.strategy.utilTarget<=9?95:S.strategy.utilTarget<=19?80:S.strategy.utilTarget<=29?65:45,color:"var(--green)",desc:"Target utilization: "+S.strategy.utilTarget+"%"},
-      {name:"Length of History",weight:15,score:p.age<3?50:p.age<6?70:85,color:"var(--gold)",desc:p.age+" years — "+( S.strategy.keepOldAccounts?"kept old accounts open":"some accounts may have been closed")},
+      {name:"Length of History",weight:15,score:p.age<3?50:p.age<6?70:85,color:"var(--gold)",desc:p.age+" years — "+(S.strategy.keepOldAccounts?"kept old accounts open":"some accounts may have been closed")},
       {name:"Credit Mix",weight:10,score:p.mix===1?50:p.mix===2?70:85,color:"var(--purple)",desc:p.mix+" account type"+(p.mix!==1?"s":"")+" on file"},
       {name:"New Inquiries",weight:10,score:S.strategy.noNewAccounts?95:p.inq>2?50:75,color:"var(--teal)",desc:S.strategy.noNewAccounts?"No new applications — excellent":"Some new inquiries recorded"},
     ];
-    tabContent=`
-      <div style="margin-bottom:14px">
-        <div style="color:var(--muted);font-size:11px;line-height:1.7">Your score is calculated from 5 factors. Each factor below shows your performance during the 8-month simulation.</div>
-      </div>
-      ${factors.map(f=>`
-        <div style="padding:14px 0;border-top:1px solid var(--border)22">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <div>
-              <div style="font-weight:800;font-size:13px;color:${f.color}">${f.name}</div>
-              <div style="color:var(--muted);font-size:11px;margin-top:2px">${f.desc}</div>
-            </div>
-            <div style="text-align:right">
-              <div style="color:${f.color};font-weight:800;font-family:'Space Mono',monospace">${f.score}/100</div>
-              <div style="color:var(--muted);font-size:10px">${f.weight}% weight</div>
-            </div>
-          </div>
-          ${pb(f.score,f.color,10)}
-        </div>`).join("")}
-      <div style="margin-top:14px;padding:12px 14px;background:var(--as);border:1px solid var(--blue)44;border-radius:10px">
-        <div style="color:var(--blue);font-weight:800;font-size:12px;margin-bottom:6px">Your Calculated Score Breakdown</div>
-        <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">
-          ${factors.map(f=>`<div>${f.name}: ${f.score}/100 × ${f.weight}% = ${Math.round(f.score*f.weight/100)} pts</div>`).join("")}
-          <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;color:var(--blue);font-weight:700">Final Score: ${cs.score} (${finalSl.label})</div>
-        </div>
-      </div>`;
-  }
-  else if(_auditTab==="checklist"){
-    tabContent=`${AUDIT_CHECKS.map(c=>{
-      const val=S.auditChecks[c.id];
-      return `<div style="border-radius:11px;padding:12px 14px;border:1px solid ${val==="pass"?"var(--green)44":val==="flag"?"var(--red)44":"var(--border)"};background:${val==="pass"?"var(--grs)":val==="flag"?"var(--rs)":"var(--card)"};margin-bottom:8px">
-        <div style="display:flex;gap:11px;align-items:flex-start">
-          <div style="flex:1">
-            <div style="font-weight:700;font-size:12px">${c.lbl}</div>
-            <div style="color:var(--muted);font-size:10px;margin-top:3px">${bdg(c.cat,"var(--blue)")}</div>
-          </div>
-          <div style="display:flex;gap:6px;flex-shrink:0">
-            <button class="btn sm ${val==="pass"?"green":"ghost"}" style="${val==="pass"?"":"color:var(--green);border-color:var(--green)55"}" onclick="setCheck('${c.id}','pass')">✓ Pass</button>
-            <button class="btn sm ${val==="flag"?"red":"ghost"}" style="${val==="flag"?"":"color:var(--red);border-color:var(--red)55"}" onclick="setCheck('${c.id}','flag')">⚑ Flag</button>
-          </div>
-        </div>
-      </div>`;
-    }).join("")}
-    <div class="card" style="background:#080c18">
-      <div class="g3">${st("Checked",`${passCount+flagCount}/${AUDIT_CHECKS.length}`,"var(--blue)")}${st("Passed",passCount,"var(--green)")}${st("Flagged",flagCount,flagCount>0?"var(--red)":"var(--muted)")}</div>
-    </div>
+    tabContent=`<div style="margin-bottom:14px"><div style="color:var(--muted);font-size:11px;line-height:1.7">Your score is calculated from 5 factors. Each factor below shows your performance during the 8-month simulation.</div></div>
+      ${factors.map(f=>`<div style="padding:14px 0;border-top:1px solid var(--border)22"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div><div style="font-weight:800;font-size:13px;color:${f.color}">${f.name}</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${f.desc}</div></div><div style="text-align:right"><div style="color:${f.color};font-weight:800;font-family:'Space Mono',monospace">${f.score}/100</div><div style="color:var(--muted);font-size:10px">${f.weight}% weight</div></div></div>${pb(f.score,f.color,10)}</div>`).join("")}
+      <div style="margin-top:14px;padding:12px 14px;background:var(--as);border:1px solid var(--blue)44;border-radius:10px"><div style="color:var(--blue);font-weight:800;font-size:12px;margin-bottom:6px">Your Calculated Score Breakdown</div><div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">${factors.map(f=>`<div>${f.name}: ${f.score}/100 × ${f.weight}% = ${Math.round(f.score*f.weight/100)} pts</div>`).join("")}<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;color:var(--blue);font-weight:700">Final Score: ${cs.score} (${finalSl.label})</div></div></div>`;
+  } else if(_auditTab==="checklist"){
+    tabContent=`${AUDIT_CHECKS.map(c=>{const val=S.auditChecks[c.id];return `<div style="border-radius:11px;padding:12px 14px;border:1px solid ${val==="pass"?"var(--green)44":val==="flag"?"var(--red)44":"var(--border)"};background:${val==="pass"?"var(--grs)":val==="flag"?"var(--rs)":"var(--card)"};margin-bottom:8px"><div style="display:flex;gap:11px;align-items:flex-start"><div style="flex:1"><div style="font-weight:700;font-size:12px">${c.lbl}</div><div style="color:var(--muted);font-size:10px;margin-top:3px">${bdg(c.cat,"var(--blue)")}</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn sm ${val==="pass"?"green":"ghost"}" style="${val==="pass"?"":"color:var(--green);border-color:var(--green)55"}" onclick="setCheck('${c.id}','pass')">✓ Pass</button><button class="btn sm ${val==="flag"?"red":"ghost"}" style="${val==="flag"?"":"color:var(--red);border-color:var(--red)55"}" onclick="setCheck('${c.id}','flag')">⚑ Flag</button></div></div></div>`;}).join("")}
+    <div class="card" style="background:#080c18"><div class="g3">${st("Checked",`${passCount+flagCount}/${AUDIT_CHECKS.length}`,"var(--blue)")}${st("Passed",passCount,"var(--green)")}${st("Flagged",flagCount,flagCount>0?"var(--red)":"var(--muted)")}</div></div>
     ${allChecked?b("🏆 View My Rating →","setAuditTab('opinion')","primary","lg full"):""}`;
-  }
-  else if(_auditTab==="opinion"){
+  } else if(_auditTab==="opinion"){
     if(!allChecked){
-      tabContent=`<div style="text-align:center;padding:22px 0">
-        <div style="font-size:34px;margin-bottom:10px">⏳</div>
-        <div style="color:var(--gold);font-weight:800;font-size:15px">Complete the Checklist First</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:6px">Mark all 10 items Pass or Flag to receive your rating.</div>
-        <div style="margin-top:14px">${b("Go to Checklist →","setAuditTab('checklist')","primary","md")}</div>
-      </div>`;
+      tabContent=`<div style="text-align:center;padding:22px 0"><div style="font-size:34px;margin-bottom:10px">⏳</div><div style="color:var(--gold);font-weight:800;font-size:15px">Complete the Checklist First</div><div style="color:var(--muted);font-size:12px;margin-top:6px">Mark all 10 items Pass or Flag to receive your rating.</div><div style="margin-top:14px">${b("Go to Checklist →","setAuditTab('checklist')","primary","md")}</div></div>`;
     } else {
-      const nextSteps=cs.score<580?["Dispute all negative items immediately","Set up autopay to prevent any missed payments","Get a secured credit card if you have none","Target: reduce utilization to below 30%"]:
-        cs.score<670?["Continue paying down balances — target under 20% utilization","Apply for a credit limit increase on your best card","Keep all accounts open and make minimum payments","Target: 740 in 12 months"]:
-        cs.score<740?["You're close to Very Good — focus on utilization under 10%","Request limit increases, don't open new accounts","Keep perfect payment history","Target: 740+ in 6 months"]:
-        ["Maintain utilization under 10%","Keep payment streak going","Diversify credit mix if possible","You now qualify for the best rates available"];
-
-      tabContent=`
-        <div style="border-radius:14px;padding:24px 18px;text-align:center;background:${ratingColor}18;border:1px solid ${ratingColor}55;margin-bottom:13px">
-          <div style="font-size:42px;margin-bottom:8px">${ratingIcon}</div>
-          <div style="color:${ratingColor};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px">Credit Strategy Rating</div>
-          <div style="color:${ratingColor};font-size:22px;font-weight:900">${rating}</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:8px">Score moved from <strong style="color:${scoreLabel(p.startScore).color}">${p.startScore}</strong> to <strong style="color:${finalSl.color}">${cs.score}</strong> — a change of <strong style="color:${diff>=0?"var(--green)":"var(--red)"}">${diff>=0?"+":""}${diff} points</strong></div>
-        </div>
-        <div class="card" style="background:#080c18;margin-bottom:13px">
-          <div style="color:var(--blue);font-weight:800;font-size:12px;margin-bottom:10px">📋 Your Next Steps in Real Life</div>
-          ${nextSteps.map((s,i)=>`<div style="display:flex;gap:10px;padding:7px 0;border-top:${i>0?"1px solid var(--border)22":"none"}"><span style="color:var(--blue);font-weight:700;flex-shrink:0">${i+1}.</span><span style="color:var(--text);font-size:12px">${s}</span></div>`).join("")}
-        </div>
-        <div class="cert">
-          <div style="font-size:46px;margin-bottom:8px">🏆</div>
-          <div style="color:var(--blue);font-size:19px;font-weight:900">Certificate of Completion</div>
-          <div style="color:var(--text);font-size:13px;margin-top:5px">nugO Credit Simulation Lab</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:12px">This certifies that</div>
-          <div style="color:var(--gold);font-size:18px;font-weight:800;margin:5px 0">${p.name}</div>
-          <div style="color:var(--muted);font-size:12px">completed all 16 rounds of credit simulation</div>
-          <div style="color:var(--blue);font-size:13px;font-weight:700;margin-top:3px">${p.profileLabel} · 8-Month Credit Journey</div>
-          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">
-            ${bdg((diff>=0?"+":"")+diff+" Points","var(--blue)","lg")}
-            ${bdg(ratingIcon+" "+rating,ratingColor,"lg")}
-            ${bdg(finalSl.label+" Credit",finalSl.color,"lg")}
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;text-align:left">
-            ${["Credit Report Analysis","Dispute Strategy","Utilization Planning","Payment Strategy","Account Management","8-Month Simulation","20 Credit Events","Score Factor Breakdown","Credit Audit Checklist","Credit Mastery Rating"].map(s=>`
-              <div style="display:flex;gap:6px;align-items:center"><span style="color:var(--blue);font-size:11px">✓</span><span style="color:var(--muted);font-size:10px">${s}</span></div>`).join("")}
-          </div>
-        </div>
+      const nextSteps=cs.score<580?["Dispute all negative items immediately","Set up autopay to prevent any missed payments","Get a secured credit card if you have none","Target: reduce utilization to below 30%"]:cs.score<670?["Continue paying down balances — target under 20% utilization","Apply for a credit limit increase on your best card","Keep all accounts open and make minimum payments","Target: 740 in 12 months"]:cs.score<740?["You're close to Very Good — focus on utilization under 10%","Request limit increases, don't open new accounts","Keep perfect payment history","Target: 740+ in 6 months"]:["Maintain utilization under 10%","Keep payment streak going","Diversify credit mix if possible","You now qualify for the best rates available"];
+      tabContent=`<div style="border-radius:14px;padding:24px 18px;text-align:center;background:${ratingColor}18;border:1px solid ${ratingColor}55;margin-bottom:13px"><div style="font-size:42px;margin-bottom:8px">${ratingIcon}</div><div style="color:${ratingColor};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px">Credit Strategy Rating</div><div style="color:${ratingColor};font-size:22px;font-weight:900">${rating}</div><div style="color:var(--muted);font-size:12px;margin-top:8px">Score moved from <strong style="color:${scoreLabel(p.startScore).color}">${p.startScore}</strong> to <strong style="color:${finalSl.color}">${cs.score}</strong> — a change of <strong style="color:${diff>=0?"var(--green)":"var(--red)"}">${diff>=0?"+":""}${diff} points</strong></div></div>
+        <div class="card" style="background:#080c18;margin-bottom:13px"><div style="color:var(--blue);font-weight:800;font-size:12px;margin-bottom:10px">📋 Your Next Steps in Real Life</div>${nextSteps.map((s,i)=>`<div style="display:flex;gap:10px;padding:7px 0;border-top:${i>0?"1px solid var(--border)22":"none"}"><span style="color:var(--blue);font-weight:700;flex-shrink:0">${i+1}.</span><span style="color:var(--text);font-size:12px">${s}</span></div>`).join("")}</div>
+        <div class="cert"><div style="font-size:46px;margin-bottom:8px">🏆</div><div style="color:var(--blue);font-size:19px;font-weight:900">Certificate of Completion</div><div style="color:var(--text);font-size:13px;margin-top:5px">nugO Credit Simulation Lab</div><div style="color:var(--muted);font-size:12px;margin-top:12px">This certifies that</div><div style="color:var(--gold);font-size:18px;font-weight:800;margin:5px 0">${p.name}</div><div style="color:var(--muted);font-size:12px">completed all 16 rounds of credit simulation</div><div style="color:var(--blue);font-size:13px;font-weight:700;margin-top:3px">${p.profileLabel} · 8-Month Credit Journey</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">${bdg((diff>=0?"+":"")+diff+" Points","var(--blue)","lg")}${bdg(ratingIcon+" "+rating,ratingColor,"lg")}${bdg(finalSl.label+" Credit",finalSl.color,"lg")}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px;text-align:left">${["Credit Report Analysis","Dispute Strategy","Utilization Planning","Payment Strategy","Account Management","8-Month Simulation","20 Credit Events","Score Factor Breakdown","Credit Audit Checklist","Credit Mastery Rating"].map(s=>`<div style="display:flex;gap:6px;align-items:center"><span style="color:var(--blue);font-size:11px">✓</span><span style="color:var(--muted);font-size:10px">${s}</span></div>`).join("")}</div></div>
         <div style="text-align:center;margin-top:14px">${b("↺ Try Another Profile","restartFull()","ghost","md")}</div>`;
     }
   }
-
-  return `
-    ${roundHdr("🔍","16","Full Credit Audit","Score Journey · Factor Breakdown · Credit Rating")}
+  return `${roundHdr("🔍","16","Full Credit Audit","Score Journey · Factor Breakdown · Credit Rating")}
     <div style="background:linear-gradient(135deg,#060e1a,#040a14);border:1px solid var(--teal)44;border-radius:13px;padding:14px 17px;display:flex;align-items:center;gap:13px;margin-bottom:14px;flex-wrap:wrap">
       <div style="font-size:28px">⭐</div>
       <div style="flex:1"><div style="color:var(--teal);font-weight:900;font-size:14px">${p.name} — Credit Simulation Complete</div><div style="color:var(--muted);font-size:11px;margin-top:2px">${p.profileLabel} · 8-Month Credit Journey</div></div>
-      <div style="display:flex;gap:13px;flex-wrap:wrap">
-        ${st("Start Score",p.startScore,scoreLabel(p.startScore).color,"sm")}
-        ${st("Final Score",cs.score,finalSl.color,"sm")}
-        ${st("Change",(diff>=0?"+":"")+diff,diff>=0?"var(--green)":"var(--red)","sm")}
-      </div>
+      <div style="display:flex;gap:13px;flex-wrap:wrap">${st("Start Score",p.startScore,scoreLabel(p.startScore).color,"sm")}${st("Final Score",cs.score,finalSl.color,"sm")}${st("Change",(diff>=0?"+":"")+diff,diff>=0?"var(--green)":"var(--red)","sm")}</div>
     </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-      ${tabs.map(t=>`<button class="btn ${_auditTab===t.id?"teal":"dark"} sm" onclick="setAuditTab('${t.id}')">${t.lbl}</button>`).join("")}
-    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${tabs.map(t=>`<button class="btn ${_auditTab===t.id?"teal":"dark"} sm" onclick="setAuditTab('${t.id}')">${t.lbl}</button>`).join("")}</div>
     ${card(tabContent)}
     ${restartLink()}`;
 }
@@ -1184,9 +773,6 @@ function renderAudit(){
 function setCheck(id,val){S.auditChecks[id]=val;saveGame();render();}
 function setAuditTab(tab){_auditTab=tab;render();}
 
-// ═══════════════════════════════════
-// HOW TO PLAY MODAL
-// ═══════════════════════════════════
 function openHTP(){_htpStep=0;renderHTP();document.getElementById("htp-modal").style.display="flex";}
 function closeHTP(){document.getElementById("htp-modal").style.display="none";}
 function htpNav(dir){_htpStep=Math.max(0,Math.min(HTP.length-1,_htpStep+dir));renderHTP();}
@@ -1194,12 +780,7 @@ function renderHTP(){
   const s=HTP[_htpStep];
   document.getElementById("htp-step-lbl").textContent=`Step ${_htpStep+1} of ${HTP.length}`;
   document.getElementById("htp-dots").innerHTML=HTP.map((_,i)=>`<div class="modal-prog-seg" onclick="_htpStep=${i};renderHTP()" style="background:${i<=_htpStep?s.color:"var(--border)"}"></div>`).join("");
-  document.getElementById("htp-content").innerHTML=`
-    <div style="text-align:center;margin-bottom:14px">
-      <div style="font-size:50px;margin-bottom:12px">${s.icon}</div>
-      <div style="color:${s.color};font-weight:900;font-size:16px;margin-bottom:10px;line-height:1.3">${s.title}</div>
-      <div style="color:var(--muted);font-size:13px;line-height:1.85;text-align:left">${s.body}</div>
-    </div>`;
+  document.getElementById("htp-content").innerHTML=`<div style="text-align:center;margin-bottom:14px"><div style="font-size:50px;margin-bottom:12px">${s.icon}</div><div style="color:${s.color};font-weight:900;font-size:16px;margin-bottom:10px;line-height:1.3">${s.title}</div><div style="color:var(--muted);font-size:13px;line-height:1.85;text-align:left">${s.body}</div></div>`;
   document.getElementById("htp-prev").style.display=_htpStep===0?"none":"inline-block";
   const nx=document.getElementById("htp-next");
   if(_htpStep===HTP.length-1){nx.textContent="Let's Build Credit! ⭐";nx.className="btn gold md";nx.onclick=closeHTP;}
@@ -1208,11 +789,8 @@ function renderHTP(){
   if(box){box.style.borderColor=s.color+"55";box.style.boxShadow=`0 0 48px ${s.color}33`;}
 }
 
-// ═══════════════════════════════════
-// INIT
-// ═══════════════════════════════════
 window.onload=function(){
-  const saved=loadsaveGame();
+  const saved=loadSave();
   if(saved&&saved.profile){_profileId=saved.profile.profileId||"fresh";}
   _auditTab="journey";
   render();
