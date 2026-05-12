@@ -397,7 +397,7 @@ function render(){
 // INTRO
 // ═══════════════════════════════════
 function renderIntro(){
-  const saved=loadSave();
+  const saved=loadsaveGame();
   const resumeBanner=saved&&saved.round>0&&saved.profile?`
     <div class="resume-banner">
       <div style="font-size:26px">💾</div>
@@ -442,9 +442,9 @@ function renderIntro(){
 }
 
 function startGame(){S={round:1,profile:null,months:[],auditChecks:{},strategy:{autopay:false,utilTarget:30,noNewAccounts:true,keepOldAccounts:true},disputes:[]};_auditTab="journey";render();}
-function resumeGame(){const saved=loadSave();if(!saved)return;S=saved;_auditTab="journey";render();}
-function discardSave(){clearSave();render();}
-function restartFull(){clearSave();S={round:0,profile:null,months:[],auditChecks:{},strategy:{},disputes:[]};_auditTab="journey";render();}
+function resumeGame(){const saved=loadsaveGame();if(!saved)return;S=saved;_auditTab="journey";render();}
+function discardSave(){clearsaveGame();render();}
+function restartFull(){clearsaveGame();S={round:0,profile:null,months:[],auditChecks:{},strategy:{},disputes:[]};_auditTab="journey";render();}
 
 // ═══════════════════════════════════
 // ROUND 1 — PICK PROFILE
@@ -637,7 +637,7 @@ function toggleDispute(id){
     el.style.borderColor=s?"var(--blue)":"var(--border)";
     el.style.background=s?"var(--as)":"var(--card)";
   });
-  save();
+  saveGame();
 }
 function submitDispute(){S.strategy.disputes=[...S.disputes];advance();}
 
@@ -776,7 +776,7 @@ function toggleAcctDecision(id){
   const key=map[id];if(key)S.strategy[key]=!S.strategy[key];
   render();
 }
-function submitAccountDecisions(){save();advance();}
+function submitAccountDecisions(){saveGame();advance();}
 
 // ═══════════════════════════════════
 // ROUNDS 7–14 — MONTHLY SIMULATION
@@ -1212,7 +1212,7 @@ function renderHTP(){
 // INIT
 // ═══════════════════════════════════
 window.onload=function(){
-  const saved=loadSave();
+  const saved=loadsaveGame();
   if(saved&&saved.profile){_profileId=saved.profile.profileId||"fresh";}
   _auditTab="journey";
   render();
